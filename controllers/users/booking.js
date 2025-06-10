@@ -1,4 +1,4 @@
-const { Booking, User, Therapist,Category } = require('../../models/index.js');
+const { Booking, User, Therapist, Category } = require('../../models/index.js');
 const notification = require('../../utils/addNotification.js')
 var moment = require('moment')
 
@@ -11,6 +11,18 @@ module.exports.AddBooking = async (req, res) => {
         message: "Please make sure all required fields are filled in."
       })
     }
+    let status = 'Request booking'
+
+    const includeOptions = [
+      {
+        model: Category,
+        as: 'category',
+        attributes: ['c_id', 'c_name', 'c_image'],
+        required: true,
+      }
+    ]
+
+
     const user = await User.findByPk(user_id);
 
     if (!user) {
@@ -19,8 +31,16 @@ module.exports.AddBooking = async (req, res) => {
         message: "user not found"
       })
     }
-    const therapist = await Therapist.findByPk(therapist_id);
+    var therapist = await Therapist.findOne({
+      where: {
+        id: therapist_id
+      },
+      include: includeOptions,
+    });
+    console.log(therapist.category.c_name, "therapisttt");
+    // console.log(bookingdetails, "booking");
 
+    let categoryimage = therapist.category.c_image
     if (!therapist) {
       return res.send({
         result: false,
@@ -33,6 +53,8 @@ module.exports.AddBooking = async (req, res) => {
       therapistId: therapist_id,
       duration: duration
     });
+
+    await notification.addNotification(user_id, therapist_id, status, `Request Therapy section`, ` ${user.name} request ${service} therapy section to ${therapist.name}`, categoryimage)
 
     return res.send({
       result: true,
@@ -267,7 +289,7 @@ module.exports.UpdateBooking = async (req, res) => {
 
 module.exports.UpdateBookingStatus = async (req, res) => {
   try {
-    let { user_id, role } = req.headers
+    let { user_id, role } = req.headers;
     const { b_id, status } = req.body;
 
     if (!b_id || !status) {
@@ -276,14 +298,7 @@ module.exports.UpdateBookingStatus = async (req, res) => {
         message: "Booking id and status is required."
       });
     }
-    const includeOptions = [
-      {
-        model: Category,
-        as: 'category',
-        attributes: ['c_id', 'c_name','c_image'],
-        required: true,
-      }
-    ]
+
     const bookingdetails = await Booking.findByPk(b_id);
     if (!bookingdetails) {
       return res.send({
@@ -292,8 +307,7 @@ module.exports.UpdateBookingStatus = async (req, res) => {
       });
     }
 
-    if (role == 'user') {
-
+    if (role === 'user') {
       var userdetails = await User.findByPk(user_id);
       if (!userdetails) {
         return res.send({
@@ -303,8 +317,7 @@ module.exports.UpdateBookingStatus = async (req, res) => {
       }
     }
 
-    if (role == 'therapist') {
-
+    if (role === 'therapist') {
       var userdetails = await Therapist.findByPk(user_id);
       if (!userdetails) {
         return res.send({
@@ -313,28 +326,44 @@ module.exports.UpdateBookingStatus = async (req, res) => {
         });
       }
     }
-let date = moment().format('YYYY-MM-DD HH:MM:SS')
-console.log("date:",date);
 
+    let u_id = bookingdetails.userId;
+    let therapist_id = bookingdetails.therapistId;
 
-    let u_id = bookingdetails.userId
-    let therapist_id = bookingdetails.therapistId
-
-    var therapistdetails = await Therapist.findOne({
-      where: {
-        id: therapist_id
-      },
-      include: includeOptions,
-    });
-    console.log(therapistdetails.category.c_name, "therapisttt");
-    // console.log(bookingdetails, "booking");
-
-let categoryimage=therapistdetails.category.c_image
-    await Booking.update(status, {
-      where: { id: b_id }
+    const therapistdetails = await Therapist.findOne({
+      where: { id: therapist_id },
+      include: [
+        {
+          model: Category,
+          as: 'category',
+          attributes: ['c_id', 'c_name', 'c_image'],
+          required: true,
+        }
+      ]
     });
 
-    await notification.addNotification(u_id, therapist_id,status, `Booking Status Updated`, `Booking number [${b_id}] status ${status}`,categoryimage,date)
+    const categoryimage = therapistdetails?.category?.c_image || null;
+
+    const updatestatus = await Booking.update(
+      { status }, 
+      { where: { id: b_id } }
+    );
+
+    if (updatestatus[0] === 0) {
+      return res.send({
+        result: false,
+        message: "Failed to update booking status."
+      });
+    }
+
+    await notification.addNotification(
+      u_id,
+      therapist_id,
+      status,
+      `Booking ${status}`,
+      `${userdetails.name} ${status} ${bookingdetails.service} section`,
+      categoryimage
+    );
 
     return res.send({
       result: true,
@@ -342,6 +371,7 @@ let categoryimage=therapistdetails.category.c_image
     });
 
   } catch (error) {
+    console.error("UpdateBookingStatus Error:", error);
     return res.send({
       result: false,
       message: error.message

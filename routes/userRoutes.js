@@ -40,4 +40,7 @@ router.post('/update/booking', UpdateBooking);
 const { UpdateBookingStatus } = require('../controllers/users/booking.js');
 router.post('/update/booking-status', UpdateBookingStatus);
 
+const { GetNotification } = require('../controllers/users/listnotification.js');
+router.post('/list/notification', GetNotification);
+
 module.exports = router;

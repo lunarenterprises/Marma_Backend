@@ -17,7 +17,11 @@ const Therapist = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-     category_id: {
+    gender: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    category_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -44,11 +48,23 @@ const Therapist = sequelize.define(
         min: 0,
       },
     },
-      specialty: {
+    specialty: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-      description: {
+    description: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    state: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    district: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    location: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -57,7 +73,7 @@ const Therapist = sequelize.define(
       defaultValue: 'Offline',
     },
     rating: {
-      type: DataTypes.DECIMAL(2,1),
+      type: DataTypes.DECIMAL(2, 1),
       defaultValue: 0,
       validate: {
         min: 0,
