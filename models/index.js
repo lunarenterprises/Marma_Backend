@@ -13,6 +13,7 @@ const Category = require('./admin/addCategory.js');
 const Chat = require('./chat.js');
 const Messages = require('./messages.js');
 const Notification = require('./notification.js');
+const Questions = require('./questions.js')
 
 
 // === Define Associations === //
@@ -135,6 +136,7 @@ module.exports = {
   Messages,
   Chat,
   Notification,
+  Questions,
   initRoles,
   createDefaultAdmin,
   initializeDatabase,
