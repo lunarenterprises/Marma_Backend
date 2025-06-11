@@ -1,4 +1,4 @@
-const { Booking, User, Therapist, Category } = require('../../models/index.js');
+const { Booking, User, Therapist, Category, Op } = require('../../models/index.js');
 const notification = require('../../utils/addNotification.js')
 var moment = require('moment')
 
