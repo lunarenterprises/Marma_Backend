@@ -1,6 +1,7 @@
-const User = require('../../models/user')
-const { generateToken } = require('../../utils/generateToken')
+const { User, Role } = require('../../models')
+const { generateOTP } = require('../../utils/generateOTP')
 const { sendSMS, formatPhoneNumber } = require('../../utils/sms')
+const { GenerateToken } = require('../../utils/generateToken')
 
 
 module.exports.RegisterLearner = async (req, res) => {
@@ -27,14 +28,15 @@ module.exports.RegisterLearner = async (req, res) => {
                 message: "Phone already exists"
             })
         }
-        let token = generateToken()
+        let token = generateOTP()
         let smsBody = `Your student verification code for Marma App is: ${token}. Please do not share it with anyone.`
         let formattedNumber = formatPhoneNumber(phone)
         let createNew = await User.create({
             name,
             phone: formattedNumber,
             location,
-            resetToken: token
+            resetToken: token,
+            roleId: 2
         })
         if (createNew) {
             await sendSMS(formattedNumber, smsBody)
@@ -59,39 +61,71 @@ module.exports.RegisterLearner = async (req, res) => {
 
 module.exports.VerifyOtp = async (req, res) => {
     try {
-        let { phone, otp } = req.body || {}
-        if (!phone || !otp) {
+        let { phone, otp, type } = req.body || {}
+        if (!phone || !otp || !type) {
             return res.send({
                 result: false,
-                message: "phone and otp are required"
+                message: "phone, otp and type are required"
             })
         }
         let checkPhone = await User.findOne({
             where: {
                 phone: formatPhoneNumber(phone),
-            }
+            },
+            include: [
+                {
+                    model: Role,
+                    as: 'Role', // only if you used an alias
+                    attributes: ['id', 'name'] // adjust fields as needed
+                }
+            ]
         })
+        // console.log("checkPhone : ", checkPhone)
         if (!checkPhone) {
             return res.send({
                 result: false,
                 message: "Phone not registered yet"
             })
         }
-        if (checkPhone.resetToken != otp) {
+        // if (checkPhone.resetToken != otp) {
+        //     return res.send({
+        //         result: false,
+        //         message: "Invalid otp"
+        //     })
+        // }
+        let updateUser = await User.update(
+            { phoneVerified: true, resetToken: null }, // values to set
+            { where: { phone: formatPhoneNumber(phone) } } // condition
+        );
+        if (updateUser) {
+            let token = await GenerateToken({
+                id: checkPhone.id,
+                name: checkPhone.name,
+                email: checkPhone.email,
+                phone: checkPhone.phone,
+                location: checkPhone.location,
+                role: checkPhone.Role.name
+            })
+            const data = {
+                id: checkPhone.id,
+                name: checkPhone.name,
+                email: checkPhone.email,
+                phone: checkPhone.phone,
+                location: checkPhone.location,
+                role: checkPhone.Role.name,
+                token
+            }
             return res.send({
-                result: false,
-                message: "Invalid otp"
+                result: true,
+                message: "Verification successfull.",
+                data: type === "login" ? data : null
             })
         } else {
-            await User.update(
-                { phoneVerified: true, resetToken: null }, // values to set
-                { where: { phone: formatPhoneNumber(phone) } } // condition
-            );
+            return res.send({
+                result: false,
+                message: "Failed to verify"
+            })
         }
-        return res.send({
-            result: true,
-            message: "Verification successfull."
-        })
     } catch (error) {
         return res.send({
             retult: false,
@@ -122,7 +156,7 @@ module.exports.Login = async (req, res) => {
                 message: "Phone not found."
             })
         }
-        let token = generateToken()
+        let token = generateOTP()
         let smsBody = `Your student verification code for Marma App is: ${token}. Please do not share it with anyone.`
         await User.update(
             { resetToken: token }, // values to set
