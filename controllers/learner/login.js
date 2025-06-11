@@ -80,19 +80,18 @@ module.exports.VerifyOtp = async (req, res) => {
                 }
             ]
         })
-        // console.log("checkPhone : ", checkPhone)
         if (!checkPhone) {
             return res.send({
                 result: false,
                 message: "Phone not registered yet"
             })
         }
-        // if (checkPhone.resetToken != otp) {
-        //     return res.send({
-        //         result: false,
-        //         message: "Invalid otp"
-        //     })
-        // }
+        if (checkPhone.resetToken != otp) {
+            return res.send({
+                result: false,
+                message: "Invalid otp"
+            })
+        }
         let updateUser = await User.update(
             { phoneVerified: true, resetToken: null }, // values to set
             { where: { phone: formatPhoneNumber(phone) } } // condition
