@@ -10,8 +10,9 @@ router.post('/login', Login)
 const { ListAllVideos } = require('../controllers/learner/videos')
 router.get('/videos', LearnerAuthenticateToken, ListAllVideos)
 
-const { ListAllQuestions } = require('../controllers/learner/questions')
+const { ListAllQuestions, SubmitQuestions } = require('../controllers/learner/questions')
 router.get('/questions', LearnerAuthenticateToken, ListAllQuestions)
+router.post('/submit_questions', LearnerAuthenticateToken, SubmitQuestions)
 
 const { EditProfile, DeleteProfile, DeleteProfilePic } = require('../controllers/learner/profile')
 router.post('/update_profile', LearnerAuthenticateToken, EditProfile)

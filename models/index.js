@@ -14,6 +14,7 @@ const Chat = require('./chat.js');
 const Messages = require('./messages.js');
 const Notification = require('./notification.js');
 const Questions = require('./questions.js')
+const SubmitQuestions = require('./submittedQuestions.js')
 
 
 // === Define Associations === //
@@ -46,6 +47,13 @@ Booking.belongsTo(Therapist, { foreignKey: 'therapistId', as: 'therapist' });
 // Booking ↔ User
 Booking.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
+// Question → SubmittedQuestions (1:M)
+Questions.hasMany(SubmitQuestions, { foreignKey: 'question' });
+SubmitQuestions.belongsTo(Questions, { foreignKey: 'question' });
+
+// Therapist → SubmittedQuestions (1:M)
+Therapist.hasMany(SubmitQuestions, { foreignKey: 'userId' });
+SubmitQuestions.belongsTo(Therapist, { foreignKey: 'userId' });
 
 // then run associations after all models are loaded
 Chat.belongsTo(User, { as: "sender", foreignKey: "sender_id" });
@@ -120,9 +128,6 @@ const createDefaultAdmin = async () => {
 };
 
 const initializeDatabase = async () => {
-  await Category.sync(); // Sync Category first
-  await Therapist.sync(); // Then sync Therapist
-  await sequelize.sync();
   await initRoles();
   await createDefaultAdmin();
 };
@@ -143,6 +148,7 @@ module.exports = {
   Chat,
   Notification,
   Questions,
+  SubmitQuestions,
   initRoles,
   createDefaultAdmin,
   initializeDatabase,
