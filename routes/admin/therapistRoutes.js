@@ -10,7 +10,7 @@ const {
   updateTherapistStatus,
   getTherapistStats,
 } = require('../../controllers/therapistController.js');
-const authenticateToken = require('../../middlewares/auth.js');
+const {authenticateToken} = require('../../middlewares/auth.js');
 const { isAdmin } = require('../../middlewares/roleCheck.js');
 
 const router = express.Router();

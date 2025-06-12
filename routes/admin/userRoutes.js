@@ -1,5 +1,5 @@
 const express = require('express');
-const authenticateToken = require('../../middlewares/auth.js');
+const {authenticateToken} = require('../../middlewares/auth.js');
 const { isAdmin } = require('../../middlewares/roleCheck.js');
 const {
   getUserList,

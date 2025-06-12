@@ -7,7 +7,7 @@ const {
   cancelBooking,
 } = require('../../controllers/bookingController.js');
 
-const authenticateToken = require('../../middlewares/auth.js');
+const {authenticateToken} = require('../../middlewares/auth.js');
 const { isAdmin } = require('../../middlewares/roleCheck.js');
 
 const router = express.Router();

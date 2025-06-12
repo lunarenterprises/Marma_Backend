@@ -22,6 +22,9 @@ const Questions = require('./questions.js')
 User.belongsTo(Role, { foreignKey: 'roleId' });
 Role.hasMany(User, { foreignKey: 'roleId' });
 
+Therapist.belongsTo(Role, { foreignKey: 'roleId' })
+Role.hasMany(Therapist, { foreignKey: 'roleId' });
+
 // User ↔ OTP Logs
 OtpLog.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
@@ -117,6 +120,9 @@ const createDefaultAdmin = async () => {
 };
 
 const initializeDatabase = async () => {
+  await Category.sync(); // Sync Category first
+  await Therapist.sync(); // Then sync Therapist
+  await sequelize.sync();
   await initRoles();
   await createDefaultAdmin();
 };

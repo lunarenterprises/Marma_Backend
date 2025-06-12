@@ -1,4 +1,4 @@
-const { User, Role } = require('../../models')
+const { Therapist, Role } = require('../../models')
 const { generateOTP } = require('../../utils/generateOTP')
 const { sendSMS, formatPhoneNumber } = require('../../utils/sms')
 const { GenerateToken } = require('../../utils/generateToken')
@@ -13,13 +13,13 @@ module.exports.RegisterLearner = async (req, res) => {
                 message: "Name, phone and location are required"
             })
         }
-        await User.destroy({
+        await Therapist.destroy({
             where: {
                 phone: formatPhoneNumber(phone),
                 phoneVerified: 'false',
             },
         });
-        let checkPhone = await User.findOne({
+        let checkPhone = await Therapist.findOne({
             where: { phone: formatPhoneNumber(phone), phoneVerified: "true" }
         })
         if (checkPhone) {
@@ -31,7 +31,7 @@ module.exports.RegisterLearner = async (req, res) => {
         let token = generateOTP()
         let smsBody = `Your student verification code for Marma App is: ${token}. Please do not share it with anyone.`
         let formattedNumber = formatPhoneNumber(phone)
-        let createNew = await User.create({
+        let createNew = await Therapist.create({
             name,
             phone: formattedNumber,
             location,
@@ -68,7 +68,7 @@ module.exports.VerifyOtp = async (req, res) => {
                 message: "phone, otp and type are required"
             })
         }
-        let checkPhone = await User.findOne({
+        let checkPhone = await Therapist.findOne({
             where: {
                 phone: formatPhoneNumber(phone),
             },
@@ -92,7 +92,7 @@ module.exports.VerifyOtp = async (req, res) => {
                 message: "Invalid otp"
             })
         }
-        let updateUser = await User.update(
+        let updateUser = await Therapist.update(
             { phoneVerified: true, resetToken: null }, // values to set
             { where: { phone: formatPhoneNumber(phone) } } // condition
         );
@@ -144,9 +144,10 @@ module.exports.Login = async (req, res) => {
             })
         }
         const formattedNumber = formatPhoneNumber(phone)
-        let checkPhone = await User.findOne({
+        let checkPhone = await Therapist.findOne({
             where: {
-                phone: formattedNumber
+                phone: formattedNumber,
+                roleId: 2
             }
         })
         if (!checkPhone) {
@@ -157,7 +158,7 @@ module.exports.Login = async (req, res) => {
         }
         let token = generateOTP()
         let smsBody = `Your student verification code for Marma App is: ${token}. Please do not share it with anyone.`
-        await User.update(
+        await Therapist.update(
             { resetToken: token }, // values to set
             { where: { phone: formattedNumber } } // condition
         );

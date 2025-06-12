@@ -19,15 +19,15 @@ const Therapist = sequelize.define(
     },
     gender: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     category_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: true,
     },
     email: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       unique: true,
       validate: {
         isEmail: true,
@@ -39,30 +39,30 @@ const Therapist = sequelize.define(
     },
     specialization: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     experience: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       validate: {
         min: 0,
       },
     },
     specialty: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     description: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     state: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     district: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     location: {
       type: DataTypes.STRING,
@@ -88,10 +88,22 @@ const Therapist = sequelize.define(
       type: DataTypes.ENUM('Pending', 'Approved', 'Inactive'),
       defaultValue: 'Pending',
     },
+    roleId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    resetToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    phoneVerified: {
+      type: DataTypes.ENUM('true', 'false'),
+      allowNull: true,
+      defaultValue: 'false',
+    }
   },
   {
-    timestamps: true,
-    paranoid: true,
+    timestamps: true
   }
 );
 

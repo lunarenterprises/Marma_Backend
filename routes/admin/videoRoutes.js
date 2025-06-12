@@ -7,7 +7,7 @@ const {
   getVideoById,
   updateVideo,
 } = require('../../controllers/learnerVideoController.js');
-const authenticateToken = require('../../middlewares/auth.js');
+const {authenticateToken} = require('../../middlewares/auth.js');
 const { isAdmin } = require('../../middlewares/roleCheck.js');
 
 const router = express.Router();
