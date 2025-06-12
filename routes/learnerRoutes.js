@@ -13,8 +13,9 @@ router.get('/videos', LearnerAuthenticateToken, ListAllVideos)
 const { ListAllQuestions } = require('../controllers/learner/questions')
 router.get('/questions', LearnerAuthenticateToken, ListAllQuestions)
 
-const { EditProfile, DeleteProfile } = require('../controllers/learner/profile')
+const { EditProfile, DeleteProfile, DeleteProfilePic } = require('../controllers/learner/profile')
 router.post('/update_profile', LearnerAuthenticateToken, EditProfile)
 router.post('/delete_profile', LearnerAuthenticateToken, DeleteProfile)
+router.post('/delete_profile_picture', LearnerAuthenticateToken, DeleteProfilePic)
 
 module.exports = router

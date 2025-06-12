@@ -1,6 +1,9 @@
 const formidable = require('formidable');
 const { Therapist } = require('../../models/index');
 const { formatPhoneNumber } = require('../../utils/sms');
+const moment = require('moment')
+const path = require('path')
+const fs = require('fs')
 
 
 module.exports.EditProfile = async (req, res) => {
@@ -49,8 +52,8 @@ module.exports.EditProfile = async (req, res) => {
                             data: err,
                         });
                     }
-                    imagepath = `/uploads/profiles_pic/${fileName}`;
                 })
+                imagepath = `/uploads/profiles_pic/${fileName}`;
             }
             let [affectedCount] = await Therapist.update(
                 { name, phone: formatPhoneNumber(phone), file: imagepath }, // fields to update
@@ -68,6 +71,33 @@ module.exports.EditProfile = async (req, res) => {
                 })
             }
         });
+    } catch (error) {
+        return res.send({
+            result: false,
+            message: error.message
+        })
+    }
+}
+
+
+module.exports.DeleteProfilePic = async (req, res) => {
+    try {
+        let user = req.user
+        let [affectedCount] = await Therapist.update(
+            { file: null },
+            { where: { id: user.id } }
+        )
+        if (affectedCount > 0) {
+            return res.send({
+                result: true,
+                message: "Profile picture removed successfully"
+            })
+        } else {
+            return res.send({
+                result: false,
+                message: "Failed to remove profile picture"
+            })
+        }
     } catch (error) {
         return res.send({
             result: false,
