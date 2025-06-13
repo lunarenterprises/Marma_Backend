@@ -106,12 +106,12 @@ module.exports.VerifyOtp = async (req, res) => {
                 role: checkPhone.Role.name
             })
             const data = {
-                id: checkPhone.id,
+                u_id: checkPhone.id,
                 name: checkPhone.name,
                 email: checkPhone.email,
                 phone: checkPhone.phone,
                 location: checkPhone.location,
-                role: checkPhone.Role.name,
+                role: checkPhone.roleId,
                 token
             }
             return res.send({
