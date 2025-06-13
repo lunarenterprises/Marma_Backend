@@ -264,7 +264,7 @@ module.exports.verifyOtp = async (req, res) => {
         let SECRET_KEY = process.env.JWT_SECRET
 
         // Validate OTP and expiry
-        if (user.resetToken != otp
+        if (user.resetToken !== otp
             // !user.resetTokenExpiry ||
             // moment().isAfter(user.resetTokenExpiry)
         ) {
@@ -273,7 +273,7 @@ module.exports.verifyOtp = async (req, res) => {
                 message: "Invalid or expired OTP",
             });
         }
-        if (type == 'login') {
+        if (type === 'login') {
 
             const payload = {
                 email: user.email,

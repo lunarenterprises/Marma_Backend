@@ -1,5 +1,7 @@
 const express = require('express');
 const multer = require('multer');
+const path = require('path')
+const fs = require('fs')
 const {
   createVideo,
   deleteVideo,
@@ -7,10 +9,17 @@ const {
   getVideoById,
   updateVideo,
 } = require('../../controllers/learnerVideoController.js');
-const {authenticateToken} = require('../../middlewares/auth.js');
+const { authenticateToken } = require('../../middlewares/auth.js');
 const { isAdmin } = require('../../middlewares/roleCheck.js');
 
 const router = express.Router();
+
+// ✅ Ensure folder exists
+const uploadDir = path.join(__dirname, '../../uploads/learnerVideos');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 
 const storage = multer.diskStorage({
   destination: (_, file, cb) => cb(null, 'uploads/learnerVideos/'),

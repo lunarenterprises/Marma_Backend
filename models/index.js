@@ -15,6 +15,7 @@ const Messages = require('./messages.js');
 const Notification = require('./notification.js');
 const Questions = require('./questions.js')
 const SubmitQuestions = require('./submittedQuestions.js')
+const Bank=require('./bank.js')
 
 
 // === Define Associations === //
@@ -65,6 +66,8 @@ User.hasMany(Chat, { as: "ReceivedChats", foreignKey: "receiver_id" });
 
 Messages.belongsTo(Chat, { foreignKey: "chat_id" });
 Messages.belongsTo(User, { foreignKey: "sender_id" });
+
+Bank.belongsTo(Therapist,{ foreignKey: "therapist_id" })
 
 // === Initial Seeding === //
 
@@ -149,6 +152,7 @@ module.exports = {
   Notification,
   Questions,
   SubmitQuestions,
+  Bank,
   initRoles,
   createDefaultAdmin,
   initializeDatabase,
