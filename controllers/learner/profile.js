@@ -60,6 +60,13 @@ module.exports.EditProfile = async (req, res) => {
                 { where: { id: user.id } }        // condition
             );
             if (affectedCount > 0) {
+                await addNotification({
+                    user_id: null,
+                    therapist_id: user.id,
+                    type: "Updated Profile",
+                    title: "Profile Updated",
+                    message: `${user.name} updated their profile.`,
+                })
                 return res.send({
                     result: true,
                     message: "Profile updated successfully"
@@ -88,6 +95,13 @@ module.exports.DeleteProfilePic = async (req, res) => {
             { where: { id: user.id } }
         )
         if (affectedCount > 0) {
+            await addNotification({
+                user_id: null,
+                therapist_id: user.id,
+                type: "Deleted Profile Picture",
+                title: "Profile Picture Deleted",
+                message: `${user.name} deleted their profile picture.`,
+            })
             return res.send({
                 result: true,
                 message: "Profile picture removed successfully"
@@ -116,6 +130,13 @@ module.exports.DeleteProfile = async (req, res) => {
         );
 
         if (affectedCount > 0) {
+            await addNotification({
+                user_id: null,
+                therapist_id: user.id,
+                type: "Deleted Profile",
+                title: "Profile Deleted",
+                message: `${user.name} deleted their profile.`,
+            })
             return res.send({
                 result: true,
                 message: "Profile deleted successfully"

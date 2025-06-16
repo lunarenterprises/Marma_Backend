@@ -1,4 +1,5 @@
 let { Questions, SubmitQuestions } = require('../../models/index')
+let { addNotification } = require('../../utils/addNotification')
 
 
 module.exports.ListAllQuestions = async (req, res) => {
@@ -48,9 +49,14 @@ module.exports.SubmitQuestions = async (req, res) => {
                 isCorrect  // add this field in the model if needed
             });
         }
-
-
         await SubmitQuestions.bulkCreate(records);
+        await addNotification({
+            user_id: null,
+            therapist_id: user.id,
+            type: "Mock Test Submission",
+            title: "Completed mock test",
+            message: `${user.name} submitted mock test questions`,
+        })
         return res.send({
             result: true,
             message: "Submission successfull",

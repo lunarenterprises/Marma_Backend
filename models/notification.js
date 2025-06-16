@@ -11,7 +11,7 @@ const Notification = sequelize.define(
     },
     n_user_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     n_therapist_id: {
       type: DataTypes.INTEGER,
@@ -25,9 +25,9 @@ const Notification = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-     n_image: {
+    n_image: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     n_status: {
       type: DataTypes.STRING,
@@ -37,7 +37,7 @@ const Notification = sequelize.define(
   },
   {
     tableName: 'notifications',
-    timestamps: true, 
+    timestamps: true,
   }
 );
 

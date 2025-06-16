@@ -20,4 +20,8 @@ router.post('/delete_profile', LearnerAuthenticateToken, DeleteProfile)
 router.post('/delete_profile_picture', LearnerAuthenticateToken, DeleteProfilePic)
 router.get('/get_profile', LearnerAuthenticateToken, GetProfile)
 
+const { ListAllNotifications } = require('../controllers/learner/notification')
+router.get('/notifications', LearnerAuthenticateToken, ListAllNotifications)
+
+
 module.exports = router
