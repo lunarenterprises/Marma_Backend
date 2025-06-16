@@ -133,3 +133,31 @@ module.exports.DeleteProfile = async (req, res) => {
         });
     }
 };
+
+
+module.exports.GetProfile = async (req, res) => {
+    try {
+        let user = req.user
+        let therapist = await Therapist.findOne({
+            where: { id: user.id },
+            attributes: ['id', 'name', 'email', 'phone', 'file']
+        })
+        if (therapist) {
+            return res.send({
+                result: true,
+                message: "Profile fetched successfully",
+                data: therapist
+            })
+        } else {
+            return res.send({
+                result: false,
+                message: "Profile not found"
+            })
+        }
+    } catch (error) {
+        return res.send({
+            result: false,
+            message: error.message
+        })
+    }
+}
