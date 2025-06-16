@@ -128,7 +128,6 @@ module.exports.DeleteProfile = async (req, res) => {
             { status: "inactive" },
             { where: { id: user.id } }
         );
-
         if (affectedCount > 0) {
             await addNotification({
                 user_id: null,
