@@ -1,8 +1,6 @@
 // sockets/index.js  (or whatever you call this file)
 const { Op, literal } = require("sequelize");
-const Chat = require("../models/chat");
-const Message = require("../models/messages");
-const { User, Therapist } = require('../models/index')
+const { User, Therapist, Chat, Messages } = require('../models/index')
 
 module.exports = function (io) {
     const onlineUsers = new Map(); // user_id => socket.id
@@ -84,7 +82,7 @@ module.exports = function (io) {
                 console.log("chats : ", chats)
                 /* ---------- fetch all last messages in one go ---------- */
                 const lastIds = chats.map(c => c.lastMessageId).filter(Boolean);
-                const lastMessages = await Message.findAll({
+                const lastMessages = await Messages.findAll({
                     where: { id: lastIds },
                     attributes: ["id", "chat_id", "sender_id", "message", "createdAt"],
                     raw: true
@@ -145,7 +143,7 @@ module.exports = function (io) {
                 socket.join(room);
 
                 /* c) pull full history (order oldest→newest) */
-                const messages = await Message.findAll({
+                const messages = await Messages.findAll({
                     where: { chat_id: chat.id },
                     order: [["createdAt", "ASC"]]
                 });
@@ -170,7 +168,7 @@ module.exports = function (io) {
                     return socket.emit("error", "Invalid message data");
                 }
                 /* save message first (so DB is source-of-truth) */
-                const saved = await Message.create({
+                const saved = await Messages.create({
                     chat_id,
                     sender_id,
                     message,
@@ -202,7 +200,7 @@ module.exports = function (io) {
 
         socket.on("messageRead", async ({ chat_id, user_id, message_id }) => {
             try {
-                await Message.update(
+                await Messages.update(
                     { is_read: true }, // you need a boolean `is_read` column
                     { where: { id: message_id } }
                 );
