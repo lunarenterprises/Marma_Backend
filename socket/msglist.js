@@ -1,8 +1,8 @@
-    // sockets/index.js  (or whatever you call this file)
+// sockets/index.js  (or whatever you call this file)
 const { Op, literal } = require("sequelize");
 const Chat = require("../models/chat");
 const Message = require("../models/messages");
-const User = require('../models/user')
+const { User, Therapist } = require('../models/index')
 
 module.exports = function (io) {
     const onlineUsers = new Map(); // user_id => socket.id
@@ -16,14 +16,21 @@ module.exports = function (io) {
             io.emit("onlineUsers", Array.from(onlineUsers.keys())); // broadcast online user IDs
         });
 
-        socket.on("listChats", async ({ user_id }) => {
+        socket.on("listChats", async ({ user_id, role }) => {
             try {
-                if (!user_id) {
-                    return socket.emit("error", "Missing user ID(s)");
+                if (!user_id || !role) {
+                    return socket.emit("error", "Missing user ID(s) or role");
                 }
-                let user = await User.verifyUser(user_id)
-                if (!user) {
-                    return socket.emit("error", "Sender not found");
+                if (role === 'user') {
+                    let user = await User.findByPk(user_id)
+                    if (!user) {
+                        return socket.emit("error", "Sender not found");
+                    }
+                } else {
+                    let therapist = await Therapist.findByPk(user_id)
+                    if (!therapist) {
+                        return socket.emit("error", "Therapist not found");
+                    }
                 }
                 /* ---------------- core query ---------------- */
                 const chats = await Chat.findAll({
@@ -109,7 +116,7 @@ module.exports = function (io) {
         })
 
         /* ---------- 1. JOIN A CHAT ROOM ---------- */
-        socket.on("joinRoom", async ({ user_id, receiver_id }) => {
+        socket.on("joinRoom", async ({ user_id, receiver_id, user_role, receiver_role }) => {
             try {
                 if (!user_id || !receiver_id) {
                     return socket.emit("error", "Missing user ID(s)");
@@ -122,13 +129,15 @@ module.exports = function (io) {
                 const [chat] = await Chat.findOrCreate({
                     where: {
                         [Op.or]: [
-                            { sender_id: user_id, receiver_id },   // A→B
-                            { sender_id: receiver_id, receiver_id: user_id } // B→A
+                            { sender_id: user_id, receiver_id, sender_role: user_role, receiver_role },   // A→B
+                            { sender_id: receiver_id, receiver_id: user_id, sender_role: receiver_role, receiver_role: user_role } // B→A
                         ]
                     },
                     defaults: {                                         // 👈  <- ADD THIS
                         sender_id: user_id,
-                        receiver_id: receiver_id
+                        receiver_id: receiver_id,
+                        sender_role: user_role,
+                        receiver_role
                     }
                 });
                 /* b) make the socket join the room named = chat.id */

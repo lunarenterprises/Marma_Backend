@@ -16,6 +16,14 @@ const Chat = sequelize.define(
         receiver_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
+        },
+        sender_role: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        receiver_role: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
         }
     },
     {
@@ -23,4 +31,4 @@ const Chat = sequelize.define(
     }
 );
 
-module.exports = Chat   ;
+module.exports = Chat;
