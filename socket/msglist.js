@@ -167,15 +167,18 @@ module.exports = function (io) {
         });
 
         socket.on("typing", ({ chat_id, user_id }) => {
+            if (!chat_id || !user_id) return socket.emit("error", "Invalid chat id or user id");
             socket.to(String(chat_id)).emit("typing", { user_id });
         });
 
         socket.on("stopTyping", ({ chat_id, user_id }) => {
+            if (!chat_id || !user_id) return socket.emit("error", "Invalid chat id or user id");
             socket.to(String(chat_id)).emit("stopTyping", { user_id });
         });
 
         socket.on("messageRead", async ({ chat_id, user_id }) => {
             try {
+                if (!chat_id || !user_id) return socket.emit("error", "Invalid chat id or user id");
                 await Messages.update(
                     { is_read: true },
                     {
