@@ -95,11 +95,24 @@ module.exports = function (io) {
 
         socket.on("joinRoom", async ({ user_id, receiver_id, user_role, receiver_role }) => {
             try {
-                if (!user_id || !receiver_id) return socket.emit("error", "Missing user ID(s)");
+                if (!user_id || !receiver_id || !user_role || !receiver_role) return socket.emit("error", "Missing user ID(s) and roles");
+                // Validate sender
+                if (user_role === 3) { // therapist
+                    const therapist = await Therapist.findByPk(user_id);
+                    if (!therapist) return socket.emit("error", "Therapist (sender) not found");
+                } else if (user_role === 4) { // user
+                    const user = await User.findByPk(user_id);
+                    if (!user) return socket.emit("error", "User (sender) not found");
+                }
 
-                const user = await User.findByPk(user_id);
-                if (!user) return socket.emit("error", "Sender not found");
-
+                // Validate receiver
+                if (receiver_role === 3) {
+                    const therapist = await Therapist.findByPk(receiver_id);
+                    if (!therapist) return socket.emit("error", "Therapist (receiver) not found");
+                } else if (receiver_role === 4) {
+                    const user = await User.findByPk(receiver_id);
+                    if (!user) return socket.emit("error", "User (receiver) not found");
+                }
                 const [chat] = await Chat.findOrCreate({
                     where: {
                         [Op.or]: [
