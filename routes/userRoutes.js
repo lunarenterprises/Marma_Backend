@@ -23,7 +23,7 @@ const { ListCategory } = require('../controllers/admin/addCategory.js');
 router.get('/list/category', ListCategory);
 
 const { EditProfile } = require('../controllers/users/editprofile.js');
-router.put('/edit/profile', EditProfile);
+router.post('/edit/profile', EditProfile);
 
 const { AddBooking } = require('../controllers/users/booking.js');
 router.post('/add/booking', AddBooking);
@@ -34,11 +34,8 @@ router.post('/list/booking', ListBooking);
 const { AddReview } = require('../controllers/users/review.js');
 router.post('/add/review', AddReview);
 
-const { UpdateBooking } = require('../controllers/users/booking.js');
-router.post('/update/booking', UpdateBooking);
-
-const { UpdateBookingStatus } = require('../controllers/users/booking.js');
-router.post('/update/booking-status', UpdateBookingStatus);
+// const { UpdateBookingStatus } = require('../controllers/users/booking.js');
+// router.post('/update/booking-status', UpdateBookingStatus);
 
 const { GetNotification } = require('../controllers/users/listnotification.js');
 router.post('/list/notification', GetNotification);
