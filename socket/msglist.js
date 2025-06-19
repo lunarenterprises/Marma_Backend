@@ -1,103 +1,82 @@
-// sockets/index.js  (or whatever you call this file)
 const { Op, literal } = require("sequelize");
-const { User, Therapist, Chat, Messages } = require('../models/index')
+const { User, Therapist, Chat, Messages } = require('../models/index');
 
 module.exports = function (io) {
-    const onlineUsers = new Map(); // user_id => socket.id
+    const onlineUsers = new Map(); // key: `${role}-${id}`, value: socket.id
+
+    // ✅ Reusable broadcaster function
+    function broadcastOnlineList() {
+        const allOnline = Array.from(onlineUsers.keys());
+        for (const [key, sockId] of onlineUsers.entries()) {
+            const [role] = key.split("-");
+            const filtered = allOnline.filter(k => k !== key && !k.startsWith(role));
+            const socketInstance = io.sockets.sockets.get(sockId);
+            if (socketInstance) {
+                socketInstance.emit("onlineUsers", filtered);
+            }
+        }
+    }
+
     io.on("connection", (socket) => {
         console.log(`🔌  Socket ${socket.id} connected`);
 
-        // When a user connects and identifies themselves
-        socket.on("userOnline", ({ user_id }) => {
-            if (!user_id) return;
-            onlineUsers.set(user_id, socket.id);
-            io.emit("onlineUsers", Array.from(onlineUsers.keys())); // broadcast online user IDs
+        socket.on("userOnline", ({ user_id, role }) => {
+            if (!user_id || !role) return;
+            const key = `${role}-${user_id}`;
+            onlineUsers.set(key, socket.id);
+            console.log("onlineUser connected:", key);
+
+            // ✅ Broadcast updated online list to everyone
+            broadcastOnlineList();
         });
 
         socket.on("listChats", async ({ user_id, role }) => {
             try {
-                if (!user_id || !role) {
-                    return socket.emit("error", "Missing user ID(s) or role");
-                }
-                if (role === 'user') {
-                    let user = await User.findByPk(user_id)
-                    if (!user) {
-                        return socket.emit("error", "Sender not found");
-                    }
-                } else {
-                    let therapist = await Therapist.findByPk(user_id)
-                    if (!therapist) {
-                        return socket.emit("error", "Therapist not found");
-                    }
-                }
-                /* ---------------- core query ---------------- */
+                if (!user_id || !role) return socket.emit("error", "Missing user ID(s) or role");
+
+                const isUser = role === 'user';
+                const user = isUser ? await User.findByPk(user_id) : await Therapist.findByPk(user_id);
+                if (!user) return socket.emit("error", `${role} not found`);
+
                 const chats = await Chat.findAll({
                     where: {
                         [Op.or]: [{ sender_id: user_id }, { receiver_id: user_id }]
                     },
-                    /* bring in the “other” user’s public info */
                     include: [
-                        {
-                            model: User,
-                            as: "sender",
-                            attributes: ["id", "name", "username", "profile_pic"]
-                        },
-                        {
-                            model: User,
-                            as: "receiver",
-                            attributes: ["id", "name", "username", "profile_pic"]
-                        }
+                        { model: User, as: "sender", attributes: ["id", "name", "profile_pic"] },
+                        { model: User, as: "receiver", attributes: ["id", "name", "profile_pic"] }
                     ],
-                    /* put newest chats first */
                     order: [["updatedAt", "DESC"]],
-                    /* add two computed columns with SQL sub-queries */
                     attributes: {
                         include: [
-                            /* lastMessageId – we’ll use it in a moment */
-                            [
-                                literal(`
-                (SELECT id
-                 FROM   Messages
-                 WHERE  Messages.chat_id = Chat.id
-                 ORDER BY createdAt DESC
-                 LIMIT 1)
-              `),
-                                "lastMessageId"
-                            ],
-                            /* unreadCount */
-                            [
-                                literal(`
-                (SELECT COUNT(*)
-                 FROM   Messages
-                 WHERE  Messages.chat_id = Chat.id
-                   AND  Messages.is_read = 0
-                   AND  Messages.sender_id != ${user_id})
-              `),
-                                "unreadCount"
-                            ]
+                            [literal(`(
+                                SELECT id FROM Messages 
+                                WHERE Messages.chat_id = Chat.id 
+                                ORDER BY createdAt DESC LIMIT 1
+                            )`), "lastMessageId"],
+                            [literal(`(
+                                SELECT COUNT(*) FROM Messages 
+                                WHERE Messages.chat_id = Chat.id 
+                                AND Messages.is_read = 0 
+                                AND Messages.sender_id != ${user_id}
+                            )`), "unreadCount"]
                         ]
                     },
                     raw: true
                 });
-                console.log("chats : ", chats)
-                /* ---------- fetch all last messages in one go ---------- */
+
                 const lastIds = chats.map(c => c.lastMessageId).filter(Boolean);
                 const lastMessages = await Messages.findAll({
                     where: { id: lastIds },
                     attributes: ["id", "chat_id", "sender_id", "message", "createdAt"],
                     raw: true
                 });
-                console.log("lastMessages : ", lastMessages)
-                const lastById = Object.fromEntries(
-                    lastMessages.map(m => [m.chat_id, m])
-                );
+                const lastById = Object.fromEntries(lastMessages.map(m => [m.chat_id, m]));
 
-                /* ---------- shape final payload ---------- */
                 const payload = chats.map(c => {
-                    const partner =
-                        c.sender_id === user_id
-                            ? { id: c["receiver.id"], name: c["receiver.name"], username: c["receiver.username"], profile_pic: c["receiver.profile_pic"] }
-                            : { id: c["sender.id"], name: c["sender.name"], username: c["sender.username"], profile_pic: c["sender.profile_pic"] };
+                    const partner = c.sender_id === user_id
+                        ? { id: c["receiver.id"], name: c["receiver.name"], profile_pic: c["receiver.profile_pic"] }
+                        : { id: c["sender.id"], name: c["sender.name"], profile_pic: c["sender.profile_pic"] };
 
                     return {
                         chat_id: c.id,
@@ -106,75 +85,59 @@ module.exports = function (io) {
                         unreadCount: Number(c.unreadCount) || 0
                     };
                 });
+
                 socket.emit("chats", payload);
             } catch (error) {
-                console.error("joinRoom error:", error);
-                socket.emit("error", "Could not join room");
+                console.error("listChats error:", error);
+                socket.emit("error", "Could not fetch chat list");
             }
-        })
+        });
 
-        /* ---------- 1. JOIN A CHAT ROOM ---------- */
         socket.on("joinRoom", async ({ user_id, receiver_id, user_role, receiver_role }) => {
             try {
-                if (!user_id || !receiver_id) {
-                    return socket.emit("error", "Missing user ID(s)");
-                }
-                let user = await User.findByPk(user_id)
-                if (!user) {
-                    return socket.emit("error", "Sender not found");
-                }
-                /* a) fetch or create the one-to-one Chat row */
+                if (!user_id || !receiver_id) return socket.emit("error", "Missing user ID(s)");
+
+                const user = await User.findByPk(user_id);
+                if (!user) return socket.emit("error", "Sender not found");
+
                 const [chat] = await Chat.findOrCreate({
                     where: {
                         [Op.or]: [
-                            { sender_id: user_id, receiver_id, sender_role: user_role, receiver_role },   // A→B
-                            { sender_id: receiver_id, receiver_id: user_id, sender_role: receiver_role, receiver_role: user_role } // B→A
+                            { sender_id: user_id, receiver_id, sender_role: user_role, receiver_role },
+                            { sender_id: receiver_id, receiver_id: user_id, sender_role: receiver_role, receiver_role: user_role }
                         ]
                     },
-                    defaults: {                                         // 👈  <- ADD THIS
+                    defaults: {
                         sender_id: user_id,
-                        receiver_id: receiver_id,
+                        receiver_id,
                         sender_role: user_role,
                         receiver_role
                     }
                 });
-                /* b) make the socket join the room named = chat.id */
-                const room = String(chat.id);              // rooms must be strings
+
+                const room = String(chat.id);
                 socket.join(room);
 
-                /* c) pull full history (order oldest→newest) */
                 const messages = await Messages.findAll({
                     where: { chat_id: chat.id },
                     order: [["createdAt", "ASC"]]
                 });
 
-                /* d) broadcast “joined” + history to *everyone* in the room
-                      (so the sender also receives it)                      */
                 io.to(room).emit("joined", { chat_id: chat.id, messages });
 
-                console.log(
-                    `👥  User ${user_id} joined room ${room} with user ${receiver_id}`
-                );
+                console.log(`👥  User ${user_id} joined room ${room} with user ${receiver_id}`);
             } catch (err) {
                 console.error("joinRoom error:", err);
                 socket.emit("error", "Could not join room");
             }
         });
 
-        /* ---------- 2. SEND A MESSAGE ---------- */
         socket.on("sentMessage", async ({ chat_id, sender_id, message }) => {
             try {
-                if (!chat_id || !sender_id || !message) {
-                    return socket.emit("error", "Invalid message data");
-                }
-                /* save message first (so DB is source-of-truth) */
-                const saved = await Messages.create({
-                    chat_id,
-                    sender_id,
-                    message,
-                });
+                if (!chat_id || !sender_id || !message) return socket.emit("error", "Invalid message data");
 
-                /* broadcast to *everyone* in the room, including sender */
+                const saved = await Messages.create({ chat_id, sender_id, message });
+
                 io.to(String(chat_id)).emit("message", {
                     id: saved.id,
                     chat_id: saved.chat_id,
@@ -183,7 +146,7 @@ module.exports = function (io) {
                     created_at: saved.createdAt
                 });
 
-                console.log("💬  ", { chat_id, sender_id, message });
+                console.log("💬", { chat_id, sender_id, message });
             } catch (err) {
                 console.error("sentMessage error:", err);
                 socket.emit("error", "Message not sent");
@@ -198,30 +161,48 @@ module.exports = function (io) {
             socket.to(String(chat_id)).emit("stopTyping", { user_id });
         });
 
-        socket.on("messageRead", async ({ chat_id, user_id, message_id }) => {
+        socket.on("messageRead", async ({ chat_id, user_id }) => {
             try {
                 await Messages.update(
-                    { is_read: true }, // you need a boolean `is_read` column
-                    { where: { id: message_id } }
+                    { is_read: true },
+                    {
+                        where: {
+                            chat_id,
+                            is_read: false,
+                            sender_id: { [Op.ne]: user_id } // only mark messages from the other user/therapist
+                        }
+                    }
                 );
-                socket.to(String(chat_id)).emit("messageRead", { message_id, user_id });
+
+                // Notify the other person in the chat
+                socket.to(String(chat_id)).emit("messagesRead", {
+                    chat_id,
+                    reader_id: user_id
+                });
             } catch (err) {
                 console.error("messageRead error:", err);
             }
         });
 
-        // When a user disconnects
         socket.on("disconnect", () => {
-            for (const [userId, sockId] of onlineUsers.entries()) {
+            let disconnectedKey;
+            for (const [userKey, sockId] of onlineUsers.entries()) {
                 if (sockId === socket.id) {
-                    onlineUsers.delete(userId);
+                    disconnectedKey = userKey;
+                    onlineUsers.delete(userKey);
                     break;
                 }
             }
-            io.emit("onlineUsers", Array.from(onlineUsers.keys())); // update all clients
+            if (!disconnectedKey) return;
+
+            // ✅ Broadcast updated list to remaining users
+            broadcastOnlineList();
+
+            console.log("User disconnected:", disconnectedKey);
         });
     });
 };
+
 
 
 
