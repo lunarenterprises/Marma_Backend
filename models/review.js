@@ -21,7 +21,7 @@ const Reviews = sequelize.define('reviews', {
         allowNull: false,
     },
     r_comment: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: true,
     },
     r_rating: {

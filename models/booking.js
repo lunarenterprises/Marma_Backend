@@ -22,7 +22,7 @@ const Booking = sequelize.define(
       allowNull: false,
     },
     status: {
-      type: DataTypes.ENUM('Upcoming', 'Approved', 'Ongoing', 'Completed', 'Cancelled','Resheduled'),
+      type: DataTypes.ENUM('Upcoming','Approved','Ongoing','Completed','Cancelled','Resheduled','Rejected'),
       defaultValue: 'Upcoming',
     },
     duration: {
@@ -32,6 +32,9 @@ const Booking = sequelize.define(
       type: DataTypes.DATEONLY,
     },
     time: {
+      type: DataTypes.STRING,
+    },
+     location: {
       type: DataTypes.STRING,
     },
     paymentStatus: {
