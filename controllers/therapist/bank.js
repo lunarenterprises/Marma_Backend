@@ -22,6 +22,7 @@ module.exports.CreateBank = async (req, res) => {
                 message: "Bank already added."
             })
         }
+
         let created = await Bank.create({
             bank_name,
             user_name: holder_name,
@@ -53,7 +54,7 @@ module.exports.CreateBank = async (req, res) => {
 module.exports.EditBank = async (req, res) => {
     try {
         let user = req.user
-        let { bank_id, bank_name, holder_name, account_number, ifsc_code, branch } = req.body
+        let { bank_id, bank_name, holder_name, account_number, ifsc_code, branch } = req.body || {}
         if (!bank_id || !bank_name || !holder_name || !account_number || !ifsc_code || !branch) {
             return res.send({
                 result: false,

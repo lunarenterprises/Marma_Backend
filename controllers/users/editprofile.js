@@ -16,16 +16,14 @@ module.exports.EditProfile = async (req, res) => {
         });
       }
 
-      const { u_id, name, email, phone, gender } = fields;
-
-      if (!u_id || !name || !email || !phone || !gender) {
+      const { u_id } = fields;
+      if (!u_id) {
         return res.status(400).send({
           result: false,
-          message: "Insufficient parameters",
+          message: "User ID is required",
         });
       }
 
-      
       const user = await User.findByPk(u_id);
       if (!user) {
         return res.status(404).send({
@@ -34,55 +32,60 @@ module.exports.EditProfile = async (req, res) => {
         });
       }
 
-      // Keep existing profile picture if none uploaded
-      let imagePath = user.profile_pic;
+      // Build dynamic update object based on input fields
+      const updateData = {};
+      if (fields.name) updateData.name = fields.name;
+      if (fields.gender) updateData.gender = fields.gender;
+      if (fields.email) updateData.email = fields.email;
+      if (fields.phone) updateData.phone = fields.phone;
+      if (fields.second_phone) updateData.second_phone = fields.second_phone;
+      if (fields.address) updateData.address = fields.address;
+      if (fields.district) updateData.district = fields.district;
+      if (fields.state) updateData.state = fields.state;
+      if (fields.location) updateData.location = fields.location;
 
-      // Handle profile image upload
+      // Handle profile_pic upload
       if (files.image) {
         const imageFile = Array.isArray(files.image) ? files.image[0] : files.image;
         const oldPath = imageFile.filepath;
         const fileName = `${Date.now()}-${imageFile.originalFilename}`;
         const uploadDir = path.join(process.cwd(), 'uploads', 'profiles_pic');
 
-        // Ensure the directory exists
         await fs.mkdir(uploadDir, { recursive: true });
-
         const newPath = path.join(uploadDir, fileName);
         const relativePath = path.join('uploads', 'profiles_pic', fileName);
 
         try {
           const rawData = await fs.readFile(oldPath);
           await fs.writeFile(newPath, rawData);
-          imagePath = relativePath;
+          updateData.profile_pic = relativePath;
         } catch (fsErr) {
           return res.status(500).send({
             result: false,
             message: "Error saving image",
-            data: fsErr.message
+            data: fsErr.message,
           });
         }
       }
 
-      // Update the user
-      await User.update(
-        {
-          name,
-          email,
-          phone,
-          gender,
-          profile_pic: imagePath
-        },
-        {
-          where: { id: u_id }
-        }
-      );
+      if (Object.keys(updateData).length === 0) {
+        return res.status(400).send({
+          result: false,
+          message: "No fields provided for update",
+        });
+      }
+
+      // Update user record
+      await User.update(updateData, {
+        where: { id: u_id }
+      });
 
       const updatedUser = await User.findByPk(u_id);
 
       return res.send({
         result: true,
         message: "Profile updated successfully",
-        data: updatedUser.toJSON()
+        data: updateData
       });
     });
   } catch (error) {

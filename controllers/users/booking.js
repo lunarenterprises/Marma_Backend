@@ -73,144 +73,121 @@ module.exports.AddBooking = async (req, res) => {
 
 module.exports.ListBooking = async (req, res) => {
   try {
-    const { u_id, therapist_id, previous, cancelled, appointment } = req.body || {};
+    const {
+      u_id,
+      therapist_id,
+      previous,
+      cancelled,
+      appointment,
+      todysbooking,
+      yesturdaybooking,
+      lastweekbooking,
+      lastmonthbooking
+    } = req.body || {};
+
+    const include = [
+      { model: User, as: 'user', attributes: ['name', 'gender', 'address', 'email', 'phone', 'location', 'profile_pic'] },
+      { model: Therapist, as: 'therapist', attributes: ['name', 'specialty', 'file', 'location'] },
+    ];
 
     let whereClause = {};
-    if (u_id) {
-      whereClause.userId = u_id;
-      whereClause.status = 'Upcoming';
-    }
-
-    if (therapist_id) whereClause.therapistId = therapist_id;
 
     if (u_id) {
       const checkUser = await User.findOne({ where: { id: u_id } });
-      if (!checkUser) {
-        return res.status(404).send({
-          result: false,
-          message: "User not found",
-        });
-      }
+      if (!checkUser) return res.status(404).send({ result: false, message: "User not found" });
+      whereClause.userId = u_id;
     }
 
     if (therapist_id) {
       const checkTherapist = await Therapist.findOne({ where: { id: therapist_id } });
-      if (!checkTherapist) {
-        return res.status(404).send({
-          result: false,
-          message: "Therapist not found",
-        });
-      }
+      if (!checkTherapist) return res.status(404).send({ result: false, message: "Therapist not found" });
+      whereClause.therapistId = therapist_id;
     }
+
+    let Bookinglist = [];
 
     if (previous) {
-      if (!u_id) {
-        return res.status(400).send({
-          result: false,
-          message: "User ID is required for previous bookings",
-        });
-      }
-      const Bookinglist = await Booking.findAll({
+      Bookinglist = await Booking.findAll({
         where: {
-          userId: u_id,
-          status: {
-            [Op.in]: ['Completed'],
+          ...whereClause,
+          status: { [Op.in]: ['Completed'] }
+        },
+        include,
+      });
+    } else if (cancelled) {
+
+      Bookinglist = await Booking.findAll({
+        where: {
+          ...whereClause,
+          status: { [Op.in]: ['Cancelled'] }
+        },
+        include,
+      });
+    } else if (appointment) {
+      Bookinglist = await Booking.findAll({
+        where: {
+          ...whereClause,
+          status: 'Approved',
+        },
+        include,
+      });
+    } else if (todysbooking) {
+      const today = moment().format('YYYY-MM-DD');
+
+      Bookinglist = await Booking.findAll({
+        where: {
+          ...whereClause,
+          status: 'Completed',
+          date: today,
+        },
+        include,
+      });
+    } else if (yesturdaybooking) {
+      const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+      Bookinglist = await Booking.findAll({
+        where: {
+          ...whereClause,
+          status: 'Completed',
+          date: yesterday,
+        },
+        include,
+      });
+    } else if (lastweekbooking) {
+      const weekStart = moment().subtract(6, 'days').startOf('day').toDate();
+      const weekEnd = moment().endOf('day').toDate();
+
+      Bookinglist = await Booking.findAll({
+        where: {
+          ...whereClause,
+          status: 'Completed',
+          date: {
+            [Op.between]: [weekStart, weekEnd],
           },
         },
-        include: [
-          { model: User, as: 'user', attributes: ['name', 'address'] },
-          { model: Therapist, as: 'therapist', attributes: ['name', 'specialty'] },
-        ],
+        include,
       });
+    } else if (lastmonthbooking) {
+      const lastMonthStart = moment().subtract(1, 'month').startOf('month').toDate();
+      const lastMonthEnd = moment().subtract(1, 'month').endOf('month').toDate();
 
-      if (Bookinglist.length > 0) {
-        return res.status(200).send({
-          result: true,
-          message: "Data retrieved successfully",
-          list: Bookinglist,
-        });
-      } else {
-        return res.status(404).send({
-          result: false,
-          message: "No bookings found",
-        });
-      }
-    }
-
-    if (cancelled) {
-      if (!u_id) {
-        return res.status(400).send({
-          result: false,
-          message: "User ID is required for cancelled bookings",
-        });
-      }
-      const Bookinglist = await Booking.findAll({
+      Bookinglist = await Booking.findAll({
         where: {
-          userId: u_id,
-          status: {
-            [Op.in]: ['Cancelled'],
+          ...whereClause,
+          status: 'Completed',
+          date: {
+            [Op.between]: [lastMonthStart, lastMonthEnd],
           },
         },
-        include: [
-          { model: User, as: 'user', attributes: ['name', 'address'] },
-          { model: Therapist, as: 'therapist', attributes: ['name', 'specialty'] },
-        ],
+        include,
       });
-
-      if (Bookinglist.length > 0) {
-        return res.status(200).send({
-          result: true,
-          message: "Data retrieved successfully",
-          list: Bookinglist,
-        });
-      } else {
-        return res.status(404).send({
-          result: false,
-          message: "No bookings found",
-        });
-      }
-    }
-
-    if (appointment) {
-      if (therapist_id) {
-        whereClause.therapistId = therapist_id;
-        whereClause.status = 'Approved';
-      }
-      if (u_id) {
-        whereClause.userId = u_id;
-        whereClause.status = 'Approved';
-      }
-
-      const Bookinglist = await Booking.findAll({
+    } else {
+      // default booking list
+      Bookinglist = await Booking.findAll({
         where: whereClause,
-        include: [
-          { model: User, as: 'user', attributes: ['name', 'address'] },
-          { model: Therapist, as: 'therapist', attributes: ['name', 'specialty'] },
-        ],
+        include,
       });
-
-      if (Bookinglist.length > 0) {
-        return res.status(200).send({
-          result: true,
-          message: "Data retrieved successfully",
-          list: Bookinglist,
-        });
-      } else {
-        return res.status(404).send({
-          result: false,
-          message: "No appointments found",
-        });
-      }
     }
-
-    // Default booking list query
-    const Bookinglist = await Booking.findAll({
-      where: whereClause,
-      include: [
-        { model: User, as: 'user', attributes: ['name', 'address'] },
-        { model: Therapist, as: 'therapist', attributes: ['name', 'specialty'] },
-      ],
-    });
 
     if (Bookinglist.length > 0) {
       return res.status(200).send({
@@ -235,10 +212,9 @@ module.exports.ListBooking = async (req, res) => {
 };
 
 
-
 module.exports.UpdateBooking = async (req, res) => {
   try {
-    const { b_id, date, time, duration } = req.body;
+    const { b_id, date, time,location, duration, type } = req.body;
 
     if (!b_id) {
       return res.send({
@@ -260,6 +236,7 @@ module.exports.UpdateBooking = async (req, res) => {
     const updatedFields = {};
     if (date) updatedFields.date = date;
     if (time) updatedFields.time = time;
+    if (location) updatedFields.location = location;
     if (duration) updatedFields.duration = duration;
 
     // Only update if any fields are provided
@@ -273,7 +250,10 @@ module.exports.UpdateBooking = async (req, res) => {
     await Booking.update(updatedFields, {
       where: { id: b_id }
     });
+//     if (type = 'rescheduled') {
+// // let otp=
 
+//     }
     return res.send({
       result: true,
       message: "Therapy booking updated successfully."
@@ -287,94 +267,95 @@ module.exports.UpdateBooking = async (req, res) => {
   }
 };
 
-module.exports.UpdateBookingStatus = async (req, res) => {
-  try {
-    let { user_id, role } = req.headers;
-    const { b_id, status } = req.body;
 
-    if (!b_id || !status) {
-      return res.send({
-        result: false,
-        message: "Booking id and status is required."
-      });
-    }
+// module.exports.UpdateBookingStatus = async (req, res) => {
+//   try {
+//     let { user_id, role } = req.headers;
+//     const { b_id, status } = req.body;
 
-    const bookingdetails = await Booking.findByPk(b_id);
-    if (!bookingdetails) {
-      return res.send({
-        result: false,
-        message: "Booking details not found."
-      });
-    }
+//     if (!b_id || !status) {
+//       return res.send({
+//         result: false,
+//         message: "Booking id and status is required."
+//       });
+//     }
 
-    if (role === 'user') {
-      var userdetails = await User.findByPk(user_id);
-      if (!userdetails) {
-        return res.send({
-          result: false,
-          message: "User not found."
-        });
-      }
-    }
+//     const bookingdetails = await Booking.findByPk(b_id);
+//     if (!bookingdetails) {
+//       return res.send({
+//         result: false,
+//         message: "Booking details not found."
+//       });
+//     }
 
-    if (role === 'therapist') {
-      var userdetails = await Therapist.findByPk(user_id);
-      if (!userdetails) {
-        return res.send({
-          result: false,
-          message: "Therapist not found."
-        });
-      }
-    }
+//     if (role === 'user') {
+//       var userdetails = await User.findByPk(user_id);
+//       if (!userdetails) {
+//         return res.send({
+//           result: false,
+//           message: "User not found."
+//         });
+//       }
+//     }
 
-    let u_id = bookingdetails.userId;
-    let therapist_id = bookingdetails.therapistId;
+//     if (role === 'therapist') {
+//       var userdetails = await Therapist.findByPk(user_id);
+//       if (!userdetails) {
+//         return res.send({
+//           result: false,
+//           message: "Therapist not found."
+//         });
+//       }
+//     }
 
-    const therapistdetails = await Therapist.findOne({
-      where: { id: therapist_id },
-      include: [
-        {
-          model: Category,
-          as: 'category',
-          attributes: ['c_id', 'c_name', 'c_image'],
-          required: true,
-        }
-      ]
-    });
+//     let u_id = bookingdetails.userId;
+//     let therapist_id = bookingdetails.therapistId;
 
-    const categoryimage = therapistdetails?.category?.c_image || null;
+//     const therapistdetails = await Therapist.findOne({
+//       where: { id: therapist_id },
+//       include: [
+//         {
+//           model: Category,
+//           as: 'category',
+//           attributes: ['c_id', 'c_name', 'c_image'],
+//           required: true,
+//         }
+//       ]
+//     });
 
-    const updatestatus = await Booking.update(
-      { status }, 
-      { where: { id: b_id } }
-    );
+//     const categoryimage = therapistdetails?.category?.c_image || null;
 
-    if (updatestatus[0] === 0) {
-      return res.send({
-        result: false,
-        message: "Failed to update booking status."
-      });
-    }
+//     const updatestatus = await Booking.update(
+//       { status },
+//       { where: { id: b_id } }
+//     );
 
-    await notification.addNotification(
-      u_id,
-      therapist_id,
-      status,
-      `Booking ${status}`,
-      `${userdetails.name} ${status} ${bookingdetails.service} section`,
-      categoryimage
-    );
+//     if (updatestatus[0] === 0) {
+//       return res.send({
+//         result: false,
+//         message: "Failed to update booking status."
+//       });
+//     }
 
-    return res.send({
-      result: true,
-      message: `Therapy booking ${status} successfully.`
-    });
+//     await notification.addNotification(
+//       u_id,
+//       therapist_id,
+//       status,
+//       `Booking ${status}`,
+//       `${userdetails.name} ${status} ${bookingdetails.service} section`,
+//       categoryimage
+//     );
 
-  } catch (error) {
-    console.error("UpdateBookingStatus Error:", error);
-    return res.send({
-      result: false,
-      message: error.message
-    });
-  }
-};
+//     return res.send({
+//       result: true,
+//       message: `Therapy booking ${status} successfully.`
+//     });
+
+//   } catch (error) {
+//     console.error("UpdateBookingStatus Error:", error);
+//     return res.send({
+//       result: false,
+//       message: error.message
+//     });
+//   }
+// };

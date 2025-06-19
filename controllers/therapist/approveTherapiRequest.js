@@ -3,8 +3,8 @@ const { Booking, Therapist } = require('../../models/index.js');
 
 module.exports.ApproveTherapiRequest = async (req, res) => {
     try {
-        let { therapist_id } = req.headers
-        var { request_id, status } = req.body;
+        let  user = req.user 
+        var { request_id, status } = req.body || {}
         if (!request_id) {
             return res.send({
                 result: false,
@@ -15,7 +15,7 @@ module.exports.ApproveTherapiRequest = async (req, res) => {
         const request = await Booking.findOne({
             where: {
                 id: request_id,
-                therapistId: therapist_id
+                therapistId: user.id
             }
         });
 
@@ -26,7 +26,7 @@ module.exports.ApproveTherapiRequest = async (req, res) => {
                 message: "Request details not found"
             })
         }
-        const therapist = await Therapist.findByPk(therapist_id);
+        const therapist = await Therapist.findByPk(user.id);
 
         if (!therapist) {
             return res.send({

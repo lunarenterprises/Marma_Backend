@@ -146,8 +146,7 @@ module.exports.Login = async (req, res) => {
         const formattedNumber = formatPhoneNumber(phone)
         let checkPhone = await Therapist.findOne({
             where: {
-                phone: formattedNumber,
-                roleId: 2
+                phone: formattedNumber
             }
         })
         if (!checkPhone) {

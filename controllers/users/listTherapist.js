@@ -257,7 +257,7 @@ module.exports.ListTherapist = async (req, res) => {
         return res.send({
             result: therapists.length > 0,
             message: therapists.length > 0 ? "Therapists list retrieved" : "No therapists found",
-            list: therapists
+            data: therapists
         });
 
     } catch (error) {

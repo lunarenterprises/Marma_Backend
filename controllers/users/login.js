@@ -1,6 +1,7 @@
 const User = require('../../models/user'); // Sequelize model
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { GenerateToken } = require('../../utils/generateToken')
 // var nodemailer = require('nodemailer');
 var moment = require('moment');
 var OtpLog = require('../../models/otpLog')
@@ -264,7 +265,7 @@ module.exports.verifyOtp = async (req, res) => {
         let SECRET_KEY = process.env.JWT_SECRET
 
         // Validate OTP and expiry
-        if (user.resetToken !== otp
+        if (user.resetToken != otp
             // !user.resetTokenExpiry ||
             // moment().isAfter(user.resetTokenExpiry)
         ) {
@@ -273,21 +274,17 @@ module.exports.verifyOtp = async (req, res) => {
                 message: "Invalid or expired OTP",
             });
         }
-        if (type === 'login') {
-
-            const payload = {
+        if (type == 'login') {
+            let token = await GenerateToken({
+                id: user.id,
+                name: user.name,
                 email: user.email,
                 phone: user.phone,
-                u_id: user.id,
-                role: user.roleId
-            };
-            const token = jwt.sign(payload, SECRET_KEY, {});
+                location: user.location,
+                roleid: user.roleId
 
-            const addotplog = await OtpLog.create({
-                phone: phone,
-                userId: user.id,
-                purpose: 'login',
-            });
+            })
+
 
             // OTP is valid, clear it
             user.resetToken = null;
@@ -304,11 +301,11 @@ module.exports.verifyOtp = async (req, res) => {
 
             });
         } else {
-            const addotplog = await OtpLog.create({
-                phone: phone,
-                userId: user.id,
-                purpose: 'register',
-            });
+            // const addotplog = await OtpLog.create({
+            //     phone: phone,
+            //     userId: user.id,
+            //     purpose: 'register',
+            // });
 
             user.resetToken = null;
             user.resetTokenExpiry = null;

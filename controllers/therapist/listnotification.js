@@ -1,8 +1,9 @@
-var {Notification} = require('../../models/index')
+var { Notification } = require('../../models/index')
 
 module.exports.GetNotification = async (req, res) => {
     try {
-        let {therapist_id } = req.headers
+        let user = req.user
+        let therapist_id = user.id
         if (!therapist_id) {
             return res.send({
                 result: false,
@@ -10,7 +11,7 @@ module.exports.GetNotification = async (req, res) => {
             })
         }
         let data = await Notification.findAll({
-            where:{n_therapist_id:therapist_id}
+            where: { n_therapist_id: therapist_id }
         })
         if (data.length > 0) {
             return res.send({
