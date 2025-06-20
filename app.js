@@ -21,7 +21,11 @@ const { sequelize, initializeDatabase } = require('./models/index.js'); // ✅ A
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: '*', // or specific domain
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-user-id', 'x-role'] // Add your custom headers here
+}));
 app.use(express.static('./'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
