@@ -200,6 +200,15 @@ module.exports = function (io) {
             }
         });
 
+        socket.on("triggerAction", ({ chat_id, action }) => {
+            if (!chat_id || !action) return socket.emit("error", "Missing chat_id or action");
+
+            // Forward action to other users in the room
+            socket.to(String(chat_id)).emit("triggerAction", { action });
+
+            console.log(`📡 Action '${action}' triggered in chat ${chat_id}`);
+        });
+
         socket.on("disconnect", () => {
             let disconnectedKey;
             for (const [userKey, sockId] of onlineUsers.entries()) {
