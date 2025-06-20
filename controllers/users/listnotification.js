@@ -2,7 +2,7 @@ var {Notification} = require('../../models/index')
 
 module.exports.GetNotification = async (req, res) => {
     try {
-        let {user_id } = req.headers
+        let {user_id } = req.body
         if (!user_id) {
             return res.send({
                 result: false,

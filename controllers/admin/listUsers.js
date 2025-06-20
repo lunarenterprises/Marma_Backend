@@ -3,7 +3,7 @@ let { User } = require('../../models/index')
 
 module.exports.ListUSer = async (req, res) => {
     try {
-        var { u_id } = req.headers;
+        var { u_id } = req.body ;
         let userlist = await User.findAll(
             u_id ? { where: { id: u_id } } : {}
         );

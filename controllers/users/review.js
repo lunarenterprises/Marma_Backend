@@ -2,7 +2,7 @@ const { Reviews, User, Therapist, sequelize } = require('../../models/index.js')
 
 module.exports.AddReview = async (req, res) => {
     try {
-        const { user_id } = req.headers;
+        const { user_id } = req.body;
         const { therapist_id, heading, comment, rating } = req.body;
 
         if (!therapist_id || !user_id || !heading || !comment || !rating) {
