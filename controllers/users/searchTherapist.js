@@ -3,7 +3,7 @@ const { Sequelize } = require('sequelize');
 
 module.exports.ListTherapist = async (req, res) => {
     try {
-        const { therapist_id, gender, category_id, featured, topratedinarea, user_id, district, mostbooked, highlyreviewed } = req.headers;
+        const { therapist_id, gender, category_id, featured, topratedinarea, user_id, district, mostbooked, highlyreviewed } = req.body;
 
         let whereClause = {};
         if (therapist_id) whereClause.id = therapist_id;
