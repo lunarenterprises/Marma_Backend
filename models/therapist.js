@@ -84,6 +84,11 @@ const Therapist = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    wallet: {
+      type: DataTypes.DECIMAL(10, 0),
+      allowNull: true,
+      defaultValue: 0,
+    },
     status: {
       type: DataTypes.ENUM('Pending', 'Approved', 'Inactive'),
       defaultValue: 'Pending',
