@@ -17,7 +17,7 @@ const { getDashboard } = require('../controllers/userController.js');
 router.get('/dashboard', getDashboard);
 
 const { ListTherapist } = require('../controllers/users/listTherapist.js');
-router.get('/list/therapist', ListTherapist);
+router.post('/list/therapist', ListTherapist);
 
 const { ListCategory } = require('../controllers/admin/addCategory.js');
 router.get('/list/category', ListCategory);

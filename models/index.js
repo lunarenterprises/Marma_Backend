@@ -18,6 +18,8 @@ const SubmitQuestions = require('./submittedQuestions.js')
 const Bank=require('./bank.js')
 const PaymentHistory=require('./paymentHistory.js')
 const WalletHistory=require('./wallethistory.js')
+const WithdrawRequest=require('./withdrawRequest.js')
+
 
 
 
@@ -159,6 +161,7 @@ module.exports = {
   Bank,
   PaymentHistory,
   WalletHistory,
+  WithdrawRequest,
   initRoles,
   createDefaultAdmin,
   initializeDatabase,
