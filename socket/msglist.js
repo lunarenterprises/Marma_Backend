@@ -1,5 +1,5 @@
 const { Op, literal } = require("sequelize");
-const { User, Therapist, Chat, Messages } = require('../models/index');
+const { User, Therapist, Chat, Messages, Booking } = require('../models/index');
 
 module.exports = function (io) {
     const onlineUsers = new Map(); // key: `${role}-${id}`, value: socket.id
@@ -73,18 +73,48 @@ module.exports = function (io) {
                 });
                 const lastById = Object.fromEntries(lastMessages.map(m => [m.chat_id, m]));
 
-                const payload = chats.map(c => {
-                    const partner = c.sender_id === user_id
+                // const payload = chats.map(c => {
+                //     const partner = c.sender_id === user_id
+                //         ? { id: c["receiver.id"], name: c["receiver.name"], profile_pic: c["receiver.profile_pic"] }
+                //         : { id: c["sender.id"], name: c["sender.name"], profile_pic: c["sender.profile_pic"] };
+
+                //     return {
+                //         chat_id: c.id,
+                //         partner,
+                //         lastMessage: lastById[c.id] || null,
+                //         unreadCount: Number(c.unreadCount) || 0
+                //     };
+                // });
+
+                const payload = [];
+
+                for (const c of chats) {
+                    const isSender = c.sender_id === user_id;
+
+                    const partner = isSender
                         ? { id: c["receiver.id"], name: c["receiver.name"], profile_pic: c["receiver.profile_pic"] }
                         : { id: c["sender.id"], name: c["sender.name"], profile_pic: c["sender.profile_pic"] };
 
-                    return {
+                    // Determine user_id and therapist_id in the chat
+                    const userId = (c.sender_role === 4) ? c.sender_id : c.receiver_id;
+                    const therapistId = (c.sender_role === 3) ? c.sender_id : c.receiver_id;
+
+                    const booking = await Booking.findAll({
+                        where: {
+                            user_id: userId,
+                            therapist_id: therapistId
+                        },
+                        raw: true
+                    });
+
+                    payload.push({
                         chat_id: c.id,
                         partner,
                         lastMessage: lastById[c.id] || null,
-                        unreadCount: Number(c.unreadCount) || 0
-                    };
-                });
+                        unreadCount: Number(c.unreadCount) || 0,
+                        booking
+                    });
+                }
 
                 socket.emit("chats", payload);
             } catch (error) {
