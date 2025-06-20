@@ -14,13 +14,13 @@ const { verifyOtp } = require('../controllers/users/login.js');
 router.post('/verify-otp', verifyOtp);
 
 const { getDashboard } = require('../controllers/userController.js');
-router.get('/dashboard', getDashboard);
+router.post('/dashboard', getDashboard);
 
 const { ListTherapist } = require('../controllers/users/listTherapist.js');
 router.post('/list/therapist', ListTherapist);
 
 const { ListCategory } = require('../controllers/admin/addCategory.js');
-router.get('/list/category', ListCategory);
+router.post('/list/category', ListCategory);
 
 const { EditProfile } = require('../controllers/users/editprofile.js');
 router.post('/edit/profile', EditProfile);
