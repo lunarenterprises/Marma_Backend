@@ -24,7 +24,7 @@ const WithdrawRequest = sequelize.define(
     },
   },
   {
-    tableName: 'withdraw_request',
+    tableName: 'WithdrawRequest',
     timestamps: true, 
   }
 );
