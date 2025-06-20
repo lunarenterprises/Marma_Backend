@@ -28,7 +28,7 @@ const { EditCategory } = require('../controllers/admin/addCategory.js');
 router.post('/edit/category', EditCategory);
 
 const { ListUSer } = require('../controllers/admin/listUsers.js');
-router.get('/list/user', ListUSer);
+router.post('/list/user', ListUSer);
 
 
 module.exports = router;
