@@ -1,6 +1,7 @@
 let { sendEmail } = require('../../utils/emailService');
-let { User, PaymentHistory, Therapist } = require('../../models/index');
+let { User, PaymentHistory, Therapist, WalletHistory, Booking } = require('../../models/index');
 let moment = require('moment')
+
 module.exports.RazorpayCallback = async (req, res) => {
     try {
         let payment_id = req.query.payment_id;
@@ -21,47 +22,91 @@ module.exports.RazorpayCallback = async (req, res) => {
             let date = moment().format('YYYYY-MM-DD')
 
             let user_id = payment_details.ph_user_id;
+            let therapist_id = payment_details.ph_therapist_id;
+            let learner_id = payment_details.ph_learner_id;
+            let booking_id = payment_details.ph_booking_id;
             let amount = payment_details.ph_total_amount;
             let payment_date = payment_details.ph_date;
 
-            let Userdetails = await User.findOne({
-                where: { id: user_id }
-            });
 
-            if (!Userdetails) {
-                return res.send({
-                    result: false,
-                    message: "User not found"
+            if (!learner_id) {
+                var Userdetails = await User.findOne({
+                    where: { id: user_id }
                 });
+
+                if (!Userdetails) {
+                    return res.send({
+                        result: false,
+                        message: "User not found"
+                    });
+                }
+
+                var username = Userdetails.name;
+
+                // ✅ Corrected update
+                const [updateCount] = await PaymentHistory.update(
+                    { ph_payment_status: 'paid' },
+                    { where: { ph_id: payment_id } }
+                );
+
+                const [updatebookingpaymentstatus] = await Booking.update(
+                    { paymentStatus: 'paid' },
+                    { where: { id: booking_id } }
+                );
+
+                if (updatebookingpaymentstatus > 0) {
+
+                    let payAmount = amount * 0.20
+                    await PaymentHistory.update(
+                        { ph_pay_amount: payAmount },
+                        { where: { ph_id: payment_id } }
+                    );
+                    let updatedWallet = Userdetails.wallet_amount + payAmount;
+
+                    await Therapist.update(
+                        { wallet_amount: updatedWallet },
+                        { where: { id: user_id } }
+                    );
+
+                    let addwallethistory = await WalletHistory.create({
+                        wh_therapist_id: therapist_id,
+                        wh_amount: payAmount,
+                        wh_date: date
+                    });
+                }
+
+            } else {
+                //learner checking
+                var Userdetails = await Therapist.findOne({
+                    where: { id: learner_id }
+                });
+                if (!Userdetails) {
+                    return res.send({
+                        result: false,
+                        message: "Learner details not found"
+                    });
+                }
+
+                var username = Userdetails.name;
+
+
+                const [updateCount] = await PaymentHistory.update(
+                    { ph_payment_status: 'paid' },
+                    { where: { ph_id: payment_id } }
+                );
+
+                const [updatebookingpaymentstatus] = await Therapist.update(
+                    { status: 'paid' },
+                    { where: { id: learner_id } }
+                );
+
             }
 
-            let username = Userdetails.name;
-
-            // ✅ Corrected update
-            const [updateCount] = await PaymentHistory.update(
-                { ph_payment_status: 'paid' },
-                { where: { ph_id: payment_id } }
-            );
-
-            if (updateCount > 0) {
-
-                let payAmount = amount * 0.20
-                let updatedWallet = (Userdetails.wallet_amount || 0) + payAmount;
-
-                await Therapist.update(
-                    { wallet_amount: updatedWallet },
-                    { where: { id: user_id } }
-                );
-                // let addwallethistory = await WalletHistory.create({
-                //     wh_user_id: user_id,
-                //     wh_amount: payAmount,
-                //     wh_date: date
-                // });
-                let mailOptions = {
-                    from: "REFLEX MARMA <nocontact@drlifeboat.com>",
-                    to: Userdetails.email,
-                    subject: "MESSAGE FROM REFLEX MARMA",
-                    html: `<!DOCTYPE html>
+            let mailOptions = {
+                from: "REFLEX MARMA <nocontact@drlifeboat.com>",
+                to: Userdetails.email,
+                subject: "MESSAGE FROM REFLEX MARMA",
+                html: `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -179,11 +224,11 @@ module.exports.RazorpayCallback = async (req, res) => {
   </div>
 </body>
 </html>`
-                };
+            };
 
-                await sendEmail(mailOptions);
+            await sendEmail(mailOptions);
 
-                return res.send(`<!DOCTYPE html>
+            return res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -275,7 +320,7 @@ module.exports.RazorpayCallback = async (req, res) => {
 </body>
 </html>
 `);
-            }
+
         } else {
             // Payment failed
             await PaymentHistory.destroy({
@@ -367,6 +412,7 @@ module.exports.RazorpayCallback = async (req, res) => {
 </body>
 </html>`);
         }
+        
     } catch (error) {
         console.error('RazorpayCallback error:', error);
         return res.status(500).send('Internal Server Error');

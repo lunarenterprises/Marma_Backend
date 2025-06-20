@@ -16,6 +16,10 @@ const Notification = require('./notification.js');
 const Questions = require('./questions.js')
 const SubmitQuestions = require('./submittedQuestions.js')
 const Bank=require('./bank.js')
+const PaymentHistory=require('./paymentHistory.js')
+const WalletHistory=require('./wallethistory.js')
+
+
 
 
 // === Define Associations === //
@@ -153,6 +157,8 @@ module.exports = {
   Questions,
   SubmitQuestions,
   Bank,
+  PaymentHistory,
+  WalletHistory,
   initRoles,
   createDefaultAdmin,
   initializeDatabase,

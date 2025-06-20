@@ -1,7 +1,7 @@
 
 const axios = require("axios");
 const moment = require("moment");
-const { User, Therapist, PaymentHistory } = require('../../models/index');
+const { User, Therapist, PaymentHistory, Booking } = require('../../models/index');
 
 module.exports.Payment = async (req, res) => {
     try {
@@ -9,20 +9,44 @@ module.exports.Payment = async (req, res) => {
             user_id,
             therapist_id,
             learner_id,
+            booking_id,
             name,
             email,
             phone,
             role,
             ph_type,
             ph_total_amount,
-            ph_pay_amount
 
         } = req.body;
 
-        let date= moment().format('YYYYY-MM-DD')
+        let date = moment().format('YYYYY-MM-DD')
 
+        if (booking_id) {
 
-        if (user_id && therapist_id) {
+            if (!user_id || !therapist_id) {
+
+                return res.status(404).send({
+                    result: false,
+                    message: "User id and Therapist id is required",
+                });
+
+            }
+
+            const booking = await Booking.findOne({ where: { id: booking_id } });
+            if (!booking) {
+                return res.status(404).send({
+                    result: false,
+                    message: "Booking details not found",
+                });
+            }
+
+            if (booking.paymentStatus == 'paid') {
+                return res.status(404).send({
+                    result: false,
+                    message: "You are already paid for this therapy",
+                });
+            }
+
             // Validate user
             const user = await User.findByPk(user_id);
             if (!user) {
@@ -40,8 +64,8 @@ module.exports.Payment = async (req, res) => {
                     message: "Therapist not found",
                 });
             }
-        }
 
+        }
         if (learner_id) {
             // Validate learner
 
@@ -58,14 +82,14 @@ module.exports.Payment = async (req, res) => {
         // Create payment history
         let paymentData = {
             ph_type,
-            ph_date:date,
+            ph_date: date,
             ph_total_amount,
         };
 
         if (role === 'user') {
             paymentData.ph_therapist_id = therapist_id;
             paymentData.ph_user_id = user_id;
-            paymentData.ph_pay_amount = ph_pay_amount
+            paymentData.ph_booking_id = booking_id;
         } else {
             paymentData.ph_learner_id = learner_id;
         }
@@ -123,3 +147,40 @@ module.exports.Payment = async (req, res) => {
         });
     }
 };
+
+
+module.exports.ListPaymentHistory = async (req, res) => {
+    try {
+        
+        let user = req.user
+        let therapist_id = user.id
+        const therapist = await Therapist.findOne({ where: { id: therapist_id } });
+        if (!therapist) {
+            return res.status(404).send({
+                result: false,
+                message: "Therapist details not found",
+            });
+        }
+        let data = await PaymentHistory.findAll({
+            where: { ph_therapist_id: therapist_id }
+        })
+
+        if (data.length > 0) {
+            return res.send({
+                result: true,
+                message: "data retrieved",
+                data: data
+            })
+        } else {
+            return res.send({
+                result: false,
+                message: "data not found"
+            })
+        }
+    } catch (error) {
+        return res.send({
+            result: false,
+            message: error.message
+        })
+    }
+}

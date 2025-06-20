@@ -19,6 +19,14 @@ router.get('/bank', LearnerAuthenticateToken, GetBank)
 const { UpdateBooking } = require('../controllers/users/booking.js');
 router.post('/update/booking', UpdateBooking);
 
+const { ListPaymentHistory } = require('../controllers/therapist/payment.js');
+router.post('/list/payment-history',LearnerAuthenticateToken, ListPaymentHistory);
+
+const { ListWalletHistory } = require('../controllers/therapist/wallethistory.js');
+router.post('/list/wallet-history',LearnerAuthenticateToken, ListWalletHistory);
+
+
+
 
 //payment Gateway
 
