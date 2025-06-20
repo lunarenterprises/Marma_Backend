@@ -101,8 +101,8 @@ module.exports = function (io) {
 
                     const booking = await Booking.findAll({
                         where: {
-                            user_id: userId,
-                            therapist_id: therapistId
+                            userId: userId,
+                            therapistId: therapistId
                         },
                         raw: true
                     });
