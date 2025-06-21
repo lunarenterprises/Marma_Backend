@@ -6,11 +6,11 @@ const { GenerateToken } = require('../../utils/generateToken')
 
 module.exports.RegisterLearner = async (req, res) => {
     try {
-        let { name, phone, location } = req.body || {}
-        if (!name || !phone || !location) {
+        let { name, gender, street, state, pincode, phone, location, email, qualification, programme, university, yearOfPassing, cgpa, companyName, yearOfExperience, role, responsibilities, alternateEmail, alternatePhone, linkedIn, emergencyContactName, emergencyContactNumber } = req.body || {}
+        if (!name || !phone || !location || !emergencyContactName || !emergencyContactNumber) {
             return res.send({
                 result: false,
-                message: "Name, phone and location are required"
+                message: "Name, phone, location, emergency contact name and emergency contact number are required"
             })
         }
         await Therapist.destroy({
@@ -33,8 +33,27 @@ module.exports.RegisterLearner = async (req, res) => {
         let formattedNumber = formatPhoneNumber(phone)
         let createNew = await Therapist.create({
             name,
+            gender,
+            street,
+            state,
+            pincode,
             phone: formattedNumber,
+            email,
             location,
+            qualification,
+            programme,
+            university,
+            yearOfPassing,
+            cgpa,
+            companyName,
+            yearOfExperience,
+            role,
+            responsibilities,
+            alternateEmail,
+            alternatePhone: formatPhoneNumber(alternatePhone),
+            linkedIn,
+            emergencyContactName,
+            emergencyContactPhone: formatPhoneNumber(emergencyContactNumber),
             resetToken: token,
             roleId: 2
         })
@@ -86,6 +105,7 @@ module.exports.VerifyOtp = async (req, res) => {
                 message: "Phone not registered yet"
             })
         }
+        // eslint-disable-next-line eqeqeq
         if (checkPhone.resetToken != otp) {
             return res.send({
                 result: false,

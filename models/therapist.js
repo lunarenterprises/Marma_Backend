@@ -60,13 +60,77 @@ const Therapist = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    pincode: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     district: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    street: {
       type: DataTypes.STRING,
       allowNull: true,
     },
     location: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    qualification: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    programme: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    university: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    yearOfPassing: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    cgpa: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    companyName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    yearOfExperience: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    role: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    responsibilities: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    alternateEmail: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    alternatePhone: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    linkedIn: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    emergencyContactName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    emergencyContactPhone: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     availability: {
       type: DataTypes.ENUM('Online', 'Offline'),
