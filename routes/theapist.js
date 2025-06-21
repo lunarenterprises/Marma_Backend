@@ -14,7 +14,7 @@ router.post('/edit/profile',LearnerAuthenticateToken, EditProfile);
 const { CreateBank, EditBank, GetBank } = require('../controllers/therapist/bank')
 router.post('/bank/create', LearnerAuthenticateToken, CreateBank)
 router.post('/bank/edit', LearnerAuthenticateToken, EditBank)
-router.get('/bank', LearnerAuthenticateToken, GetBank)
+router.post('/bank', LearnerAuthenticateToken, GetBank)
 
 const { UpdateBooking } = require('../controllers/users/booking.js');
 router.post('/update/booking', UpdateBooking);
@@ -25,7 +25,8 @@ router.post('/list/payment-history',LearnerAuthenticateToken, ListPaymentHistory
 const { ListWalletHistory } = require('../controllers/therapist/wallethistory.js');
 router.post('/list/wallet-history',LearnerAuthenticateToken, ListWalletHistory);
 
-
+// const { WithdrawRequest } = require('../controllers/therapist/withdrawRequest.js');
+// router.post('/withdraw-request',LearnerAuthenticateToken, WithdrawRequest);
 
 
 //payment Gateway
@@ -34,6 +35,6 @@ const { Payment } = require('../controllers/therapist/payment.js');
 router.post('/payment', Payment);
 
 const { RazorpayCallback } = require('../controllers/therapist/razorpaycallback.js');
-router.get('/razorpay/callback', RazorpayCallback);
+router.post('/razorpay/callback', RazorpayCallback);
 
 module.exports=router
