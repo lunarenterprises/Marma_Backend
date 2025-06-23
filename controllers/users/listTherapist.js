@@ -1,15 +1,30 @@
-let { Therapist, Category, Reviews, Booking, User } = require('../../models');
+let { Therapist, Category, Reviews, Booking, User, Op } = require('../../models/index');
 const { Sequelize } = require('sequelize');
 
 module.exports.ListTherapist = async (req, res) => {
     try {
-        const { therapist_id, gender, category_id, featured, topratedinarea, user_id, district, mostbooked, highlyreviewed } = req.body;
+        const { therapist_id, gender, category_id, featured, topratedinarea, user_id, district, mostbooked, highlyreviewed, search } = req.body;
 
         let whereClause = {};
         if (therapist_id) whereClause.id = therapist_id;
         if (category_id) whereClause.category_id = category_id;
         if (gender) whereClause.gender = gender;
 
+
+        if (search) {
+            whereClause[Op.or] = [
+                { name: { [Op.like]: `%${search}%` } },
+                { clinicName: { [Op.like]: `%${search}%` } },
+                { specialization: { [Op.like]: `%${search}%` } },
+                { specialty: { [Op.like]: `%${search}%` } },
+                { state: { [Op.like]: `%${search}%` } },
+                { district: { [Op.like]: `%${search}%` } },
+                { location: { [Op.like]: `%${search}%` } },
+                Sequelize.where(Sequelize.cast(Sequelize.col('category_id'), 'CHAR'), {
+                    [Op.like]: `%${search}%`
+                }),
+            ];
+        }
 
         // Common include array for aggregation query (aliases must match associations)
         const includeOptions = [
