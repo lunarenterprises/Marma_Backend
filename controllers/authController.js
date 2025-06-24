@@ -76,22 +76,22 @@ const login = async (req, res) => {
     }
 
     const isValidPassword = await user.validatePassword(password);
+
     if (!isValidPassword) {
       return errorResponse(res, 401, 'Invalid email or password');
     }
 
     await user.update({ lastLogin: new Date() });
 
-     let token = await GenerateToken({
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    phone: user.phone,
-                    roleid: user.roleId,
-                    role: user.Role.name
-    
-                })
-console.log("token : ",token);
+    let token = await GenerateToken({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      roleid: user.roleId,
+      role: user.Role.name
+    })
+    console.log("token : ", token);
 
     return successResponse(res, 200, 'Login successful', {
       user: {
@@ -166,7 +166,7 @@ const resetPassword = async (req, res) => {
     const user = await User.findOne({
       where: {
         resetToken: token,
-        resetTokenExpiry: {[Op.gt]: new Date() },
+        resetTokenExpiry: { [Op.gt]: new Date() },
       },
     });
 
