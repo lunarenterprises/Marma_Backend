@@ -14,7 +14,7 @@ const WalletHistory = sequelize.define(
       allowNull: false,
     },
     wh_amount: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
     },
     wh_type: {

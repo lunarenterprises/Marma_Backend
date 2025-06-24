@@ -18,8 +18,8 @@ module.exports.RazorpayCallback = async (req, res) => {
           message: "Payment details not found"
         });
       }
-      // console.log(payment_details,"payment_details");
-      let date = moment().format('YYYYY-MM-DD')
+      console.log(payment_details,"payment_details");
+      // let date = moment().format('YYYYY-MM-DD')
 
       let user_id = payment_details.ph_user_id;
       let therapist_id = payment_details.ph_therapist_id;
@@ -30,7 +30,7 @@ module.exports.RazorpayCallback = async (req, res) => {
 
 
       if (!learner_id) {
-        var Userdetails = await Therapist.findOne({
+        var Userdetails = await User.findOne({
           where: { id: user_id }
         });
 
@@ -42,6 +42,17 @@ module.exports.RazorpayCallback = async (req, res) => {
         }
 
         var username = Userdetails.name;
+
+         var therapistdetails = await Therapist.findOne({
+          where: { id: therapist_id }
+        });
+
+        if (!therapistdetails) {
+          return res.send({
+            result: false,
+            message: "Therapist not found"
+          });
+        }
 
         // ✅ Corrected update
         const [updateCount] = await PaymentHistory.update(
@@ -57,20 +68,21 @@ module.exports.RazorpayCallback = async (req, res) => {
         if (updatebookingpaymentstatus > 0) {
 
           let payAmount = amount * 0.20
+
           await PaymentHistory.update(
             { ph_pay_amount: payAmount },
             { where: { ph_id: payment_id } }
           );
-          let updatedWallet = Number(Userdetails.wallet) + Number(payAmount);
+          let updatedWallet = Number(therapistdetails.wallet) + Number(payAmount);
 
-          console.log(Userdetails.wallet, "uuu");
-          console.log(payAmount, "uuu");
-          console.log(updatedWallet, "uuu");
+          console.log(therapistdetails.wallet, "wallet");
+          console.log(payAmount, "payAmount");
+          console.log(updatedWallet, "updatedWallet");
 
 
           await Therapist.update(
             { wallet: updatedWallet },
-            { where: { id: user_id } }
+            { where: { id: therapist_id } }
           );
 
           let addwallethistory = await WalletHistory.create({

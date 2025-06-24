@@ -149,7 +149,7 @@ const Therapist = sequelize.define(
       allowNull: true,
     },
     wallet: {
-      type: DataTypes.DECIMAL(10, 0),
+      type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
       defaultValue: 0,
     },
