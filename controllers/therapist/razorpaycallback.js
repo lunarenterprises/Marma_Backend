@@ -3,110 +3,115 @@ let { User, PaymentHistory, Therapist, WalletHistory, Booking } = require('../..
 let moment = require('moment')
 
 module.exports.RazorpayCallback = async (req, res) => {
-    try {
-        let payment_id = req.query.payment_id;
+  try {
+    let payment_id = req.query.payment_id;
 
-        if (req.query.razorpay_payment_link_status === 'paid') {
+    if (req.query.razorpay_payment_link_status === 'paid') {
 
-            let payment_details = await PaymentHistory.findOne({
-                where: { ph_id: payment_id }
-            });
+      let payment_details = await PaymentHistory.findOne({
+        where: { ph_id: payment_id }
+      });
 
-            if (!payment_details) {
-                return res.send({
-                    result: false,
-                    message: "Payment details not found"
-                });
-            }
-            // console.log(payment_details,"payment_details");
-            let date = moment().format('YYYYY-MM-DD')
+      if (!payment_details) {
+        return res.send({
+          result: false,
+          message: "Payment details not found"
+        });
+      }
+      // console.log(payment_details,"payment_details");
+      let date = moment().format('YYYYY-MM-DD')
 
-            let user_id = payment_details.ph_user_id;
-            let therapist_id = payment_details.ph_therapist_id;
-            let learner_id = payment_details.ph_learner_id;
-            let booking_id = payment_details.ph_booking_id;
-            let amount = payment_details.ph_total_amount;
-            let payment_date = payment_details.ph_date;
-
-
-            if (!learner_id) {
-                var Userdetails = await User.findOne({
-                    where: { id: user_id }
-                });
-
-                if (!Userdetails) {
-                    return res.send({
-                        result: false,
-                        message: "User not found"
-                    });
-                }
-
-                var username = Userdetails.name;
-
-                // ✅ Corrected update
-                const [updateCount] = await PaymentHistory.update(
-                    { ph_payment_status: 'paid' },
-                    { where: { ph_id: payment_id } }
-                );
-
-                const [updatebookingpaymentstatus] = await Booking.update(
-                    { paymentStatus: 'paid' },
-                    { where: { id: booking_id } }
-                );
-
-                if (updatebookingpaymentstatus > 0) {
-
-                    let payAmount = amount * 0.20
-                    await PaymentHistory.update(
-                        { ph_pay_amount: payAmount },
-                        { where: { ph_id: payment_id } }
-                    );
-                    let updatedWallet = Userdetails.wallet_amount + payAmount;
-
-                    await Therapist.update(
-                        { wallet_amount: updatedWallet },
-                        { where: { id: user_id } }
-                    );
-
-                    let addwallethistory = await WalletHistory.create({
-                        wh_therapist_id: therapist_id,
-                        wh_amount: payAmount,
-                        wh_date: date
-                    });
-                }
-
-            } else {
-                //learner checking
-                var Userdetails = await Therapist.findOne({
-                    where: { id: learner_id }
-                });
-                if (!Userdetails) {
-                    return res.send({
-                        result: false,
-                        message: "Learner details not found"
-                    });
-                }
-
-                var username = Userdetails.name;
+      let user_id = payment_details.ph_user_id;
+      let therapist_id = payment_details.ph_therapist_id;
+      let learner_id = payment_details.ph_learner_id;
+      let booking_id = payment_details.ph_booking_id;
+      let amount = payment_details.ph_total_amount;
+      let payment_date = payment_details.ph_date;
 
 
-                const [updateCount] = await PaymentHistory.update(
-                    { ph_payment_status: 'paid' },
-                    { where: { ph_id: payment_id } }
-                );
+      if (!learner_id) {
+        var Userdetails = await Therapist.findOne({
+          where: { id: user_id }
+        });
 
-                const [updatebookingpaymentstatus] = await Therapist.update(
-                    { status: 'paid' },
-                    { where: { id: learner_id } }
-                );
+        if (!Userdetails) {
+          return res.send({
+            result: false,
+            message: "User not found"
+          });
+        }
 
-            }
+        var username = Userdetails.name;
 
-            let mailOptions = {
-                from: "REFLEX MARMA <nocontact@drlifeboat.com>",
-                to: Userdetails.email,
-                subject: "MESSAGE FROM REFLEX MARMA",
-                html: `<!DOCTYPE html>
+        // ✅ Corrected update
+        const [updateCount] = await PaymentHistory.update(
+          { ph_payment_status: 'paid' },
+          { where: { ph_id: payment_id } }
+        );
+
+        const [updatebookingpaymentstatus] = await Booking.update(
+          { paymentStatus: 'paid' },
+          { where: { id: booking_id } }
+        );
+
+        if (updatebookingpaymentstatus > 0) {
+
+          let payAmount = amount * 0.20
+          await PaymentHistory.update(
+            { ph_pay_amount: payAmount },
+            { where: { ph_id: payment_id } }
+          );
+          let updatedWallet = Number(Userdetails.wallet) + Number(payAmount);
+
+          console.log(Userdetails.wallet, "uuu");
+          console.log(payAmount, "uuu");
+          console.log(updatedWallet, "uuu");
+
+
+          await Therapist.update(
+            { wallet: updatedWallet },
+            { where: { id: user_id } }
+          );
+
+          let addwallethistory = await WalletHistory.create({
+            wh_therapist_id: therapist_id,
+            wh_amount: payAmount,
+            wh_type:'Credit'
+          });
+        }
+
+      } else {
+        //learner checking
+        var Userdetails = await Therapist.findOne({
+          where: { id: learner_id }
+        });
+        if (!Userdetails) {
+          return res.send({
+            result: false,
+            message: "Learner details not found"
+          });
+        }
+
+        var username = Userdetails.name;
+
+
+        const [updateCount] = await PaymentHistory.update(
+          { ph_payment_status: 'paid' },
+          { where: { ph_id: payment_id } }
+        );
+
+        const [updatebookingpaymentstatus] = await Therapist.update(
+          { status: 'paid' },
+          { where: { id: learner_id } }
+        );
+
+      }
+
+      let mailOptions = {
+        from: "REFLEX MARMA <nocontact@drlifeboat.com>",
+        to: Userdetails.email,
+        subject: "MESSAGE FROM REFLEX MARMA",
+        html: `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -224,11 +229,11 @@ module.exports.RazorpayCallback = async (req, res) => {
   </div>
 </body>
 </html>`
-            };
+      };
 
-            await sendEmail(mailOptions);
+      await sendEmail(mailOptions);
 
-            return res.send(`<!DOCTYPE html>
+      return res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -315,19 +320,19 @@ module.exports.RazorpayCallback = async (req, res) => {
     <div class="icon">🎉</div>
     <h1>Payment Successful</h1>
     <p>Thank you for your purchase! Your transaction has been completed successfully.</p>
-    <a href="https://marma.com/" class="btn">Back to Home</a>
+    <a href="https://marma.com" class="btn">Back to Home</a>
   </div>
 </body>
 </html>
 `);
 
-        } else {
-            // Payment failed
-            await PaymentHistory.destroy({
-                where: { ph_id: payment_id }
-            });
+    } else {
+      // Payment failed
+      await PaymentHistory.destroy({
+        where: { ph_id: payment_id }
+      });
 
-            return res.send(`<!DOCTYPE html>
+      return res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -407,14 +412,14 @@ module.exports.RazorpayCallback = async (req, res) => {
     <h1>Payment Failed</h1>
     <p>Unfortunately, your payment could not be completed.</p>
     <p>Please try again or contact our support team if the problem continues.</p>
-    <a href="https://marma.com/" class="btn">Back to Home</a>
+    <a href="https://marma.com" class="btn">Back to Home</a>
   </div>
 </body>
 </html>`);
-        }
-        
-    } catch (error) {
-        console.error('RazorpayCallback error:', error);
-        return res.status(500).send('Internal Server Error');
     }
+
+  } catch (error) {
+    console.error('RazorpayCallback error:', error);
+    return res.status(500).send('Internal Server Error');
+  }
 };

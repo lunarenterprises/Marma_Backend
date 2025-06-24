@@ -1,10 +1,9 @@
-const User = require('../../models/user'); // Sequelize model
+const { User, Role, OtpLog } = require('../../models/index'); // Sequelize model
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { GenerateToken } = require('../../utils/generateToken')
 // var nodemailer = require('nodemailer');
 var moment = require('moment');
-var OtpLog = require('../../models/otpLog')
 var sendSMS = require('../../utils/sms')
 
 
@@ -23,7 +22,14 @@ module.exports.Login = async (req, res) => {
 
         // Find user by email and role
         const user = await User.findOne({
-            where: { u_email: email }
+            where: { u_email: email },
+            include: [
+                {
+                    model: Role,
+                    as: 'Role', // only if you used an alias
+                    attributes: ['id', 'name'] // adjust fields as needed
+                }
+            ]
         });
 
         if (!user) {
@@ -45,8 +51,12 @@ module.exports.Login = async (req, res) => {
 
         // Generate JWT token
         const payload = {
-            email: user.u_email,
-            u_id: user.u_id
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            location: user.location,
+            role: user.Role.name
         };
         const token = jwt.sign(payload, SECRET_KEY, {});
 
@@ -255,7 +265,13 @@ module.exports.verifyOtp = async (req, res) => {
             });
         }
 
-        const user = await User.findOne({ where: { phone: phone } });
+        const user = await User.findOne({ where: { phone: phone }, include: [
+                {
+                    model: Role,
+                    as: 'Role', // only if you used an alias
+                    attributes: ['id', 'name'] // adjust fields as needed
+                }
+            ] });
         if (!user) {
             return res.status(404).json({
                 result: false,
@@ -281,7 +297,9 @@ module.exports.verifyOtp = async (req, res) => {
                 email: user.email,
                 phone: user.phone,
                 location: user.location,
-                roleid: user.roleId
+                roleid: user.roleId,
+                rolename: user.Role.name
+
 
             })
 

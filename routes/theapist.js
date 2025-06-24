@@ -25,8 +25,8 @@ router.post('/list/payment-history',LearnerAuthenticateToken, ListPaymentHistory
 const { ListWalletHistory } = require('../controllers/therapist/wallethistory.js');
 router.post('/list/wallet-history',LearnerAuthenticateToken, ListWalletHistory);
 
-// const { WithdrawRequest } = require('../controllers/therapist/withdrawRequest.js');
-// router.post('/withdraw-request',LearnerAuthenticateToken, WithdrawRequest);
+const { WithdrawRequest } = require('../controllers/therapist/withdrawRequest.js');
+router.post('/request-withdraw',LearnerAuthenticateToken, WithdrawRequest);
 
 
 //payment Gateway

@@ -1,6 +1,6 @@
 const { Notification } = require('../models/index');
 
-module.exports.addNotification = async (user_id, therapist_id,type, title, message,image,date) => {
+module.exports.addNotification = async (user_id, therapist_id,type, title, message,image) => {
   try {
 
     const addnotification = await Notification.create({
@@ -10,7 +10,6 @@ module.exports.addNotification = async (user_id, therapist_id,type, title, messa
       n_title:title,
       n_messages: message,
       n_image:image,
-      n_date:date
     });
 
     return !!addnotification; // Return true if the creation succeeded

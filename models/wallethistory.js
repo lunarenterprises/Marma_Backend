@@ -17,9 +17,10 @@ const WalletHistory = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    wh_date: {
-      type: DataTypes.DATEONLY,
+    wh_type: {
+      type: DataTypes.ENUM('Credit', 'Debit'),
       allowNull: false,
+      defaultValue: 'Credit'
     },
     wh_status: {
       type: DataTypes.STRING,
