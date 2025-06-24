@@ -5,6 +5,8 @@ const { User, Role } = require('../models');
 const sendEmail = require('../utils/emailService');
 const { emailTemplates } = require('../utils/emailService');
 const { successResponse, errorResponse } = require('../utils/responseHandler');
+const { GenerateToken } = require('../utils/generateToken')
+
 
 // Create admin user if not exists
 const createDefaultAdmin = async () => {
@@ -80,9 +82,16 @@ const login = async (req, res) => {
 
     await user.update({ lastLogin: new Date() });
 
-    const token = jwt.sign({ userId: user.id, role: user.Role?.name }, process.env.JWT_SECRET, {
-      expiresIn: '24h',
-    });
+     let token = await GenerateToken({
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    phone: user.phone,
+                    roleid: user.roleId,
+                    role: user.Role.name
+    
+                })
+console.log("token : ",token);
 
     return successResponse(res, 200, 'Login successful', {
       user: {

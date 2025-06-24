@@ -66,10 +66,9 @@ module.exports.WithdrawRequest = async (req, res) => {
 module.exports.WithdrawRequestApprovel = async (req, res) => {
     try {
         let user = req.user
-        console.log("userrrr :", user);
 
         var { wr_id, status } = req.body || {}
-        let role = user.role
+        let role = user.Role.name
 
         if (role !== 'admin') {
             return res.send({
@@ -93,7 +92,9 @@ module.exports.WithdrawRequestApprovel = async (req, res) => {
                 message: "Withdraw Request not found"
             })
         }
+
         let therapist_id = withdrawrequest.wr_therapist_id
+        let Amount = withdrawrequest.wr_amount
 
         const UpdateWalletstatus = await WithdrawRequest.update(
             { wr_status: status },
@@ -106,11 +107,12 @@ module.exports.WithdrawRequestApprovel = async (req, res) => {
                 message: "failed to update request status"
             })
         }
+
         if (status == 'Approved') {
 
             let addwallethistory = await WalletHistory.create({
                 wh_therapist_id: therapist_id,
-                wh_amount: payAmount,
+                wh_amount: Amount,
                 wh_type: 'Debit'
             });
 
@@ -121,8 +123,6 @@ module.exports.WithdrawRequestApprovel = async (req, res) => {
                 })
             }
         }
-        // console.log(addWithdrawRequest, "addbooking");
-        // console.log(UpdateWallet, "addbooking");
 
         return res.send({
             result: true,
