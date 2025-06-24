@@ -5,7 +5,7 @@ const therapistRoutes = require('./admin/therapistRoutes.js');
 const bookingRoutes = require('./admin/bookingRoutes.js');
 const videoRoutes = require('./admin/videoRoutes.js');
 const otpRoutes = require('./admin/otpRoutes.js');
-// const adminroutes = require('./admin/adminroutes.js');
+const {authenticateToken} = require('../middlewares/auth.js');
 
 const { getDashboard } = require('../controllers/adminController.js');
 
@@ -29,6 +29,9 @@ router.post('/edit/category', EditCategory);
 
 const { ListUSer } = require('../controllers/admin/listUsers.js');
 router.post('/list/user', ListUSer);
+
+const { WithdrawRequestApprovel } = require('../controllers/therapist/withdrawRequest.js');
+router.post('/approve/withdraw-request',authenticateToken, WithdrawRequestApprovel);
 
 
 module.exports = router;

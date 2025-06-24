@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const { authenticateToken } = require('../middlewares/auth')
+
 
 const { Register } = require('../controllers/users/register.js');
 router.post('/register', Register);
@@ -34,8 +36,8 @@ router.post('/list/booking', ListBooking);
 const { AddReview } = require('../controllers/users/review.js');
 router.post('/add/review', AddReview);
 
-// const { UpdateBookingStatus } = require('../controllers/users/booking.js');
-// router.post('/update/booking-status', UpdateBookingStatus);
+const { UpdateBookingStatus } = require('../controllers/users/booking.js');
+router.post('/update/booking-status',authenticateToken, UpdateBookingStatus);
 
 const { GetNotification } = require('../controllers/users/listnotification.js');
 router.post('/list/notification', GetNotification);

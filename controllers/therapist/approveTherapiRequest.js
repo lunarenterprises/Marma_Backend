@@ -1,32 +1,48 @@
-const { Booking, Therapist } = require('../../models/index.js');
+const { Booking, Therapist,Category } = require('../../models/index.js');
+const notification = require('../../utils/addNotification.js')
 
 
 module.exports.ApproveTherapiRequest = async (req, res) => {
     try {
-        let  user = req.user 
+        let user = req.user
         var { request_id, status } = req.body || {}
         if (!request_id) {
             return res.send({
                 result: false,
-                message: "Request id is required"
+                message: "Booking id is required"
             })
         }
-        console.log("Sttatus : ", status)
+
+        let u_id = request.userId
+        let therapist_id = user.id
+
+
+        console.log("Status : ", status)
         const request = await Booking.findOne({
             where: {
                 id: request_id,
-                therapistId: user.id
+                therapistId: therapist_id
             }
         });
-
 
         if (!request) {
             return res.send({
                 result: false,
-                message: "Request details not found"
+                message: "Booking details not found"
             })
         }
-        const therapist = await Therapist.findByPk(user.id);
+
+        const therapist = await Therapist.findOne({
+            where: { id: user.id },
+            include: [
+                {
+                    model: Category,
+                    as: 'category',
+                    attributes: ['c_id', 'c_name', 'c_image'],
+                    required: true,
+                }
+            ]
+        });
 
         if (!therapist) {
             return res.send({
@@ -35,16 +51,28 @@ module.exports.ApproveTherapiRequest = async (req, res) => {
             })
         }
 
+    const categoryimage = therapist?.category?.c_image || null;
+
+
         let updateBooking = await Booking.update(
             { status },
             { where: { id: request_id } }
         );
 
+
+        await notification.addNotification(
+            u_id,
+            therapist_id,
+            status,
+            `Therapy Booking ${status}`,
+            `${therapist.name} ${status} ${request.service} section`,
+            categoryimage
+        );
         console.log(updateBooking, "addbooking");
 
         return res.send({
             result: true,
-            message: "Therapy request status updated succesfully"
+            message: `Therapy booking ${status} succesfully`
         })
 
 
