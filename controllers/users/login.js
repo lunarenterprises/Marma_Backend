@@ -278,7 +278,6 @@ module.exports.verifyOtp = async (req, res) => {
                 message: "User not found",
             });
         }
-        let SECRET_KEY = process.env.JWT_SECRET
 
         // Validate OTP and expiry
         if (user.resetToken != otp
@@ -295,8 +294,6 @@ module.exports.verifyOtp = async (req, res) => {
                 id: user.id,
                 name: user.name,
                 email: user.email,
-                phone: user.phone,
-                location: user.location,
                 roleid: user.roleId,
                 rolename: user.Role.name
 
