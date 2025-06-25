@@ -19,6 +19,7 @@ module.exports = function (io) {
 
     io.on("connection", (socket) => {
         console.log(`🔌  Socket ${socket.id} connected`);
+        console.log("connection :", socket.handshake.headers['user-agent']);
 
         socket.on("userOnline", ({ user_id, role }) => {
             if (!user_id || !role) return;
