@@ -4,6 +4,7 @@ const { formatPhoneNumber } = require('../../utils/sms');
 const moment = require('moment')
 const path = require('path')
 const fs = require('fs')
+const { addNotification } = require('../../utils/addNotification')
 
 
 module.exports.EditProfile = async (req, res) => {
@@ -19,12 +20,6 @@ module.exports.EditProfile = async (req, res) => {
                 });
             }
             const { name, phone, email, location } = fields;
-            // if (!name || !phone) {
-            //     return res.status(400).send({
-            //         result: false,
-            //         message: "Name and phone is required.",
-            //     });
-            // }
             let imagepath = null
             if (files.image) {
                 let date = moment().format('YYYY-MM-DD')
