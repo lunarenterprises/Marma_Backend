@@ -1,4 +1,5 @@
 let { Questions, SubmitQuestions } = require('../../models/index')
+const { Sequelize } = require('sequelize');
 let { addNotification } = require('../../utils/addNotification')
 
 
@@ -6,12 +7,21 @@ module.exports.ListAllQuestions = async (req, res) => {
     try {
         let user = req.user
         let questions = await Questions.findAll({
-            attributes: { exclude: ['answer'] }
+            attributes: { exclude: ['answer'] },
+            order: Sequelize.literal('RAND()'), // For MySQL
+            limit: 15
         })
+        const updatedQuestions = questions.map(q => {
+            const plain = q.get({ plain: true });
+            return {
+                ...plain,
+                options: JSON.parse(plain.options)
+            };
+        });
         return res.send({
             result: true,
             message: "Questions listed successfully",
-            questions
+            questions: updatedQuestions
         })
     } catch (error) {
         return res.send({
