@@ -18,13 +18,13 @@ module.exports.EditProfile = async (req, res) => {
                     data: err,
                 });
             }
-            const { name, phone } = fields;
-            if (!name || !phone) {
-                return res.status(400).send({
-                    result: false,
-                    message: "Name and phone is required.",
-                });
-            }
+            const { name, phone, email, location } = fields;
+            // if (!name || !phone) {
+            //     return res.status(400).send({
+            //         result: false,
+            //         message: "Name and phone is required.",
+            //     });
+            // }
             let imagepath = null
             if (files.image) {
                 let date = moment().format('YYYY-MM-DD')
@@ -56,7 +56,7 @@ module.exports.EditProfile = async (req, res) => {
                 imagepath = `/uploads/profiles_pic/${fileName}`;
             }
             let [affectedCount] = await Therapist.update(
-                { name, phone: formatPhoneNumber(phone), file: imagepath }, // fields to update
+                { name, phone: formatPhoneNumber(phone), file: imagepath, email, location }, // fields to update
                 { where: { id: user.id } }        // condition
             );
             if (affectedCount > 0) {
