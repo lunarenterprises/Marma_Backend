@@ -55,8 +55,14 @@ module.exports.EditProfile = async (req, res) => {
                 })
                 imagepath = `/uploads/profiles_pic/${fileName}`;
             }
+            let updateData = {}
+            if (name) updateData["name"] = name
+            if (phone) updateData["phone"] = formatPhoneNumber(phone)
+            if (imagepath) updateData["file"] = imagepath
+            if (email) updateData["email"] = email
+            if (location) updateData["location"] = location
             let [affectedCount] = await Therapist.update(
-                { name, phone: formatPhoneNumber(phone), file: imagepath, email, location }, // fields to update
+                updateData, // fields to update
                 { where: { id: user.id } }        // condition
             );
             if (affectedCount > 0) {
