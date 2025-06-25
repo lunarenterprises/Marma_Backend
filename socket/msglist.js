@@ -22,13 +22,22 @@ module.exports = function (io) {
 
         socket.on("userOnline", ({ user_id, role }) => {
             if (!user_id || !role) return;
-            const key = `${role}-${user_id}`;
-            onlineUsers.set(key, socket.id);
-            console.log("onlineUser connected:", key);
 
-            // ✅ Broadcast updated online list to everyone
+            const key = `${role}-${user_id}`;
+
+            // Remove old socket for this user
+            for (const [existingKey, existingSocketId] of onlineUsers.entries()) {
+                if (existingKey === key && existingSocketId !== socket.id) {
+                    onlineUsers.delete(existingKey);
+                }
+            }
+
+            onlineUsers.set(key, socket.id);
+            console.log("✅ Online user registered:", key);
+
             broadcastOnlineList();
         });
+
 
         socket.on("listChats", async ({ user_id, role }) => {
             try {
