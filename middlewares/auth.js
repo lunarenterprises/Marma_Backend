@@ -100,14 +100,12 @@ const authenticateToken = async (req, res, next) => {
 
 const LearnerAuthenticateToken = async (req, res, next) => {
   const authHeader = req.header('Authorization');
-  console.log("Authorization header:", authHeader);
 
   const token =
     authHeader && authHeader.split(' ')[0].toLowerCase() === 'bearer'
       ? authHeader.split(' ')[1]
       : null;
 
-  console.log("Extracted token:", token);
 
   if (!token || token.split('.').length !== 3) {
     return res.status(403).json({ message: 'Access denied, token missing or malformed' });
@@ -115,7 +113,6 @@ const LearnerAuthenticateToken = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Decoded token:", decoded);
 
     const userId = decoded.id || decoded.userId;
     if (!userId) {
@@ -140,7 +137,6 @@ const LearnerAuthenticateToken = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.error('Token verification error:', error);
     return res.status(401).json({
       message: 'Invalid or expired token',
       error: error.message,
