@@ -28,10 +28,9 @@ module.exports.UpdateNotificationStatus = async (req, res) => {
     try {
         let user = req.user
         let { notification_id } = req.body
-        if (notification_id.lenth > 0) {
+        if (notification_id?.length > 0) {
             notification_id.forEach(async (item) => {
-                let affectedCount = await Notification.update({ n_status: "inactive" }, { where: { n_id: item, n_therapist_id: user.id } })
-                console.log("affectedCount : ", affectedCount)
+                await Notification.update({ n_status: "inactive" }, { where: { n_id: item, n_therapist_id: user.id } })
             })
         }
         return res.send({
