@@ -22,10 +22,10 @@ module.exports = function (io) {
         console.log("IP:", socket.handshake.address);
         console.log("connection :", socket.handshake.headers['user-agent']);
 
-        const timer = setTimeout(() => {
-            console.log("⏳ Unidentified socket timed out:", socket.id);
-            socket.disconnect(true);
-        }, 10000); // 10 seconds
+        // const timer = setTimeout(() => {
+        //     console.log("⏳ Unidentified socket timed out:", socket.id);
+        //     socket.disconnect(true);
+        // }, 10000); // 10 seconds
 
         
         socket.on("userOnline", ({ user_id, role }) => {
@@ -257,7 +257,7 @@ module.exports = function (io) {
         });
 
         socket.on("disconnect", () => {
-            clearTimeout(timer); // Prevent memory leak
+            // clearTimeout(timer); // Prevent memory leak
             let disconnectedKey;
             for (const [userKey, sockId] of onlineUsers.entries()) {
                 if (sockId === socket.id) {
