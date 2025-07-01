@@ -78,7 +78,6 @@ module.exports.GetAnswer = async (req, res) => {
         if (fallback) {
             return res.send({
                 result: true,
-                fallback: true,
                 question: fallback.question,
                 answer: fallback.answer
             });
