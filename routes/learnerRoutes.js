@@ -24,5 +24,8 @@ const { ListAllNotifications, UpdateNotificationStatus } = require('../controlle
 router.get('/notifications', LearnerAuthenticateToken, ListAllNotifications)
 router.post('/update/notification', LearnerAuthenticateToken, UpdateNotificationStatus)
 
+const { GetAnswer } = require('../controllers/learner/chatBot')
+router.post('/chatbot', GetAnswer)
+
 
 module.exports = router
