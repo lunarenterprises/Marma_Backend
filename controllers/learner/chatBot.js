@@ -1,4 +1,3 @@
-const Fuse = require('fuse.js');
 const faqs = [
     {
         "question": "What is \"CP's REFLEX MARMA THERAPY\"?",
