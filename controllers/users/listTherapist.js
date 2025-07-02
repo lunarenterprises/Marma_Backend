@@ -59,6 +59,7 @@ module.exports.ListTherapist = async (req, res) => {
                 where: {
                     ...whereClause,
                     status: 'Approved',
+                    roleId: 3,
                 },
                 include: includeOptions,
                 attributes: {
@@ -84,6 +85,7 @@ module.exports.ListTherapist = async (req, res) => {
             const therapist = await Therapist.findOne({
                 where: {
                     status: 'Approved',
+                    roleId: 3,
                     ...whereClause
                 },
                 include: [
@@ -94,6 +96,7 @@ module.exports.ListTherapist = async (req, res) => {
                     }
                 ]
             });
+            console.log(therapist, "tttt");
 
             if (!therapist) {
                 return res.send({
@@ -159,6 +162,7 @@ module.exports.ListTherapist = async (req, res) => {
                 where: {
                     district: district,
                     status: 'Approved',
+                    roleId: 3,
                 },
                 include: includeOptions,
                 attributes: {
@@ -183,7 +187,10 @@ module.exports.ListTherapist = async (req, res) => {
         // ------------------- Most Booked Therapists -------------------
         if (mostbooked) {
             const therapists = await Booking.findAll({
-                where: { status: 'completed' },
+                where: {
+                    status: 'completed',
+                    roleId: 3,
+                },
                 attributes: [
                     'therapistId',
                     [Sequelize.fn('COUNT', Sequelize.col('therapistId')), 'totalBookings']
@@ -220,7 +227,10 @@ module.exports.ListTherapist = async (req, res) => {
 
         if (highlyreviewed) {
             const therapists = await Reviews.findAll({
-                where: { r_status: 'active' },
+                where: {
+                    r_status: 'active',
+                    roleId: 3,
+                },
                 attributes: [
                     'r_therapist_id',
                     [Sequelize.fn('COUNT', Sequelize.col('r_id')), 'totalReviews']
@@ -258,6 +268,8 @@ module.exports.ListTherapist = async (req, res) => {
             where: {
                 ...whereClause,
                 status: 'Approved',
+                roleId: 3,
+
             },
             include: includeOptions,
             attributes: {
