@@ -2,6 +2,9 @@
 const axios = require("axios");
 const moment = require("moment");
 const { User, Therapist, PaymentHistory, Booking } = require('../../models/index');
+let generateOTP = require('../../utils/generateOTP')
+let createOtpLog = require('../../utils/addOtpLog')
+
 
 module.exports.Payment = async (req, res) => {
     try {
@@ -124,8 +127,18 @@ module.exports.Payment = async (req, res) => {
             callback_url: callbackurl,
         };
 
+        let therapyOTP = await generateOTP()
+        let purpose = 'Therapy section'
         axios.post('https://api.razorpay.com/v1/payment_links', paymentLinkData, authHeader)
             .then(response => {
+
+                createOtpLog(phone, user_id, purpose)
+                
+                const updateotp = Booking.update(
+                    { otp: therapyOTP }, // data to update
+                    { where: { id: booking_id } } // condition
+                );
+
                 console.log('Payment link created successfully:', response.data);
                 return res.json({
                     result: true,
@@ -151,7 +164,7 @@ module.exports.Payment = async (req, res) => {
 
 module.exports.ListPaymentHistory = async (req, res) => {
     try {
-        
+
         let user = req.user
         let therapist_id = user.id
         const therapist = await Therapist.findOne({ where: { id: therapist_id } });

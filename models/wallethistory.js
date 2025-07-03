@@ -13,6 +13,10 @@ const WalletHistory = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    wh_user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     wh_amount: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
