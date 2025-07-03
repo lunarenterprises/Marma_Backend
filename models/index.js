@@ -75,6 +75,14 @@ Messages.belongsTo(User, { foreignKey: "sender_id" });
 
 Bank.belongsTo(Therapist,{ foreignKey: "therapist_id" })
 
+
+// WalletHistory belongs to a User
+WalletHistory.belongsTo(User, {foreignKey: 'wh_user_id',as: 'user',});
+
+// WalletHistory belongs to a Therapist
+WalletHistory.belongsTo(Therapist, {foreignKey: 'wh_therapist_id',as: 'therapist',});
+
+
 // === Initial Seeding === //
 
 const initRoles = async () => {

@@ -1,9 +1,9 @@
-const { Therapist, WalletHistory } = require('../../models/index');
-const { Sequelize } = require('sequelize');
+const { Therapist, WalletHistory,User } = require('../../models/index');
 
 module.exports.ListWalletHistory = async (req, res) => {
     try {
         let user = req.user;
+
         let therapist_id = user.id;
 
         const therapist = await Therapist.findOne({ where: { id: therapist_id } });
@@ -14,11 +14,15 @@ module.exports.ListWalletHistory = async (req, res) => {
                 message: "Therapist details not found",
             });
         }
-
+const include = [
+      { model: User, as: 'user', attributes: ['name','profile_pic'] },
+      { model: Therapist, as: 'therapist', attributes: ['name', 'file'] },
+    ];
         // Fetch wallet history
         let data = await WalletHistory.findAll({
             where: { wh_therapist_id: therapist_id },
             order: [['createdAt', 'DESC']],
+            include
         });
 
         // Get total earnings (Credit)

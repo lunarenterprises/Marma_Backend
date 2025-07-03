@@ -18,7 +18,6 @@ module.exports.RazorpayCallback = async (req, res) => {
           message: "Payment details not found"
         });
       }
-      console.log(payment_details,"payment_details");
       // let date = moment().format('YYYYY-MM-DD')
 
       let user_id = payment_details.ph_user_id;
@@ -75,9 +74,9 @@ module.exports.RazorpayCallback = async (req, res) => {
           );
           let updatedWallet = Number(therapistdetails.wallet) + Number(payAmount);
 
-          console.log(therapistdetails.wallet, "wallet");
-          console.log(payAmount, "payAmount");
-          console.log(updatedWallet, "updatedWallet");
+          // console.log(therapistdetails.wallet, "wallet");
+          // console.log(payAmount, "payAmount");
+          // console.log(updatedWallet, "updatedWallet");
 
 
           await Therapist.update(
@@ -87,6 +86,7 @@ module.exports.RazorpayCallback = async (req, res) => {
 
           let addwallethistory = await WalletHistory.create({
             wh_therapist_id: therapist_id,
+            wh_user_id:user_id,
             wh_amount: payAmount,
             wh_type:'Credit'
           });
