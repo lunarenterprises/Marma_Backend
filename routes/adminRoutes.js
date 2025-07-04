@@ -36,5 +36,17 @@ router.post('/upload_question', UploadQuestions)
 const { WithdrawRequestApprovel } = require('../controllers/therapist/withdrawRequest.js');
 router.post('/approve/withdraw-request', authenticateToken, WithdrawRequestApprovel);
 
+const { AddDoctor } = require('../controllers/admin/doctors.js');
+router.post('/add/doctor', AddDoctor);
+
+const { EditDoctor } = require('../controllers/admin/doctors.js');
+router.post('/edit/doctor', EditDoctor);
+
+const { ListDoctor } = require('../controllers/admin/doctors.js');
+router.post('/list/doctor', ListDoctor);
+
+const { DeleteDoctor } = require('../controllers/admin/doctors.js');
+router.post('/delete/doctor', DeleteDoctor);
+
 
 module.exports = router;

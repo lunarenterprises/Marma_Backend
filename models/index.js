@@ -19,9 +19,7 @@ const Bank=require('./bank.js')
 const PaymentHistory=require('./paymentHistory.js')
 const WalletHistory=require('./wallethistory.js')
 const WithdrawRequest=require('./withdrawRequest.js')
-
-
-
+const Doctors=require('./doctors.js')
 
 
 // === Define Associations === //
@@ -170,6 +168,7 @@ module.exports = {
   PaymentHistory,
   WalletHistory,
   WithdrawRequest,
+  Doctors,
   initRoles,
   createDefaultAdmin,
   initializeDatabase,
