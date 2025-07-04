@@ -37,16 +37,16 @@ const { WithdrawRequestApprovel } = require('../controllers/therapist/withdrawRe
 router.post('/approve/withdraw-request', authenticateToken, WithdrawRequestApprovel);
 
 const { AddDoctor } = require('../controllers/admin/doctors.js');
-router.post('/add/doctor', AddDoctor);
+router.post('/add/doctor',authenticateToken, AddDoctor);
 
 const { EditDoctor } = require('../controllers/admin/doctors.js');
-router.post('/edit/doctor', EditDoctor);
+router.post('/edit/doctor',authenticateToken, EditDoctor);
 
 const { ListDoctor } = require('../controllers/admin/doctors.js');
 router.post('/list/doctor', ListDoctor);
 
 const { DeleteDoctor } = require('../controllers/admin/doctors.js');
-router.post('/delete/doctor', DeleteDoctor);
+router.post('/delete/doctor',authenticateToken, DeleteDoctor);
 
 
 module.exports = router;
