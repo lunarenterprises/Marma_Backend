@@ -1,4 +1,4 @@
-const { Therapist, WalletHistory,User } = require('../../models/index');
+const { Therapist, WalletHistory, User } = require('../../models/index');
 
 module.exports.ListWalletHistory = async (req, res) => {
     try {
@@ -14,10 +14,10 @@ module.exports.ListWalletHistory = async (req, res) => {
                 message: "Therapist details not found",
             });
         }
-const include = [
-      { model: User, as: 'user', attributes: ['name','profile_pic'] },
-      { model: Therapist, as: 'therapist', attributes: ['name', 'file'] },
-    ];
+        const include = [
+            { model: User, as: 'user', attributes: ['name', 'profile_pic'] },
+            { model: Therapist, as: 'therapist', attributes: ['name', 'file'] },
+        ];
         // Fetch wallet history
         let data = await WalletHistory.findAll({
             where: { wh_therapist_id: therapist_id },
