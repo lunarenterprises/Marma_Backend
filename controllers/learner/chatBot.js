@@ -1,14 +1,14 @@
 const faqs = [
     {
-        "question": "What is \"CP's REFLEX MARMA THERAPY\"?",
+        "question": "What is CP REFLEX MARMA THERAPY ?",
         "answer": "CP’s Reflex Marma Therapy is a blending of two distinct wellness therapies namely Foot reflexology and Holistic Chakra Healing. It is a non-invasive therapy."
     },
     {
-        "question": "What does the C.P stands for in CP’s Reflex Marma?",
+        "question": "What does the C.P stands for in CP’s Reflex Marma ?",
         "answer": "C. P. is the short form of the name CHANDRAN POOCHAKKAD, an Internationally well-known inventor, Award Winning Multilingual Author of several Books, Provisional Teacher of Acupuncture of a Government Acupuncture Council in India, and the Director of Stylus Acupuncture Wellness Clinic and Training Centre, who had been serving as an Alternative Therapist since last 26 years."
     },
     {
-        "question": "What are the benefits of CP’s Reflex marma Therapy?",
+        "question": "What are the benefits of CP’s Reflex marma Therapy ?",
         "answer": "The benefits of Foot reflexology, a type of massage therapy, offers several potential health benefits, including stress reduction, pain relief, and improved circulation, Enhanced Sleep Quality, Detoxification, Mood Enhancement, boosted immune function, help reduce symptoms of anxiety and depression etc. Chakra healing helps to relieve mental, spiritual and Holistic aspects of Human illness."
     },
     {
@@ -16,11 +16,11 @@ const faqs = [
         "answer": "Reflexology has a history of more than 5000 years and found in Egypt and Indian culture. Father of modern Reflexology is believed to be an American ENT Doctor William Fitzgerald (1872-1942). Chakra healing was first mentioned in The Sat-Cakra-Nirupana (part of the Shiva Samhita tradition)."
     },
     {
-        "question": "Is there any medication in CP’s Reflex Marma Therapy?",
+        "question": "Is there any medication in CP’s Reflex Marma Therapy ?",
         "answer": "No medication, this is a non-invasive therapy."
     },
     {
-        "question": "How does the CP’s REFLEX MARMA App work?",
+        "question": "How does the CP’s REFLEX MARMA App work ?",
         "answer": "1. Download CP’s Reflex Marma Mobile app\n2. Make the payment for training fee\n3. Attend 3 days Professional Skill Development Training at Trivandrum\n4. On successful Completion, you'll be added as a therapist in the app\n5. Receive service requests through the app\n6. Your account will be credited for services rendered"
     },
     {
