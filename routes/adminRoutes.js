@@ -54,4 +54,7 @@ router.post('/promote/learner',authenticateToken, PromoteLearner);
 const{DeleteSection} = require('../controllers/admin/deleteSection.js')
 router.post('/delete/section' ,authenticateToken,DeleteSection)
 
+const{Dasboard} = require('../controllers/admin/dashboard.js')
+router.post('/dashboard' ,authenticateToken,Dasboard)
+
 module.exports = router;
