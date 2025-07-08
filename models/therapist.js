@@ -104,6 +104,10 @@ const Therapist = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    company_role: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     responsibilities: {
       type: DataTypes.STRING,
       allowNull: true,
