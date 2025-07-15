@@ -21,7 +21,13 @@ const faqs = [
     },
     {
         "question": "How does the CP’s REFLEX MARMA App work ?",
-        "answer": "1. Download CP’s Reflex Marma Mobile app\n2. Make the payment for training fee\n3. Attend 3 days Professional Skill Development Training at Trivandrum.\n4. On successful Completion of 3 days Training, You will be added as a CP’s Reflex Marma Therapist in our Mobile App. An account as a therapist in your name will be opened in the Mobile App for feature account purpose.\n5. As and when you get a service request through Mobile App for CP’s Reflex Marma Therapy you may render the quality service to the needy clients.\n6. Your CP’s reflex Marma account will be credited with an amount previously calculated which is mutually agreed upon for the due service you rendered. Start enjoying the earning process."
+        // "answer": "1. Download CP’s Reflex Marma Mobile app\n2. Make the payment for training fee\n3. Attend 3 days Professional Skill Development Training at Trivandrum.\n4. On successful Completion of 3 days Training, You will be added as a CP’s Reflex Marma Therapist in our Mobile App. An account as a therapist in your name will be opened in the Mobile App for feature account purpose.\n5. As and when you get a service request through Mobile App for CP’s Reflex Marma Therapy you may render the quality service to the needy clients.\n6. Your CP’s reflex Marma account will be credited with an amount previously calculated which is mutually agreed upon for the due service you rendered. Start enjoying the earning process."
+        "answer": `1. Download CP’s Reflex Marma Mobile app
+        2. Make the payment for training fee
+        3. Attend 3 days Professional Skill Development Training at Trivandrum.
+        4. On successful Completion of 3 days Training, You will be added as a CP’s Reflex Marma Therapist in our Mobile App. An account as a therapist in your name will be opened in the Mobile App for feature account purpose.
+        5. As and when you get a service request through Mobile App for CP’s Reflex Marma Therapy you may render the quality service to the needy clients.
+        6. Your CP’s reflex Marma account will be credited with an amount previously calculated which is mutually agreed upon for the due service you rendered. Start enjoying the earning process.`
     },
     {
         "question": "How will my performance be assessed at the end of the programme?",
