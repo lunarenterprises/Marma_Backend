@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { Therapist } = require('../models/index.js');
+const { Therapist ,Role} = require('../models/index.js');
 
 // Add a new therapist
 exports.addTherapist = async (req, res) => {
@@ -26,6 +26,7 @@ exports.addTherapist = async (req, res) => {
 };
 
 // Get all therapists (with optional filters)
+
 exports.getTherapists = async (req, res) => {
   try {
     const { status, availability, searchTerm } = req.query;
@@ -62,6 +63,13 @@ exports.getTherapists = async (req, res) => {
         'status',
         'createdAt',
       ],
+      include: [
+        {
+          model: Role,
+          as: 'Role',
+          attributes: ['name'],
+        },
+      ],
       order: [['createdAt', 'DESC']],
     });
 
@@ -78,18 +86,25 @@ exports.getTherapists = async (req, res) => {
       file: therapist.file,
       status: therapist.status,
       joinedDate: therapist.createdAt,
+      role: therapist.Role?.name || null,
     }));
 
     res.status(200).json({
       success: true,
-      data: formattedTherapists,
       total: formattedTherapists.length,
+      data: formattedTherapists,
     });
+
   } catch (error) {
     console.error('Error fetching therapists:', error);
-    res.status(500).json({ success: false, message: 'Failed to fetch therapists.' });
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch therapists.',
+      error: error.message
+    });
   }
 };
+
 
 // Get a single therapist by ID
 exports.getTherapistById = async (req, res) => {

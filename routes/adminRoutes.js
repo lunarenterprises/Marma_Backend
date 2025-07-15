@@ -30,6 +30,9 @@ router.post('/edit/category', EditCategory);
 const { ListUSer } = require('../controllers/admin/listUsers.js');
 router.post('/list/user', ListUSer);
 
+const { ListLearners } = require('../controllers/admin/listLearner.js');
+router.post('/list/learners', ListLearners);
+
 const { UploadQuestions } = require('../controllers/admin/addQuestions.js')
 router.post('/upload_question', UploadQuestions)
 
@@ -37,16 +40,24 @@ const { WithdrawRequestApprovel } = require('../controllers/therapist/withdrawRe
 router.post('/approve/withdraw-request', authenticateToken, WithdrawRequestApprovel);
 
 const { AddDoctor } = require('../controllers/admin/doctors.js');
-router.post('/add/doctor',authenticateToken, AddDoctor);
+router.post('/add/doctor', authenticateToken, AddDoctor);
 
 const { EditDoctor } = require('../controllers/admin/doctors.js');
-router.post('/edit/doctor',authenticateToken, EditDoctor);
+router.post('/edit/doctor', authenticateToken, EditDoctor);
 
 const { ListDoctor } = require('../controllers/admin/doctors.js');
 router.post('/list/doctor', ListDoctor);
 
 const { DeleteDoctor } = require('../controllers/admin/doctors.js');
-router.post('/delete/doctor',authenticateToken, DeleteDoctor);
+router.post('/delete/doctor', authenticateToken, DeleteDoctor);
 
+const { PromoteLearner } = require('../controllers/admin/promoteLearner.js');
+router.post('/promote/learner', authenticateToken, PromoteLearner);
+
+const { DeleteSection } = require('../controllers/admin/deleteSection.js')
+router.post('/delete/section', authenticateToken, DeleteSection)
+
+const { Dasboard } = require('../controllers/admin/dashboard.js')
+router.post('/dashboard', authenticateToken, Dasboard)
 
 module.exports = router;

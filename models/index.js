@@ -15,11 +15,11 @@ const Messages = require('./messages.js');
 const Notification = require('./notification.js');
 const Questions = require('./questions.js')
 const SubmitQuestions = require('./submittedQuestions.js')
-const Bank=require('./bank.js')
-const PaymentHistory=require('./paymentHistory.js')
-const WalletHistory=require('./wallethistory.js')
-const WithdrawRequest=require('./withdrawRequest.js')
-const Doctors=require('./doctors.js')
+const Bank = require('./bank.js')
+const PaymentHistory = require('./paymentHistory.js')
+const WalletHistory = require('./wallethistory.js')
+const WithdrawRequest = require('./withdrawRequest.js')
+const Doctors = require('./doctors.js')
 
 
 // === Define Associations === //
@@ -71,15 +71,20 @@ User.hasMany(Chat, { as: "ReceivedChats", foreignKey: "receiver_id" });
 Messages.belongsTo(Chat, { foreignKey: "chat_id" });
 Messages.belongsTo(User, { foreignKey: "sender_id" });
 
-Bank.belongsTo(Therapist,{ foreignKey: "therapist_id" })
+Bank.belongsTo(Therapist, { foreignKey: "therapist_id" })
 
 
 // WalletHistory belongs to a User
-WalletHistory.belongsTo(User, {foreignKey: 'wh_user_id',as: 'user',});
+WalletHistory.belongsTo(User, { foreignKey: 'wh_user_id', as: 'user', });
 
 // WalletHistory belongs to a Therapist
-WalletHistory.belongsTo(Therapist, {foreignKey: 'wh_therapist_id',as: 'therapist',});
+WalletHistory.belongsTo(Therapist, { foreignKey: 'wh_therapist_id', as: 'therapist', });
 
+// PaymentHistory belongs to a User
+PaymentHistory.belongsTo(User, { foreignKey: 'ph_user_id', as: 'user' });
+
+// PaymentHistory belongs to a Therapist
+PaymentHistory.belongsTo(Therapist, { foreignKey: 'ph_therapist_id', as: 'therapist' });
 
 // === Initial Seeding === //
 

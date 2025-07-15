@@ -133,7 +133,7 @@ module.exports.Payment = async (req, res) => {
             .then(response => {
 
                 createOtpLog(phone, user_id, purpose)
-                
+
                 const updateotp = Booking.update(
                     { otp: therapyOTP }, // data to update
                     { where: { id: booking_id } } // condition
@@ -167,6 +167,7 @@ module.exports.ListPaymentHistory = async (req, res) => {
 
         let user = req.user
         let therapist_id = user.id
+        
         const therapist = await Therapist.findOne({ where: { id: therapist_id } });
         if (!therapist) {
             return res.status(404).send({
@@ -174,8 +175,25 @@ module.exports.ListPaymentHistory = async (req, res) => {
                 message: "Therapist details not found",
             });
         }
+
+         const includeOptions = [
+            {
+                model: User,
+                as: 'user',
+                attributes: ['name','profile_pic','phone'],
+                required: false,
+            },
+            {
+                model: Therapist,
+                as: 'therapist',         // must match alias in association
+                attributes: ['name','file','phone'],
+                required: false,        // left join so therapists with zero bookings included
+            }
+        ];
+
         let data = await PaymentHistory.findAll({
-            where: { ph_therapist_id: therapist_id }
+            where: { ph_therapist_id: therapist_id },
+            include:includeOptions
         })
 
         if (data.length > 0) {
