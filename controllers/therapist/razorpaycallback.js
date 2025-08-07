@@ -5,6 +5,7 @@ let moment = require('moment')
 module.exports.RazorpayCallback = async (req, res) => {
   try {
     let payment_id = req.query.payment_id;
+    console.log("callback :", payment_id, req.query.razorpay_payment_link_status);
 
     if (req.query.razorpay_payment_link_status === 'paid') {
 
@@ -42,7 +43,7 @@ module.exports.RazorpayCallback = async (req, res) => {
 
         var username = Userdetails.name;
 
-         var therapistdetails = await Therapist.findOne({
+        var therapistdetails = await Therapist.findOne({
           where: { id: therapist_id }
         });
 
@@ -74,9 +75,9 @@ module.exports.RazorpayCallback = async (req, res) => {
           );
           let updatedWallet = Number(therapistdetails.wallet) + Number(payAmount);
 
-          // console.log(therapistdetails.wallet, "wallet");
-          // console.log(payAmount, "payAmount");
-          // console.log(updatedWallet, "updatedWallet");
+          console.log(therapistdetails.wallet, "wallet");
+          console.log(payAmount, "payAmount");
+          console.log(updatedWallet, "updatedWallet");
 
 
           await Therapist.update(
@@ -86,9 +87,9 @@ module.exports.RazorpayCallback = async (req, res) => {
 
           let addwallethistory = await WalletHistory.create({
             wh_therapist_id: therapist_id,
-            wh_user_id:user_id,
+            wh_user_id: user_id,
             wh_amount: payAmount,
-            wh_type:'Credit'
+            wh_type: 'Credit'
           });
         }
 
@@ -120,7 +121,7 @@ module.exports.RazorpayCallback = async (req, res) => {
       }
 
       let mailOptions = {
-        from: "REFLEX MARMA <nocontact@drlifeboat.com>",
+        from: `REFLEX MARMA <${process.env.EMAIL_USER}>`,
         to: Userdetails.email,
         subject: "MESSAGE FROM REFLEX MARMA",
         html: `<!DOCTYPE html>

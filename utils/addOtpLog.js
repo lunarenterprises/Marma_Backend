@@ -1,8 +1,9 @@
 const OtpLog = require('../models/otpLog'); 
 
 
-const createOtpLog = async ({ phone, userId, purpose }) => {
+const createOtpLog = async ( phone, userId, purpose ) => {
   try {
+    
     const otpLog = await OtpLog.create({
       phone,
       userId,
