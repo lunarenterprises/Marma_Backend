@@ -38,6 +38,6 @@ const { Payment } = require('../controllers/therapist/payment.js');
 router.post('/payment', Payment);
 
 const { RazorpayCallback } = require('../controllers/therapist/razorpaycallback.js');
-router.post('/razorpay/callback', RazorpayCallback);
+router.get('/razorpay/callback', RazorpayCallback);
 
 module.exports=router

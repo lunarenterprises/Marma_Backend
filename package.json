@@ -6,8 +6,7 @@
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --fix",
-    "start": "node marma.js",
-    "dev": "nodemon marma.js"
+    "start": "nodemon marma.js"
   },
   "keywords": [],
   "author": "",
