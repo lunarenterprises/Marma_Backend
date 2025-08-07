@@ -7,10 +7,10 @@ const { GenerateToken } = require('../../utils/generateToken')
 module.exports.RegisterLearner = async (req, res) => {
     try {
         let { name, gender, street, state, pincode, phone, location, email, qualification, programme, district, university, yearOfPassing, cgpa, companyName, yearOfExperience, role, responsibilities, alternateEmail, alternatePhone, linkedIn, emergencyContactName, emergencyContactNumber } = req.body || {}
-        if (!name || !phone || !location || !emergencyContactName || !emergencyContactNumber || !district) {
+        if (!name || !gender || !email || !phone) {
             return res.send({
                 result: false,
-                message: "Name, phone, location,district, emergency contact name and emergency contact number are required"
+                message: "Name, phone, email and gender are required"
             })
         }
         await Therapist.destroy({

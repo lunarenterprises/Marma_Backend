@@ -74,7 +74,7 @@ const Therapist = sequelize.define(
     },
     location: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     qualification: {
       type: DataTypes.STRING,
