@@ -98,13 +98,13 @@ module.exports.Payment = async (req, res) => {
         // Razorpay credentials
         // test api key
 
-        // const key_id = process.env.TEST_KEY_ID;
-        // const key_secret = process.env.TEST_KEY_SECRET;
+        const key_id = process.env.TEST_KEY_ID;
+        const key_secret = process.env.TEST_KEY_SECRET;
 
         //live api keys
 
-        const key_id = process.env.KEY_ID;
-        const key_secret = process.env.KEY_SECRET;
+        // const key_id = process.env.KEY_ID;
+        // const key_secret = process.env.KEY_SECRET;
 
         const callback_url = `https://lunarsenterprises.com:6030/api/therapist/razorpay/callback?payment_id=${payment_id}`;
 
