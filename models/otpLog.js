@@ -8,7 +8,11 @@ const OtpLog = sequelize.define('OtpLog', {
   },
   userId: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
+  },
+  learner_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
   },
   purpose: {
     type: DataTypes.STRING,
