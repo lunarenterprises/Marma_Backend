@@ -341,9 +341,37 @@ module.exports.RazorpayCallback = async (req, res) => {
 
     } else {
       // Payment failed
-      await PaymentHistory.destroy({
-        where: { ph_id: payment_id }
+      try {
+  const paymentData = await PaymentHistory.findOne({
+    where: { ph_id: payment_id }
+  });
+
+  if (!paymentData) {
+    throw new Error(`Payment record with ID ${payment_id} not found.`);
+  }
+
+  await PaymentHistory.destroy({
+    where: { ph_id: payment_id }
+  });
+
+  if (paymentData.ph_learner_id) {
+    const therapistExists = await Therapist.findOne({
+      where: { id: paymentData.ph_learner_id }
+    });
+
+    if (therapistExists) {
+      await Therapist.destroy({
+        where: { id: paymentData.ph_learner_id }
       });
+    } else {
+      console.warn(`Therapist with ID ${paymentData.ph_learner_id} not found.`);
+    }
+  }
+} catch (error) {
+  console.error("Error during payment deletion:", error);
+  // Handle gracefully or rethrow
+}
+
 
       return res.send(`<!DOCTYPE html>
 <html lang="en">

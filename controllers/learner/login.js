@@ -62,8 +62,10 @@ module.exports.RegisterLearner = async (req, res) => {
             await sendSMS(formattedNumber, smsBody)
             return res.send({
                 result: true,
-                message: "Registration successfull. OTP sended to your number."
-            })
+                message: "Registration successful. OTP has been sent to your number.",
+                learner_id: createNew.id,
+            });
+
         } else {
             return res.send({
                 result: false,
