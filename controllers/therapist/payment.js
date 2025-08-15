@@ -129,17 +129,26 @@ module.exports.Payment = async (req, res) => {
 
         // Generate OTP and create Razorpay payment link
         const therapyOTP = await generateOTP.generateOTP();
-        const purpose = 'Therapy session';
-
+        let purpose = '';
+        if (learner_id) {
+            purpose = 'Course payment';
+        } else {
+            purpose = 'Therapy session';
+        }
         try {
             const response = await axios.post(
                 'https://api.razorpay.com/v1/payment_links',
                 paymentLinkData,
                 authHeader
             );
-            // console.log("otp log :", phone, user_id, purpose );
+            // console.log("otp log :", phone, learner_id ? learner_id : user_id, purpose);
+            if (learner_id) {
+                await createOtpLog(phone,null, learner_id, purpose);
 
-            await createOtpLog(phone, user_id, purpose);
+            } else {
+                await createOtpLog(phone, user_id,null, purpose);
+
+            }
 
             if (booking_id) {
                 await Booking.update(

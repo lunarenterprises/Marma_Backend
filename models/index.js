@@ -34,6 +34,9 @@ Role.hasMany(Therapist, { foreignKey: 'roleId' });
 // User ↔ OTP Logs
 OtpLog.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
+// Learner ↔ OTP Logs
+OtpLog.belongsTo(Therapist, { foreignKey: 'learner_id', as: 'therapist' });
+
 // User ↔ Reviews
 User.hasMany(Reviews, { foreignKey: 'r_user_id' });
 Reviews.belongsTo(User, { foreignKey: 'r_user_id' });

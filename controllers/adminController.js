@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { User, Role, OtpLog } = require('../models');
+const { User, Role, OtpLog, Therapist } = require('../models');
 const { successResponse, errorResponse } = require('../utils/responseHandler');
 
 // Dashboard API
@@ -221,6 +221,11 @@ const getOtpLogs = async (req, res) => {
         {
           model: User,
           as: 'user',
+          attributes: ['id', 'name'],
+        },
+        {
+          model: Therapist,
+          as: 'therapist',
           attributes: ['id', 'name'],
         },
       ],
