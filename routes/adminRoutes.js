@@ -60,4 +60,13 @@ router.post('/delete/section', authenticateToken, DeleteSection)
 const { Dasboard } = require('../controllers/admin/dashboard.js')
 router.post('/dashboard', authenticateToken, Dasboard)
 
+const { AddGallery } = require('../controllers/admin/Gallery.js')
+router.post('/add/gallery', AddGallery)
+
+const { listGallery } = require('../controllers/admin/Gallery.js')
+router.post('/list/gallery', listGallery)
+
+const { DeleteGallery } = require('../controllers/admin/Gallery.js')
+router.post('/delete/gallery', DeleteGallery)
+
 module.exports = router;
