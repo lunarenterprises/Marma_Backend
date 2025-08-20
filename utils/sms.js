@@ -1,11 +1,14 @@
 
-const client = require('twilio')(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
+// const client = require('twilio')(process.env.TWILIO_SID_TEST, process.env.TWILIO_AUTH_TOKEN_TEST);
+const client = require('twilio')(process.env.TWILIO_SID_LIVE, process.env.TWILIO_AUTH_TOKEN_LIVE);
 
 module.exports.sendSMS = async (toNumber, message) => {
   try {
+    toNumber = formatPhoneNumber(toNumber);
     const res = await client.messages.create({
       body: message,
-      // from: process.env.TWILIO_PHONE,
+      // messagingServiceSid: process.env.TWILIO_MESSAGING_SID_LIVE, 
+      from: process.env.TWILIO_PHONE, 
       to: toNumber
     });
     console.log('Message SID:', res.sid);
@@ -13,6 +16,7 @@ module.exports.sendSMS = async (toNumber, message) => {
     console.error('Error sending SMS:', err);
   }
 };
+
 
 
 module.exports.formatPhoneNumber = (phone, defaultCountryCode = '+91') => {
