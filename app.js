@@ -27,7 +27,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'x-user-id', 'x-role'] // Add your custom headers here
 }));
 app.use(express.static('./'));
-app.use(express.json());
+app.use(express.json({limit:'10mb'}));
 app.use(express.urlencoded({ extended: false }));
 app.use(helmet());
 
