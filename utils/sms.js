@@ -5,7 +5,7 @@ module.exports.sendSMS = async (toNumber, message) => {
   try {
     const res = await client.messages.create({
       body: message,
-      from: process.env.TWILIO_PHONE,
+      // from: process.env.TWILIO_PHONE,
       to: toNumber
     });
     console.log('Message SID:', res.sid);
