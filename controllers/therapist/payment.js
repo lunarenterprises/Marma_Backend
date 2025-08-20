@@ -126,7 +126,7 @@ module.exports.Payment = async (req, res) => {
     // const key_id = process.env.KEY_ID;
     // const key_secret = process.env.KEY_SECRET;
 
-    const callback_url = `https://lunarsenterprises.com:6030/api/therapist/razorpay/callback?payment_id=${payment_id}`;
+    const callback_url = `https://www.marma.lunarenp.com/api/therapist/razorpay/callback?payment_id=${payment_id}`;
 
     const authHeader = {
         auth: {
