@@ -94,7 +94,7 @@ module.exports.Register = async (req, res) => {
             const userId = adduser.id;
             const purpose = 'register';
 
-            await createOtpLog({ phone, userId, purpose });
+            await createOtpLog( phone, userId, purpose );
 
             await User.update(
                 {
