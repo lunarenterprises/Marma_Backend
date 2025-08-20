@@ -1,6 +1,7 @@
-var {Gallery} = require('../../models/index.js')
+var { Gallery } = require('../../models/index.js')
 var formidable = require('formidable')
 var fs = require('fs')
+let path = require('path')
 
 module.exports.AddGallery = async (req, res) => {
     try {
@@ -16,20 +17,28 @@ module.exports.AddGallery = async (req, res) => {
 
             if (files.file) {
                 // console.log("filesss",files.file);
-                
-                files.file = Array.isArray(files.file) ? files.file[0] : files.file;
 
-                var oldPath = files.file.filepath;
-                var newPath =
-                    process.cwd() +
-                    "/uploads/gallery/" + files.file.originalFilename
-                let rawData = fs.readFileSync(oldPath);
-                let file_type = files.file.mimetype.split('/')[0]
-                fs.writeFileSync(newPath, rawData)
-                var imagepath = "/uploads/gallery/" + files.file.originalFilename
-                console.log(file_type,imagepath);
+                const file = Array.isArray(files.file) ? files.file[0] : files.file;
 
-                var Insertgallery = await Gallery.create({file:imagepath,type:file_type})
+                const oldPath = file.filepath;
+                const fileName = file.originalFilename;
+                const fileType = file.mimetype.split('/')[0];
+
+                const uploadDir = path.join(process.cwd(), 'uploads', 'gallery');
+
+                // Ensure directory exists
+                if (!fs.existsSync(uploadDir)) {
+                    fs.mkdirSync(uploadDir, { recursive: true });
+                }
+
+                const newPath = path.join(uploadDir, fileName);
+                const imagePath = `/uploads/gallery/${fileName}`;
+
+                const rawData = fs.readFileSync(oldPath);
+                fs.writeFileSync(newPath, rawData);
+                console.log(fileType, imagePath);
+
+                var Insertgallery = await Gallery.create({ file: imagePath, type: fileType })
 
                 if (Insertgallery) {
                     return res.send({
