@@ -333,7 +333,7 @@ module.exports.RazorpayCallback = async (req, res) => {
     <div class="icon">🎉</div>
     <h1>Payment Successful</h1>
     <p>Thank you for your purchase! Your transaction has been completed successfully.</p>
-    <a href="https://marma.com" class="btn">Back to Home</a>
+    <a href="myapp://" class="btn">Back to Home</a>
   </div>
 </body>
 </html>
@@ -359,7 +359,7 @@ module.exports.RazorpayCallback = async (req, res) => {
       where: { id: paymentData.ph_learner_id }
     });
 
-    if (therapistExists) {
+    if (therapistExists && therapistExists.status === 'Pending') {
       await Therapist.destroy({
         where: { id: paymentData.ph_learner_id }
       });
