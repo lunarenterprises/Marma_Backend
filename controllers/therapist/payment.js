@@ -79,7 +79,7 @@ module.exports.Payment = async (req, res) => {
         // Learner validation (only if learner_id exists)
         if (learner_id) {
 
-            if (role !== 'user') {
+            if (role !== 'learner') {
                 return res.status(400).json({
                     result: false,
                     message: "Invalid role for learner payment",
