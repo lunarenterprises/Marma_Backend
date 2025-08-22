@@ -23,18 +23,32 @@ module.exports.Register = async (req, res) => {
 
         let deleteemail = await User.destroy({
             where: {
-                email,
-                emailVerified: 'false',
+                phone,
+                phoneVerified: 'false',
             },
         });
 
-        console.log(deleteemail, "eee");
-
+        // console.log(deleteemail, "eee");
+        phone = formatPhoneNumber(phone);
         // Check required fields
         if (!name || !email || !phone || !address || !location || !role || !district || !state) {
             return res.status(400).json({
                 result: false,
                 message: 'Missing required fields',
+            });
+        }
+
+        // Check existing phone
+        const existingphone = await User.findOne({
+            where: {
+                phone,
+                phoneVerified: 'true'
+            }
+        });
+        if (existingphone) {
+            return res.status(409).json({
+                result: false,
+                message: 'Phone number is already registered',
             });
         }
 
@@ -94,7 +108,7 @@ module.exports.Register = async (req, res) => {
             const userId = adduser.id;
             const purpose = 'register';
 
-            await createOtpLog( phone, userId,null, purpose );
+            await createOtpLog(phone, userId, null, purpose);
 
             await User.update(
                 {

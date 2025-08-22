@@ -25,7 +25,7 @@ module.exports.RegisterLearner = async (req, res) => {
         if (checkPhone) {
             return res.send({
                 result: false,
-                message: "Phone already exists"
+                message: "Phone number is already registered"
             })
         }
         let token = generateOTP()

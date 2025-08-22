@@ -4,7 +4,7 @@ const client = require('twilio')(process.env.TWILIO_SID_LIVE, process.env.TWILIO
 
 module.exports.sendSMS = async (toNumber, message) => {
   try {
-    toNumber = formatPhoneNumber(toNumber);
+    // toNumber = formatPhoneNumber(toNumber);
     const res = await client.messages.create({
       body: message,
       // messagingServiceSid: process.env.TWILIO_MESSAGING_SID_LIVE, 
