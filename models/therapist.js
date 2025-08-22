@@ -154,7 +154,7 @@ const Therapist = sequelize.define(
       defaultValue: 0,
     },
     status: {
-      type: DataTypes.ENUM('Pending', 'Approved', 'Inactive'),
+      type: DataTypes.ENUM('Pending', 'Approved','Paid','Inactive'),
       defaultValue: 'Pending',
     },
     roleId: {
