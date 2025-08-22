@@ -101,6 +101,11 @@ const User = sequelize.define(
       type: DataTypes.DATE,
       allowNull: true,
     },
+     phoneVerified: {
+      type: DataTypes.ENUM('true', 'false'),
+      allowNull: true,
+      defaultValue: 'false',
+    },
   },
   {
     timestamps: true,
