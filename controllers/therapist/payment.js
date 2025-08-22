@@ -67,7 +67,7 @@ module.exports.Payment = async (req, res) => {
                 });
             }
 
-            var therapist = await Therapist.findByPk(therapist_id);
+            let therapist = await Therapist.findByPk(therapist_id);
             if (!therapist) {
                 return res.status(404).json({
                     result: false,
@@ -79,7 +79,16 @@ module.exports.Payment = async (req, res) => {
         // Learner validation (only if learner_id exists)
         if (learner_id) {
 
-            if (therapist.status === 'Paid') {
+            const learner = await Therapist.findByPk(learner_id);
+
+            if (!learner) {
+                return res.status(404).json({
+                    result: false,
+                    message: "Learner not found",
+                });
+            }
+            
+            if (learner.status === 'Paid') {
                 return res.status(409).json({
                     result: false,
                     message: "Payment has already been made for this Learner",
@@ -92,13 +101,7 @@ module.exports.Payment = async (req, res) => {
                     message: "Invalid role for learner payment",
                 });
             }
-            const learner = await Therapist.findByPk(learner_id);
-            if (!learner) {
-                return res.status(404).json({
-                    result: false,
-                    message: "Learner not found",
-                });
-            }
+
         }
 
         // Save Payment History
