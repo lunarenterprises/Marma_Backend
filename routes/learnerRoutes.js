@@ -27,5 +27,7 @@ router.post('/update/notification', LearnerAuthenticateToken, UpdateNotification
 const { GetAnswer } = require('../controllers/learner/chatBot')
 router.post('/chatbot', GetAnswer)
 
+const { TestWhatsapp} = require('../controllers/learner/videos')
+router.post('/send/whatsapp', TestWhatsapp)
 
 module.exports = router

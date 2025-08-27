@@ -2,11 +2,12 @@ const { Therapist, Role } = require('../../models')
 const { generateOTP } = require('../../utils/generateOTP')
 const { sendSMS, formatPhoneNumber } = require('../../utils/sms')
 const { GenerateToken } = require('../../utils/generateToken')
+const { SendWhatsappMessage } = require('../../utils/whatsapp')
 
 
 module.exports.RegisterLearner = async (req, res) => {
     try {
-        let { name, gender, street, state, pincode, phone, location, email, qualification, programme, district, university, yearOfPassing, cgpa, companyName, yearOfExperience, role, responsibilities, alternateEmail, alternatePhone, linkedIn, emergencyContactName, emergencyContactNumber } = req.body || {}
+        let { name, gender, phone, email } = req.body || {}
         if (!name || !gender || !email || !phone) {
             return res.send({
                 result: false,
@@ -19,6 +20,15 @@ module.exports.RegisterLearner = async (req, res) => {
                 phoneVerified: 'false',
             },
         });
+        let checkEmail = await Therapist.findOne({
+            where: { email: email, phoneVerified: "true" }
+        })
+        if (checkEmail) {
+            return res.send({
+                result: false,
+                message: "Email already registered"
+            })
+        }
         let checkPhone = await Therapist.findOne({
             where: { phone: formatPhoneNumber(phone), phoneVerified: "true" }
         })
@@ -31,35 +41,18 @@ module.exports.RegisterLearner = async (req, res) => {
         let token = generateOTP()
         let smsBody = `Your student verification code for Marma App is: ${token}. Please do not share it with anyone.`
         let formattedNumber = formatPhoneNumber(phone)
+        console.log("formattedNumber : ", formattedNumber)
         let createNew = await Therapist.create({
             name,
             gender,
-            street,
-            state,
-            pincode,
             phone: formattedNumber,
             email,
-            location,
-            district,
-            qualification,
-            programme,
-            university,
-            yearOfPassing,
-            cgpa,
-            companyName,
-            yearOfExperience,
-            role,
-            responsibilities,
-            alternateEmail,
-            alternatePhone: formatPhoneNumber(alternatePhone),
-            linkedIn,
-            emergencyContactName,
-            emergencyContactPhone: formatPhoneNumber(emergencyContactNumber),
-            resetToken: token,
             roleId: 2
         })
+        console.log("createNew : ", createNew)
         if (createNew) {
             await sendSMS(formattedNumber, smsBody)
+            await SendWhatsappMessage()
             return res.send({
                 result: true,
                 message: "Registration successful. OTP has been sent to your number.",
@@ -73,6 +66,7 @@ module.exports.RegisterLearner = async (req, res) => {
             })
         }
     } catch (error) {
+        console.log("error : ", error)
         return res.send({
             result: false,
             message: error.message

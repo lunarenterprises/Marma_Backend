@@ -28,9 +28,13 @@ const Therapist = sequelize.define(
     email: {
       type: DataTypes.STRING,
       allowNull: true,
-      unique: true,
+      unique: {
+        msg: 'This email is already in use',
+      },
       validate: {
-        isEmail: true,
+        isEmail: {
+          msg: 'Please enter a valid email address',
+        },
       },
     },
     phone: {
@@ -154,7 +158,7 @@ const Therapist = sequelize.define(
       defaultValue: 0,
     },
     status: {
-      type: DataTypes.ENUM('Pending', 'Approved','Paid','Inactive'),
+      type: DataTypes.ENUM('Pending', 'Approved', 'Paid', 'Inactive'),
       defaultValue: 'Pending',
     },
     roleId: {
