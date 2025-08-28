@@ -50,6 +50,7 @@ module.exports.EditProfile = async (req, res) => {
                 })
                 imagepath = `/uploads/profiles_pic/${fileName}`;
             }
+            
             let updateData = {}
             if (name) updateData["name"] = name
             if (phone) updateData["phone"] = formatPhoneNumber(phone)
