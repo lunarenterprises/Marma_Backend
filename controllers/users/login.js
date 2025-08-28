@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const { GenerateToken } = require('../../utils/generateToken')
 // var nodemailer = require('nodemailer');
 var moment = require('moment');
-var sendSMS = require('../../utils/sms')
+var { formatPhoneNumber, sendSMS } = require('../../utils/sms')
 
 
 module.exports.Login = async (req, res) => {
@@ -94,8 +94,8 @@ module.exports.LoginOtp = async (req, res) => {
                 message: 'Phone number is required',
             });
         }
-
-        const user = await User.findOne({ where: { phone } });
+        const formattedNumber = formatPhoneNumber(phone)
+        const user = await User.findOne({ where: { phone: formattedNumber } });
         console.log(user, "user");
 
         if (!user) {
@@ -125,13 +125,13 @@ module.exports.LoginOtp = async (req, res) => {
                 resetTokenExpiry: expirationDate
             },
             {
-                where: { phone }
+                where: { phone: formattedNumber }
             }
         );
 
         let message = `Your OTP is ${otp} for completing your registration with Reflex Marma. It is valid for 5 minutes. Do not share this code with anyone`
 
-        let sendsms = await sendSMS.sendSMS('+917034500199', message)
+        await sendSMS(formattedNumber, message)
 
         // Email setup
         //         const transporter = nodemailer.createTransport({
@@ -264,14 +264,16 @@ module.exports.verifyOtp = async (req, res) => {
                 message: "Phone number and OTP are required",
             });
         }
-
-        const user = await User.findOne({ where: { phone: phone }, include: [
+        const formattedNumber = formatPhoneNumber(phone)
+        const user = await User.findOne({
+            where: { phone: formattedNumber }, include: [
                 {
                     model: Role,
                     as: 'Role', // only if you used an alias
                     attributes: ['id', 'name'] // adjust fields as needed
                 }
-            ] });
+            ]
+        });
         if (!user) {
             return res.status(404).json({
                 result: false,
