@@ -9,7 +9,7 @@ var {sendSMS,formatPhoneNumber} = require('../../utils/sms')
 
 module.exports.Register = async (req, res) => {
     try {
-        const {
+        let {
             name,
             email,
             phone,
@@ -46,6 +46,7 @@ module.exports.Register = async (req, res) => {
                 phoneVerified: 'true'
             }
         });
+
         if (existingphone) {
             return res.status(409).json({
                 result: false,
