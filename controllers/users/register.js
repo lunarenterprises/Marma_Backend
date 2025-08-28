@@ -3,7 +3,8 @@ const { Op } = require('sequelize');
 const moment = require('moment');
 const { sendEmail, emailUser } = require('../../utils/emailService');
 const createOtpLog = require('../../utils/addOtpLog');
-var sendSMS = require('../../utils/sms')
+var {sendSMS,formatPhoneNumber} = require('../../utils/sms')
+
 
 
 module.exports.Register = async (req, res) => {
