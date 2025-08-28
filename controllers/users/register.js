@@ -3,7 +3,7 @@ const { Op } = require('sequelize');
 const moment = require('moment');
 const { sendEmail, emailUser } = require('../../utils/emailService');
 const createOtpLog = require('../../utils/addOtpLog');
-var {formatPhoneNumber,sendSMS} = require('../../utils/sms')
+var { formatPhoneNumber, sendSMS } = require('../../utils/sms')
 
 
 
@@ -22,6 +22,7 @@ module.exports.Register = async (req, res) => {
             password,
         } = req.body;
 
+        phone = formatPhoneNumber(phone);
         let deleteemail = await User.destroy({
             where: {
                 phone,
@@ -30,7 +31,6 @@ module.exports.Register = async (req, res) => {
         });
 
         // console.log(deleteemail, "eee");
-        phone = formatPhoneNumber(phone);
         // Check required fields
         if (!name || !email || !phone || !address || !location || !role || !district || !state) {
             return res.status(400).json({
@@ -77,7 +77,7 @@ module.exports.Register = async (req, res) => {
             where: {
                 [Op.or]: [
                     { phone },
-                    second_phone ? { second_phone } : {},
+                    second_phone ? { second_phone: formatPhoneNumber(second_phone) } : {},
                 ],
             },
         });
@@ -95,7 +95,7 @@ module.exports.Register = async (req, res) => {
             email,
             password,
             phone,
-            second_phone,
+            second_phone: formatPhoneNumber(second_phone),
             address,
             district,
             state,
