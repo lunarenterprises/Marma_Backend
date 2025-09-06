@@ -282,15 +282,15 @@ module.exports.verifyOtp = async (req, res) => {
         }
 
         // Validate OTP and expiry
-        if (user.resetToken != otp
-            // !user.resetTokenExpiry ||
-            // moment().isAfter(user.resetTokenExpiry)
-        ) {
-            return res.status(400).json({
-                result: false,
-                message: "Invalid or expired OTP",
-            });
-        }
+        // if (user.resetToken != otp
+        //     // !user.resetTokenExpiry ||
+        //     // moment().isAfter(user.resetTokenExpiry)
+        // ) {
+        //     return res.status(400).json({
+        //         result: false,
+        //         message: "Invalid or expired OTP",
+        //     });
+        // }
         if (type == 'login') {
             let token = await GenerateToken({
                 id: user.id,

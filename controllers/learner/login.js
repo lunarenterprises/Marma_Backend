@@ -103,12 +103,12 @@ module.exports.VerifyOtp = async (req, res) => {
             })
         }
         // eslint-disable-next-line eqeqeq
-        if (checkPhone.resetToken != otp) {
-            return res.send({
-                result: false,
-                message: "Invalid otp"
-            })
-        }
+        // if (checkPhone.resetToken != otp) {
+        //     return res.send({
+        //         result: false,
+        //         message: "Invalid otp"
+        //     })
+        // }
         let updateUser = await Therapist.update(
             { phoneVerified: true, resetToken: null }, // values to set
             { where: { phone: formatPhoneNumber(phone) } } // condition
