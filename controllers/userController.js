@@ -1,4 +1,7 @@
-exports.getDashboard = async (req, res) => {
+const { User } = require('../models')
+
+
+module.exports.getDashboard = async (req, res) => {
   try {
     const user = req.user;
 
@@ -20,3 +23,29 @@ exports.getDashboard = async (req, res) => {
     });
   }
 };
+
+
+module.exports.DeleteMyAccount = async (req, res) => {
+  try {
+    const { id } = req.user
+    const deleted = await User.destroy({
+      where: { id }
+    })
+    if (deleted) {
+      return res.send({
+        result: true,
+        message: "Account deleted successfully"
+      })
+    } else {
+      return res.send({
+        result: false,
+        message: "Failed to delete account"
+      })
+    }
+  } catch (error) {
+    return res.send({
+      result: false,
+      message: error.message
+    })
+  }
+}

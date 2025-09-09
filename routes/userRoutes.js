@@ -37,9 +37,12 @@ const { AddReview } = require('../controllers/users/review.js');
 router.post('/add/review', AddReview);
 
 const { UpdateBookingStatus } = require('../controllers/users/booking.js');
-router.post('/update/booking-status',authenticateToken, UpdateBookingStatus);
+router.post('/update/booking-status', authenticateToken, UpdateBookingStatus);
 
 const { GetNotification } = require('../controllers/users/listnotification.js');
 router.post('/list/notification', GetNotification);
+
+const { DeleteMyAccount } = require('../controllers/userController.js')
+router.get('/deleteaccount', authenticateToken, DeleteMyAccount)
 
 module.exports = router;
