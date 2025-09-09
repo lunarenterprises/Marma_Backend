@@ -30,6 +30,5 @@ router.post('/chatbot', GetAnswer)
 const { TestWhatsapp} = require('../controllers/learner/videos')
 router.post('/send/whatsapp', TestWhatsapp)
 
-const {}=require('../controllers/learner/profile')
 
 module.exports = router
