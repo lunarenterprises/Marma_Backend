@@ -50,7 +50,7 @@ module.exports.EditProfile = async (req, res) => {
                 })
                 imagepath = `/uploads/profiles_pic/${fileName}`;
             }
-            
+
             let updateData = {}
             if (name) updateData["name"] = name
             if (phone) updateData["phone"] = formatPhoneNumber(phone)
@@ -126,8 +126,11 @@ module.exports.DeleteProfilePic = async (req, res) => {
 module.exports.DeleteProfile = async (req, res) => {
     try {
         const user = req.user;
-        const [affectedCount] = await Therapist.update(
-            { status: "inactive" },
+        // const [affectedCount] = await Therapist.update(
+        //     { status: "inactive" },
+        //     { where: { id: user.id } }
+        // );
+        const [affectedCount] = await Therapist.destroy(
             { where: { id: user.id } }
         );
 
