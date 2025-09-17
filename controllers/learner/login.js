@@ -53,7 +53,8 @@ module.exports.RegisterLearner = async (req, res) => {
             gender,
             phone: formattedNumber,
             email,
-            roleId: 2
+            roleId: 2,
+            resetToken: token
         })
         console.log("createNew : ", createNew)
         if (createNew) {
