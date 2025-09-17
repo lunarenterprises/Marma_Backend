@@ -20,8 +20,14 @@ module.exports.RegisterLearner = async (req, res) => {
                 phoneVerified: 'false',
             },
         });
+        await Therapist.destroy({
+            where: {
+                email: email.toLowerCase().trim(),
+                phoneVerified: 'false',
+            },
+        })
         let checkEmail = await Therapist.findOne({
-            where: { email: email, phoneVerified: "true" }
+            where: { email: email.toLowerCase().trim(), phoneVerified: "true" }
         })
         if (checkEmail) {
             return res.send({
@@ -103,12 +109,12 @@ module.exports.VerifyOtp = async (req, res) => {
             })
         }
         // eslint-disable-next-line eqeqeq
-        // if (checkPhone.resetToken != otp) {
-        //     return res.send({
-        //         result: false,
-        //         message: "Invalid otp"
-        //     })
-        // }
+        if (checkPhone.resetToken != otp) {
+            return res.send({
+                result: false,
+                message: "Invalid otp"
+            })
+        }
         let updateUser = await Therapist.update(
             { phoneVerified: true, resetToken: null }, // values to set
             { where: { phone: formatPhoneNumber(phone) } } // condition
