@@ -16,7 +16,7 @@ const { verifyOtp } = require('../controllers/users/login.js');
 router.post('/verify-otp', verifyOtp);
 
 const { getDashboard } = require('../controllers/userController.js');
-router.post('/dashboard', getDashboard);
+router.post('/dashboard', authenticateToken, getDashboard);
 
 const { ListTherapist } = require('../controllers/users/listTherapist.js');
 router.post('/list/therapist', ListTherapist);

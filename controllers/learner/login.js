@@ -59,7 +59,12 @@ module.exports.RegisterLearner = async (req, res) => {
         console.log("createNew : ", createNew)
         if (createNew) {
             await sendSMS(formattedNumber, smsBody)
-            await SendWhatsappMessage()
+            await sendSMS('+917994690247',
+`A new student registered,
+Name : ${name},
+Email : ${email},
+Phone : ${phone}.`)
+            // await SendWhatsappMessage()
             return res.send({
                 result: true,
                 message: "Registration successful. OTP has been sent to your number.",
