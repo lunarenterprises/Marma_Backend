@@ -60,7 +60,7 @@ module.exports.RegisterLearner = async (req, res) => {
         if (createNew) {
             await sendSMS(formattedNumber, smsBody)
             await sendSMS('+917994690247',
-`A new student registered,
+                `A new student registered,
 Name : ${name},
 Email : ${email},
 Phone : ${phone}.`)
