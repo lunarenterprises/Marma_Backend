@@ -21,7 +21,7 @@ exports.addTherapist = async (req, res) => {
       },
     })
     let checkEmail = await Therapist.findOne({
-      where: { email: email.toLowerCase().trim(), phoneVerified: "true" }
+      where: { email: email.toLowerCase().trim()}
     })
     if (checkEmail) {
       return res.send({
