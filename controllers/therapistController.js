@@ -1,12 +1,43 @@
 const { Op } = require('sequelize');
-const { Therapist ,Role} = require('../models/index.js');
+const { Therapist, Role } = require('../models/index.js');
 
 // Add a new therapist
 exports.addTherapist = async (req, res) => {
   try {
-    const { name, clinicName, email, phone, specialization, experience, availability } = req.body;
-    const file = req.file ? req.file.filename : null;
+    const { name, clinicName, email, phone, specialization, experience, availability,description } = req.body;
 
+      const file = req.file ? req.file.filename : null;
+
+    await Therapist.destroy({
+      where: {
+        phone: formatPhoneNumber(phone),
+        phoneVerified: 'false',
+      },
+    });
+    await Therapist.destroy({
+      where: {
+        email: email.toLowerCase().trim(),
+        phoneVerified: 'false',
+      },
+    })
+    let checkEmail = await Therapist.findOne({
+      where: { email: email.toLowerCase().trim()}
+    })
+    if (checkEmail) {
+      return res.send({
+        result: false,
+        message: "Email already registered"
+      })
+    }
+    let checkPhone = await Therapist.findOne({
+      where: { phone: formatPhoneNumber(phone), phoneVerified: "true" }
+    })
+    if (checkPhone) {
+      return res.send({
+        result: false,
+        message: "Phone number is already registered"
+      })
+    }
     const therapist = await Therapist.create({
       name,
       clinicName,
@@ -15,9 +46,9 @@ exports.addTherapist = async (req, res) => {
       specialization,
       experience,
       availability,
-      file,
+      description,
+      file
     });
-
     res.status(201).json({ success: true, data: therapist });
   } catch (error) {
     console.error('Error creating therapist:', error);

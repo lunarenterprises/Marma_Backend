@@ -3,7 +3,7 @@ let { User } = require('../../models/index')
 
 module.exports.ListUSer = async (req, res) => {
     try {
-        var { u_id } = req.body;
+        var { u_id } = req.body || {}
         const { Op } = require("sequelize");
 
         let userlist = await User.findAll(

@@ -5,8 +5,6 @@ const { sendEmail, emailUser } = require('../../utils/emailService');
 const createOtpLog = require('../../utils/addOtpLog');
 var { formatPhoneNumber, sendSMS } = require('../../utils/sms')
 
-
-
 module.exports.Register = async (req, res) => {
     try {
         let {

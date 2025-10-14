@@ -3,8 +3,7 @@ let { Chat, User, Messages } = require('../../models/index')
 
 module.exports.GetChatId = async (req, res) => {
     try {
-        const { user_id } = req.body;
-        const { receiver_id } = req.body
+        const { receiver_id, user_id } = req.body || {}
         if (!receiver_id) {
             return res.send({
                 result: false,
