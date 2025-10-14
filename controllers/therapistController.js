@@ -4,7 +4,7 @@ const { Therapist, Role } = require('../models/index.js');
 // Add a new therapist
 exports.addTherapist = async (req, res) => {
   try {
-    const { name, clinicName, email, phone, specialization, experience, availability } = req.body;
+    const { name, clinicName, email, phone, specialization, experience, availability,description } = req.body;
 
       const file = req.file ? req.file.filename : null;
 
@@ -46,6 +46,7 @@ exports.addTherapist = async (req, res) => {
       specialization,
       experience,
       availability,
+      description,
       file
     });
     res.status(201).json({ success: true, data: therapist });
