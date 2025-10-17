@@ -69,4 +69,7 @@ router.post('/list/gallery', listGallery)
 const { DeleteGallery } = require('../controllers/admin/Gallery.js')
 router.post('/delete/gallery', DeleteGallery)
 
+const { addTherapist } = require('../controllers/admin/addTherapist.js')
+router.post('/add/therapist', addTherapist)
+
 module.exports = router;
