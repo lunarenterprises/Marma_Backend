@@ -5,8 +5,9 @@ const { LearnerAuthenticateToken } = require('../middlewares/auth')
 const { ApproveTherapiRequest } = require('../controllers/therapist/approveTherapiRequest');
 router.post('/approve/therapist',LearnerAuthenticateToken, ApproveTherapiRequest);
 
-const { GetNotification } = require('../controllers/therapist/listnotification');
-router.post('/list/notification',LearnerAuthenticateToken, GetNotification);
+const { GetNotification,MarkNotificationsAsRead } = require('../controllers/therapist/listnotification');
+router.post('/list/notification', GetNotification);
+router.post('/read/notification', MarkNotificationsAsRead);
 
 const { EditProfile } = require('../controllers/therapist/editProfile');
 router.post('/edit/profile',LearnerAuthenticateToken, EditProfile);
@@ -28,9 +29,9 @@ router.post('/list/wallet-history',LearnerAuthenticateToken, ListWalletHistory);
 const { WithdrawRequest } = require('../controllers/therapist/withdrawRequest.js');
 router.post('/request-withdraw',LearnerAuthenticateToken, WithdrawRequest);
 
-const { CheckTherapyOTP } = require('../controllers/therapist/CheckTherapyOtp.js');
+const { CheckTherapyOTP,EndTherapy } = require('../controllers/therapist/CheckTherapyOtp.js');
 router.post('/verify/therapy-otp',LearnerAuthenticateToken, CheckTherapyOTP);
-
+router.post('/finish/therapy', EndTherapy);
 
 //payment Gateway
 

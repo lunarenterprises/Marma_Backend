@@ -31,3 +31,43 @@ module.exports.GetNotification = async (req, res) => {
         })
     }
 }
+
+module.exports.MarkNotificationsAsRead = async (req, res) => {
+    try {
+        const { user_id } = req.body;
+
+        if (!user_id) {
+            return res.send({
+                result: false,
+                message: "user id is required"
+            });
+        }
+
+        const [updatedCount] = await Notification.update(
+            { n_user_read: '1' }, 
+            {
+                where: {
+                    n_user_id: user_id,
+                    n_user_read: '0' 
+                }
+            }
+        );
+
+        if (updatedCount > 0) {
+            return res.send({
+                result: true,
+                message: `${updatedCount} notification(s) marked as read.`
+            });
+        } else {
+            return res.send({
+                result: false,
+                message: "No unread notifications found."
+            });
+        }
+    } catch (error) {
+        return res.send({
+            result: false,
+            message: error.message
+        });
+    }
+};
