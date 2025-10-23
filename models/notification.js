@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, INTEGER } = require('sequelize');
 const sequelize = require('../config/db.js');
 
 const Notification = sequelize.define(
@@ -36,7 +36,17 @@ const Notification = sequelize.define(
     n_status: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: 'active',
+      defaultValue: 'unread',
+    },
+     n_user_read: {
+      type:INTEGER,
+      allowNull: false,
+      defaultValue: '0',
+    },
+     n_therapist_read: {
+      type: INTEGER,
+      allowNull: false,
+      defaultValue: '0',
     },
   },
   {

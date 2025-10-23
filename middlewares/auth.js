@@ -99,13 +99,13 @@ const authenticateToken = async (req, res, next) => {
 // };
 
 const LearnerAuthenticateToken = async (req, res, next) => {
+  
   const authHeader = req.header('Authorization');
 
   const token =
     authHeader && authHeader.split(' ')[0].toLowerCase() === 'bearer'
       ? authHeader.split(' ')[1]
       : null;
-
 
   if (!token || token.split('.').length !== 3) {
     return res.status(403).json({ message: 'Access denied, token missing or malformed' });

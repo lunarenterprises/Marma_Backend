@@ -16,7 +16,6 @@ module.exports.ApproveTherapiRequest = async (req, res) => {
         let u_id = request.userId
         let therapist_id = user.id
 
-
         console.log("Status : ", status)
         const request = await Booking.findOne({
             where: {
@@ -53,12 +52,10 @@ module.exports.ApproveTherapiRequest = async (req, res) => {
 
     const categoryimage = therapist?.category?.c_image || null;
 
-
         let updateBooking = await Booking.update(
             { status },
             { where: { id: request_id } }
         );
-
 
         await notification.addNotification(
             u_id,
@@ -74,7 +71,6 @@ module.exports.ApproveTherapiRequest = async (req, res) => {
             result: true,
             message: `Therapy booking ${status} succesfully`
         })
-
 
     } catch (error) {
         return res.send({
