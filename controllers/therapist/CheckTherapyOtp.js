@@ -30,7 +30,7 @@ module.exports.CheckTherapyOTP = async (req, res) => {
                         { where: { id: b_id } }
                     );
 
-                    console.log("updatestatus", updatestatus);
+                    // console.log("updatestatus", updatestatus);
 
                     if (updatestatus === 1) {
                         return res.send({
@@ -45,7 +45,7 @@ module.exports.CheckTherapyOTP = async (req, res) => {
                     }
 
                 } else {
-                    console.log("else Ongoing");
+                    // console.log("else Ongoing");
 
 
                     let [verifyotp] = await Booking.update(
@@ -100,12 +100,12 @@ module.exports.EndTherapy = async (req, res) => {
                 message: "booking id is required ",
             });
         }
-        // if (user.Role.name !== 'therapist') {
-        //     return res.send({
-        //         result: false,
-        //         message: "You are Unautorized ,please contact adminstrator",
-        //     });
-        // }
+        if (user.Role.name !== 'therapist') {
+            return res.send({
+                result: false,
+                message: "You are Unautorized ,please contact adminstrator",
+            });
+        }
 
         let checkbooking = await Booking.findAll({
             where: { id: b_id }
@@ -125,7 +125,7 @@ module.exports.EndTherapy = async (req, res) => {
             let payment_details = await PaymentHistory.findOne({
                 where: { ph_booking_id: b_id, ph_payment_status: 'paid' }
             });
-            console.log("payment_details",payment_details);
+            // console.log("payment_details",payment_details);
             
             if (payment_details) {
 
@@ -133,7 +133,7 @@ module.exports.EndTherapy = async (req, res) => {
                     where: { pd_id: payment_details.ph_price_id }
                 });
 
-                console.log("getprice", getprice, getprice.pd_doctor_fee);
+                // console.log("getprice", getprice, getprice.pd_doctor_fee);
 
                 await PaymentHistory.update(
                     { ph_pay_doctor: getprice.pd_doctor_fee },
@@ -141,9 +141,9 @@ module.exports.EndTherapy = async (req, res) => {
                 );
                 let updatedWallet = Number(doctordetails.d_wallet) + Number(getprice.pd_doctor_fee);
 
-                console.log(doctordetails.d_wallet, "wallet");
-                console.log(getprice.pd_doctor_fee, "pd_therapist_fee");
-                console.log(updatedWallet, "updatedWallet");
+                // console.log(doctordetails.d_wallet, "wallet");
+                // console.log(getprice.pd_doctor_fee, "pd_therapist_fee");
+                // console.log(updatedWallet, "updatedWallet");
 
 
                 let updatedocwallet = await Doctors.update(
@@ -193,8 +193,6 @@ module.exports.EndTherapy = async (req, res) => {
                 { otp: therapyOTP },
                 { where: { id: b_id } }
             );
-
-            console.log("endtherapy", endtherapy);
 
             if (endtherapy) {
                 return res.send({

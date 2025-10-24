@@ -31,7 +31,7 @@ router.post('/request-withdraw',LearnerAuthenticateToken, WithdrawRequest);
 
 const { CheckTherapyOTP,EndTherapy } = require('../controllers/therapist/CheckTherapyOtp.js');
 router.post('/verify/therapy-otp',LearnerAuthenticateToken, CheckTherapyOTP);
-router.post('/finish/therapy', EndTherapy);
+router.post('/finish/therapy', LearnerAuthenticateToken,EndTherapy);
 
 //payment Gateway
 

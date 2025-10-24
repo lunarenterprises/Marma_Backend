@@ -108,7 +108,7 @@ module.exports.Payment = async (req, res) => {
             ph_date: date,
             ph_total_amount,
         };
-console.log("ph_price_id",bookingdetails.price_id);
+// console.log("ph_price_id",bookingdetails.price_id);
 
         if (role === 'user') {
             paymentData.ph_user_id = user_id;
@@ -121,7 +121,7 @@ console.log("ph_price_id",bookingdetails.price_id);
         }
 
         const addPaymentHistory = await PaymentHistory.create(paymentData);
-        console.log("🧾 Payment history added:", addPaymentHistory.ph_id);
+        // console.log("🧾 Payment history added:", addPaymentHistory.ph_id);
 
         const payment_id = addPaymentHistory.ph_id;
 
