@@ -35,40 +35,44 @@ module.exports.GetNotification = async (req, res) => {
 
 module.exports.MarkNotificationsAsRead = async (req, res) => {
     try {
-        const { user_id } = req.body;
+        const user = req.user;
 
-        if (!user_id) {
-            return res.send({
+        if (!user || !user.id) {
+            return res.status(400).json({
                 result: false,
-                message: "user id is required"
+                message: "User ID is required."
             });
         }
 
-        const [updatedCount] = await Notification.update(
-            { n_therapist_read: '1' }, // or 1, depending on DB type
-            {
-                where: {
-                    n_therapist_id: user_id,
-                    n_therapist_read: '0' // Only update unread ones
+
+          const  [updatedCount] = await Notification.update(
+                { n_therapist_read: '1' },
+                {
+                    where: {
+                        n_therapist_id: user.id,
+                        n_therapist_read: '0'
+                    }
                 }
-            }
-        );
+            );
+        
 
         if (updatedCount > 0) {
-            return res.send({
+            return res.status(200).json({
                 result: true,
                 message: `${updatedCount} notification(s) marked as read.`
             });
         } else {
-            return res.send({
+            return res.status(200).json({
                 result: false,
                 message: "No unread notifications found."
             });
         }
+
     } catch (error) {
-        return res.send({
+        console.error("Error marking notifications as read:", error);
+        return res.status(500).json({
             result: false,
-            message: error.message
+            message: error.message || "An error occurred while marking notifications as read."
         });
     }
 };

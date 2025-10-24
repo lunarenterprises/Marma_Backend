@@ -21,6 +21,10 @@ const Booking = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    price_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     status: {
       type: DataTypes.ENUM('Upcoming', 'Approved', 'Ongoing', 'Completed', 'Cancelled', 'Resheduled', 'Rejected'),
       defaultValue: 'Upcoming',

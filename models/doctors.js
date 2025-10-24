@@ -23,6 +23,11 @@ const Doctors = sequelize.define('Doctors', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  d_wallet: {
+    type: DataTypes.INET,
+    allowNull: true,
+    defaultValue: '0',
+  },
   d_status: {
     type: DataTypes.STRING,
     allowNull: false,

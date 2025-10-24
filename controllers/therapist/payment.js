@@ -31,10 +31,8 @@ module.exports.Payment = async (req, res) => {
 
         }
 
-        const date = moment().format('YYYY-MM-DD'); // fixed typo: YYYYY ➝ YYYY
-
-
-
+        const date = moment().format('YYYY-MM-DD');
+        let bookingdetails
         // Booking validation (only if booking_id exists)
         if (booking_id) {
             if (!user_id || !therapist_id) {
@@ -44,15 +42,15 @@ module.exports.Payment = async (req, res) => {
                 });
             }
 
-            const booking = await Booking.findOne({ where: { id: booking_id } });
-            if (!booking) {
+            bookingdetails = await Booking.findOne({ where: { id: booking_id } });
+            if (!bookingdetails) {
                 return res.status(404).json({
                     result: false,
                     message: "Booking not found",
                 });
             }
 
-            if (booking.paymentStatus === 'paid') {
+            if (bookingdetails.paymentStatus === 'paid') {
                 return res.status(409).json({
                     result: false,
                     message: "Payment has already been made for this booking",
@@ -87,7 +85,7 @@ module.exports.Payment = async (req, res) => {
                     message: "Learner not found",
                 });
             }
-            
+
             if (learner.status === 'Paid') {
                 return res.status(409).json({
                     result: false,
@@ -110,11 +108,14 @@ module.exports.Payment = async (req, res) => {
             ph_date: date,
             ph_total_amount,
         };
+console.log("ph_price_id",bookingdetails.price_id);
 
         if (role === 'user') {
             paymentData.ph_user_id = user_id;
             paymentData.ph_therapist_id = therapist_id;
             paymentData.ph_booking_id = booking_id;
+            paymentData.ph_price_id = bookingdetails.price_id;
+
         } else {
             paymentData.ph_learner_id = learner_id;
         }

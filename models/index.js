@@ -21,6 +21,7 @@ const WalletHistory = require('./wallethistory.js')
 const WithdrawRequest = require('./withdrawRequest.js')
 const Doctors = require('./doctors.js')
 const Gallery = require('./Gallery.js')
+const priceDetails = require('./price.js')
 
 
 // === Define Associations === //
@@ -179,6 +180,7 @@ module.exports = {
   WithdrawRequest,
   Doctors,
   Gallery,
+  priceDetails,
   initRoles,
   createDefaultAdmin,
   initializeDatabase,

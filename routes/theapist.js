@@ -6,8 +6,8 @@ const { ApproveTherapiRequest } = require('../controllers/therapist/approveThera
 router.post('/approve/therapist',LearnerAuthenticateToken, ApproveTherapiRequest);
 
 const { GetNotification,MarkNotificationsAsRead } = require('../controllers/therapist/listnotification');
-router.post('/list/notification', GetNotification);
-router.post('/read/notification', MarkNotificationsAsRead);
+router.post('/list/notification',LearnerAuthenticateToken, GetNotification);
+router.post('/read/notification',LearnerAuthenticateToken, MarkNotificationsAsRead);
 
 const { EditProfile } = require('../controllers/therapist/editProfile');
 router.post('/edit/profile',LearnerAuthenticateToken, EditProfile);

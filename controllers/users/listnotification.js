@@ -1,8 +1,8 @@
-var {Notification} = require('../../models/index')
+var { Notification } = require('../../models/index')
 
 module.exports.GetNotification = async (req, res) => {
     try {
-        let {user_id } = req.body
+        let { user_id } = req.body
         if (!user_id) {
             return res.send({
                 result: false,
@@ -10,7 +10,7 @@ module.exports.GetNotification = async (req, res) => {
             })
         }
         let data = await Notification.findAll({
-            where:{n_user_id:user_id}
+            where: { n_user_id: user_id }
         })
         if (data.length > 0) {
             return res.send({
@@ -34,21 +34,21 @@ module.exports.GetNotification = async (req, res) => {
 
 module.exports.MarkNotificationsAsRead = async (req, res) => {
     try {
-        const { user_id } = req.body;
+        const user = req.user;
 
-        if (!user_id) {
-            return res.send({
+        if (!user || !user.id) {
+            return res.status(400).json({
                 result: false,
-                message: "user id is required"
+                message: "User ID is required."
             });
         }
 
         const [updatedCount] = await Notification.update(
-            { n_user_read: '1' }, 
+            { n_user_read: '1' },
             {
                 where: {
-                    n_user_id: user_id,
-                    n_user_read: '0' 
+                    n_user_id: user.id,
+                    n_user_read: '0'
                 }
             }
         );
