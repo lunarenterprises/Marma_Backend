@@ -31,14 +31,14 @@ module.exports.AddBooking = async (req, res) => {
         message: "user not found"
       })
     }
-    
+
     var therapist = await Therapist.findOne({
       where: {
         id: therapist_id
       },
       include: includeOptions,
     });
-    console.log(therapist.category.c_name, "therapisttt");
+    // console.log(therapist.category.c_name, "therapisttt");
     // console.log(bookingdetails, "booking");
 
     let categoryimage = therapist.category.c_image
