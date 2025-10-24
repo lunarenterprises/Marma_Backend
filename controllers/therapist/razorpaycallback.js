@@ -1,5 +1,5 @@
 let { sendEmail } = require('../../utils/emailService');
-let { User, PaymentHistory, Therapist, WalletHistory, Booking } = require('../../models/index');
+let { User, PaymentHistory, Therapist, WalletHistory, Booking, priceDetails } = require('../../models/index');
 let moment = require('moment')
 
 module.exports.RazorpayCallback = async (req, res) => {
@@ -67,16 +67,22 @@ module.exports.RazorpayCallback = async (req, res) => {
 
         if (updatebookingpaymentstatus > 0) {
 
-          let payAmount = amount * 0.20
+          let getprice = await priceDetails.findOne({
+            where: { pd_id: payment_details.ph_price_id }
+          });
+
+          console.log("getprice", getprice);
+          console.log("getprice",getprice.pd_therapist_fee);
+
 
           await PaymentHistory.update(
-            { ph_pay_amount: payAmount },
+            { ph_pay_therapist: getprice.pd_therapist_fee },
             { where: { ph_id: payment_id } }
           );
-          let updatedWallet = Number(therapistdetails.wallet) + Number(payAmount);
+          let updatedWallet = Number(therapistdetails.wallet) + Number(getprice.pd_therapist_fee);
 
           console.log(therapistdetails.wallet, "wallet");
-          console.log(payAmount, "payAmount");
+          console.log(getprice.pd_therapist_fee, "pd_therapist_fee");
           console.log(updatedWallet, "updatedWallet");
 
 
@@ -88,7 +94,7 @@ module.exports.RazorpayCallback = async (req, res) => {
           let addwallethistory = await WalletHistory.create({
             wh_therapist_id: therapist_id,
             wh_user_id: user_id,
-            wh_amount: payAmount,
+            wh_amount: getprice.pd_therapist_fee,
             wh_type: 'Credit'
           });
         }
@@ -342,35 +348,35 @@ module.exports.RazorpayCallback = async (req, res) => {
     } else {
       // Payment failed
       try {
-  const paymentData = await PaymentHistory.findOne({
-    where: { ph_id: payment_id }
-  });
+        const paymentData = await PaymentHistory.findOne({
+          where: { ph_id: payment_id }
+        });
 
-  if (!paymentData) {
-    throw new Error(`Payment record with ID ${payment_id} not found.`);
-  }
+        if (!paymentData) {
+          throw new Error(`Payment record with ID ${payment_id} not found.`);
+        }
 
-  await PaymentHistory.destroy({
-    where: { ph_id: payment_id }
-  });
+        await PaymentHistory.destroy({
+          where: { ph_id: payment_id }
+        });
 
-  if (paymentData.ph_learner_id) {
-    const therapistExists = await Therapist.findOne({
-      where: { id: paymentData.ph_learner_id }
-    });
+        if (paymentData.ph_learner_id) {
+          const therapistExists = await Therapist.findOne({
+            where: { id: paymentData.ph_learner_id }
+          });
 
-    if (therapistExists && therapistExists.status === 'Pending') {
-      await Therapist.destroy({
-        where: { id: paymentData.ph_learner_id }
-      });
-    } else {
-      console.warn(`Therapist with ID ${paymentData.ph_learner_id} not found.`);
-    }
-  }
-} catch (error) {
-  console.error("Error during payment deletion:", error);
-  // Handle gracefully or rethrow
-}
+          if (therapistExists && therapistExists.status === 'Pending') {
+            await Therapist.destroy({
+              where: { id: paymentData.ph_learner_id }
+            });
+          } else {
+            console.warn(`Therapist with ID ${paymentData.ph_learner_id} not found.`);
+          }
+        }
+      } catch (error) {
+        console.error("Error during payment deletion:", error);
+        // Handle gracefully or rethrow
+      }
 
 
       return res.send(`<!DOCTYPE html>

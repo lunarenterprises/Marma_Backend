@@ -31,11 +31,19 @@ const PaymentHistory = sequelize.define('PaymentHistory', {
         type: DataTypes.DATE,
         allowNull: true,
     },
+    ph_price_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
     ph_total_amount: {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
-    ph_pay_amount: {
+    ph_pay_therapist: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    ph_pay_doctor: {
         type: DataTypes.INTEGER,
         allowNull: true,
     },

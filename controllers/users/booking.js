@@ -4,13 +4,14 @@ var moment = require('moment')
 
 module.exports.AddBooking = async (req, res) => {
   try {
-    var { service, user_id, therapist_id, duration } = req.body;
-    if (!service || !user_id || !therapist_id || !duration) {
+    var { service, user_id, therapist_id, duration,price_id } = req.body;
+    if (!service || !user_id || !therapist_id || !duration || !price_id) {
       return res.send({
         result: false,
         message: "Please make sure all required fields are filled in."
       })
     }
+
     let status = 'Request booking'
 
     const includeOptions = [
@@ -22,7 +23,6 @@ module.exports.AddBooking = async (req, res) => {
       }
     ]
 
-
     const user = await User.findByPk(user_id);
 
     if (!user) {
@@ -31,6 +31,7 @@ module.exports.AddBooking = async (req, res) => {
         message: "user not found"
       })
     }
+    
     var therapist = await Therapist.findOne({
       where: {
         id: therapist_id
@@ -51,7 +52,8 @@ module.exports.AddBooking = async (req, res) => {
       service: service,
       userId: user_id,
       therapistId: therapist_id,
-      duration: duration
+      duration: duration,
+      price_id:price_id
     });
 
     await notification.addNotification(user_id, therapist_id, status, `Request Therapy section`, ` ${user.name} request ${service} therapy section to ${therapist.name}`, categoryimage)

@@ -72,4 +72,11 @@ router.post('/delete/gallery', DeleteGallery)
 const { addTherapist } = require('../controllers/admin/addTherapist.js')
 router.post('/add/therapist', addTherapist)
 
+const { AddPriceDetails, ListPriceDetails, EditPriceDetails, DeletePriceDetails } = require('../controllers/admin/price.js')
+router.post('/add/price-details', AddPriceDetails)
+router.post('/list/price-details', ListPriceDetails)
+router.post('/edit/price-details', EditPriceDetails)
+router.post('/delete/price-details', DeletePriceDetails)
+
+
 module.exports = router;

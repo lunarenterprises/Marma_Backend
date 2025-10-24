@@ -40,8 +40,8 @@ const { UpdateBookingStatus } = require('../controllers/users/booking.js');
 router.post('/update/booking-status', authenticateToken, UpdateBookingStatus);
 
 const { GetNotification,MarkNotificationsAsRead } = require('../controllers/users/listnotification.js');
-router.post('/list/notification', GetNotification);
-router.post('/read/notification', MarkNotificationsAsRead);
+router.post('/list/notification',authenticateToken, GetNotification);
+router.post('/read/notification',authenticateToken, MarkNotificationsAsRead);
 
 const { DeleteMyAccount } = require('../controllers/userController.js')
 router.get('/deleteaccount', authenticateToken, DeleteMyAccount)
