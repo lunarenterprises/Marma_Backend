@@ -15,14 +15,14 @@ module.exports.AddPriceDetails = async (req, res) => {
         }
 
         try {
-            
+
             const newPriceDetails = await priceDetails.create({
                 pd_minutes, pd_price, pd_therapist_fee, pd_doctor_fee
             });
 
             console.log("newPriceDetails", newPriceDetails);
 
-            if (newPriceDetails == 1) {
+            if (newPriceDetails) {
                 return res.send({
                     result: true,
                     message: "Price Details added successfully",
