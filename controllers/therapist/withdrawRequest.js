@@ -61,6 +61,50 @@ module.exports.WithdrawRequest = async (req, res) => {
     }
 }
 
+module.exports.GetWithdrawRequests = async (req, res) => {
+  try {
+    const { therapist_id,status } = req.body || {}
+
+    const whereClause = {};
+    if (therapist_id) whereClause.wr_therapist_id = therapist_id;
+    if (status) whereClause.wr_status = status;
+
+
+    const includeOptions = [
+      {
+        model: Therapist,
+        as: 'therapist', // must match your association alias
+        attributes: [],
+        required: false, // left join — includes therapists even without matches
+      },
+    ];
+
+    // Fetch data
+    const data = await WithdrawRequest.findAll({
+      where: whereClause,
+      include: includeOptions,
+    });
+
+    // Response handling
+    if (data && data.length > 0) {
+      return res.send({
+        result: true,
+        message: 'Data retrieved successfully',
+        data,
+      });
+    } else {
+      return res.send({
+        result: false,
+        message: 'No data found',
+      });
+    }
+  } catch (error) {
+    return res.status(500).send({
+      result: false,
+      message: error.message,
+    });
+  }
+};
 
 
 module.exports.WithdrawRequestApprovel = async (req, res) => {

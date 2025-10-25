@@ -32,7 +32,7 @@ module.exports.ListTherapist = async (req, res) => {
                 model: Category,
                 as: 'category',
                 attributes: ['c_id', 'c_name'],
-                required: true,
+                required: false,
             },
             {
                 model: Booking,

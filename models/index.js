@@ -85,11 +85,16 @@ WalletHistory.belongsTo(User, { foreignKey: 'wh_user_id', as: 'user', });
 // WalletHistory belongs to a Therapist
 WalletHistory.belongsTo(Therapist, { foreignKey: 'wh_therapist_id', as: 'therapist', });
 
+WalletHistory.belongsTo(Doctors, { foreignKey: 'wh_doctor_id', as: 'doctor', });
+
 // PaymentHistory belongs to a User
 PaymentHistory.belongsTo(User, { foreignKey: 'ph_user_id', as: 'user' });
 
 // PaymentHistory belongs to a Therapist
 PaymentHistory.belongsTo(Therapist, { foreignKey: 'ph_therapist_id', as: 'therapist' });
+
+// WithdrawRequest belongs to a Therapist
+WithdrawRequest.belongsTo(Therapist, { foreignKey: 'wr_therapist_id', as: 'therapist' });
 
 // === Initial Seeding === //
 
