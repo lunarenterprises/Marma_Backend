@@ -36,8 +36,9 @@ router.post('/list/learners', ListLearners);
 const { UploadQuestions } = require('../controllers/admin/addQuestions.js')
 router.post('/upload_question', UploadQuestions)
 
-const { WithdrawRequestApprovel } = require('../controllers/therapist/withdrawRequest.js');
+const { WithdrawRequestApprovel,GetWithdrawRequests } = require('../controllers/therapist/withdrawRequest.js');
 router.post('/approve/withdraw-request', authenticateToken, WithdrawRequestApprovel);
+router.post('/list/withdraw-request', GetWithdrawRequests);
 
 const { AddDoctor } = require('../controllers/admin/doctors.js');
 router.post('/add/doctor', authenticateToken, AddDoctor);
@@ -72,11 +73,16 @@ router.post('/delete/gallery', DeleteGallery)
 const { addTherapist } = require('../controllers/admin/addTherapist.js')
 router.post('/add/therapist', addTherapist)
 
+const { ListTherapist } = require('../controllers/admin/listTherapist.js')
+router.post('/list/therapist', ListTherapist)
+
 const { AddPriceDetails, ListPriceDetails, EditPriceDetails, DeletePriceDetails } = require('../controllers/admin/price.js')
 router.post('/add/price-details', AddPriceDetails)
 router.post('/list/price-details', ListPriceDetails)
 router.post('/edit/price-details', EditPriceDetails)
 router.post('/delete/price-details', DeletePriceDetails)
 
+const { ListWalletHistory } = require('../controllers/admin/wallethistory.js')
+router.post('/list/wallet-history', ListWalletHistory)
 
 module.exports = router;

@@ -26,8 +26,9 @@ router.post('/list/payment-history',LearnerAuthenticateToken, ListPaymentHistory
 const { ListWalletHistory } = require('../controllers/therapist/wallethistory.js');
 router.post('/list/wallet-history',LearnerAuthenticateToken, ListWalletHistory);
 
-const { WithdrawRequest } = require('../controllers/therapist/withdrawRequest.js');
+const { WithdrawRequest,GetWithdrawRequests } = require('../controllers/therapist/withdrawRequest.js');
 router.post('/request-withdraw',LearnerAuthenticateToken, WithdrawRequest);
+router.post('/list/withdraw-request', LearnerAuthenticateToken, GetWithdrawRequests);
 
 const { CheckTherapyOTP,EndTherapy } = require('../controllers/therapist/CheckTherapyOtp.js');
 router.post('/verify/therapy-otp',LearnerAuthenticateToken, CheckTherapyOTP);
