@@ -95,6 +95,7 @@ PaymentHistory.belongsTo(Therapist, { foreignKey: 'ph_therapist_id', as: 'therap
 
 // WithdrawRequest belongs to a Therapist
 WithdrawRequest.belongsTo(Therapist, { foreignKey: 'wr_therapist_id', as: 'therapist' });
+Therapist.hasMany(WithdrawRequest, { foreignKey: 'wr_therapist_id',as: 'withdrawRequests',});
 
 // === Initial Seeding === //
 

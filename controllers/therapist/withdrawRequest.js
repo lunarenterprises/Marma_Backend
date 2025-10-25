@@ -74,7 +74,7 @@ module.exports.GetWithdrawRequests = async (req, res) => {
       {
         model: Therapist,
         as: 'therapist', // must match your association alias
-        attributes: [],
+        attributes: ['name','clinicName','phone','specialization','file'],
         required: false, // left join — includes therapists even without matches
       },
     ];
