@@ -1,4 +1,4 @@
-const { Booking, Therapist,Category } = require('../../models/index.js');
+const { Booking, Therapist, Category } = require('../../models/index.js');
 const notification = require('../../utils/addNotification.js')
 
 
@@ -12,6 +12,15 @@ module.exports.ApproveTherapiRequest = async (req, res) => {
                 message: "Booking id is required"
             })
         }
+
+        // const validStatuses = ['Approve', 'Rejected'];
+
+        // if (!validStatuses.includes(status)) {
+        //     return res.send({
+        //         result: true,
+        //         message: "Invalid Status"
+        //     });
+        // }
 
         let u_id = request.userId
         let therapist_id = user.id
@@ -50,7 +59,7 @@ module.exports.ApproveTherapiRequest = async (req, res) => {
             })
         }
 
-    const categoryimage = therapist?.category?.c_image || null;
+        const categoryimage = therapist?.category?.c_image || null;
 
         let updateBooking = await Booking.update(
             { status },
