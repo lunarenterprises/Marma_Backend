@@ -115,6 +115,7 @@ module.exports.ListBooking = async (req, res) => {
           status: { [Op.in]: ['Completed'] }
         },
         include,
+         order: [['createdAt', 'DESC']]
       });
     } else if (cancelled) {
 

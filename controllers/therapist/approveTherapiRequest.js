@@ -22,7 +22,6 @@ module.exports.ApproveTherapiRequest = async (req, res) => {
         //     });
         // }
 
-        let u_id = request.userId
         let therapist_id = user.id
 
         console.log("Status : ", status)
