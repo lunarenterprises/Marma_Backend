@@ -21,7 +21,7 @@ module.exports.CheckTherapyOTP = async (req, res) => {
 
         if (checkbooking.length > 0) {
 
-            if (otp === checkbooking[0]?.otp) {
+            if (otp == checkbooking[0]?.otp) {
                 if (checkbooking[0]?.status == 'Ongoing') {
                     console.log("Ongoing");
 
@@ -46,7 +46,6 @@ module.exports.CheckTherapyOTP = async (req, res) => {
 
                 } else {
                     // console.log("else Ongoing");
-
 
                     let [verifyotp] = await Booking.update(
                         { status: 'Ongoing' },
