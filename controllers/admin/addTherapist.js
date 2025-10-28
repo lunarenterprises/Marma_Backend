@@ -19,7 +19,7 @@ exports.addTherapist = async (req, res) => {
                     data: err,
                 });
             }
-            const { name, clinicName, email, phone, specialization, experience, availability, description } = fields
+            const { name, clinicName,gender, email, phone, specialization, experience, availability, description } = fields
 
             await Therapist.destroy({
                 where: {
@@ -84,6 +84,7 @@ exports.addTherapist = async (req, res) => {
             const therapist = await Therapist.create({
                 name,
                 clinicName,
+                gender,
                 email,
                 phone,
                 specialization,
@@ -92,6 +93,7 @@ exports.addTherapist = async (req, res) => {
                 description,
                 file: imagepath
             });
+            
             res.status(201).json({ success: true, data: therapist });
         })
     } catch (error) {
