@@ -5,7 +5,6 @@ const { User, Therapist, PaymentHistory, Booking } = require('../../models/index
 let generateOTP = require('../../utils/generateOTP')
 let createOtpLog = require('../../utils/addOtpLog')
 
-
 module.exports.Payment = async (req, res) => {
     try {
         let {
