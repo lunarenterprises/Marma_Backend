@@ -158,7 +158,7 @@ module.exports.EditDoctor = async (req, res) => {
                 });
             }
 
-            const { d_id, d_name, d_phone,d_wallet, d_specialization } = fields;
+            const { d_id, d_name, d_phone,d_wallet, d_specialization,d_status } = fields;
 
             if (!d_id) {
                 return res.status(400).send({
@@ -181,6 +181,8 @@ module.exports.EditDoctor = async (req, res) => {
             if (d_phone) updatedData.d_phone = d_phone;
             if (d_specialization) updatedData.d_specialization = d_specialization;
             if (d_wallet) updatedData.d_wallet = d_wallet;
+            if (d_status) updatedData.d_status = d_status;
+
 
             // Handle file upload
             if (files.image) {

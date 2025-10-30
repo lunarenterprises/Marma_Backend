@@ -159,7 +159,7 @@ module.exports.DeletePriceDetails = async (req, res) => {
             if (DeletePriceDetails) {
                 return res.send({
                     result: true,
-                    message: "Price Details deleted sucessfully",
+                    message: "Price Details deleted successfully",
                 });
             }
 
