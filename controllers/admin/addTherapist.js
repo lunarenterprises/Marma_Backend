@@ -91,7 +91,8 @@ exports.addTherapist = async (req, res) => {
                 experience,
                 availability,
                 description,
-                file: imagepath
+                file: imagepath,
+                status:"Approved"
             });
             
             res.status(201).json({ success: true, data: therapist });
