@@ -21,9 +21,15 @@ module.exports.Register = async (req, res) => {
         } = req.body;
 
         phone = formatPhoneNumber(phone);
-        let deleteemail = await User.destroy({
+        let deletemobile = await User.destroy({
             where: {
                 phone,
+                phoneVerified: 'false',
+            },
+        });
+        let deleteemail = await User.destroy({
+            where: {
+                email,
                 phoneVerified: 'false',
             },
         });
