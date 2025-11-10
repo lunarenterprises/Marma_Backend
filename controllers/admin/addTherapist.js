@@ -92,6 +92,7 @@ exports.addTherapist = async (req, res) => {
                 availability,
                 description,
                 file: imagepath,
+                roleId:'3',
                 status:"Approved"
             });
             
