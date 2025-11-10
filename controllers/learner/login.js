@@ -61,9 +61,9 @@ module.exports.RegisterLearner = async (req, res) => {
             await sendSMS(formattedNumber, smsBody)
             await sendSMS('+917994690247',
                 `A new student registered,
-Name : ${name},
-Email : ${email},
-Phone : ${phone}.`)
+                 Name : ${name},
+                 Email : ${email},
+                 Phone : ${phone}.`)
             // await SendWhatsappMessage()
             return res.send({
                 result: true,

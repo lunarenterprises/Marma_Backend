@@ -6,7 +6,6 @@ const path = require('path')
 const fs = require('fs')
 const { addNotification } = require('../../utils/addNotification')
 
-
 module.exports.EditProfile = async (req, res) => {
     try {
         const form = new formidable.IncomingForm({ multiples: true });

@@ -19,7 +19,7 @@ exports.addTherapist = async (req, res) => {
                     data: err,
                 });
             }
-            const { name, clinicName,gender, email, phone, specialization, experience, availability, description } = fields
+            const { name, clinicName, gender, email, phone, specialization, experience, availability, description } = fields
 
             await Therapist.destroy({
                 where: {
@@ -27,6 +27,7 @@ exports.addTherapist = async (req, res) => {
                     phoneVerified: 'false',
                 },
             });
+
             await Therapist.destroy({
                 where: {
                     email: email.toLowerCase().trim(),
@@ -92,10 +93,10 @@ exports.addTherapist = async (req, res) => {
                 availability,
                 description,
                 file: imagepath,
-                roleId:'3',
-                status:"Approved"
+                roleId: '3',
+                status: "Approved"
             });
-            
+
             res.status(201).json({ success: true, data: therapist });
         })
     } catch (error) {
