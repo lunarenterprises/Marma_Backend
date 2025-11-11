@@ -315,7 +315,7 @@ console.log("user:",user);
           model: Category,
           as: 'category',
           attributes: ['c_id', 'c_name', 'c_image'],
-          required: true,
+          required: false,
         }
       ]
     });
