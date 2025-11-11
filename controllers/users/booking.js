@@ -19,7 +19,7 @@ module.exports.AddBooking = async (req, res) => {
         model: Category,
         as: 'category',
         attributes: ['c_id', 'c_name', 'c_image'],
-        required: true,
+        required: false,
       }
     ]
 
@@ -42,6 +42,8 @@ module.exports.AddBooking = async (req, res) => {
     // console.log(bookingdetails, "booking");
 
     let categoryimage = therapist.category.c_image
+    let userimage = user.profile_pic
+
     if (!therapist) {
       return res.send({
         result: false,
@@ -56,7 +58,7 @@ module.exports.AddBooking = async (req, res) => {
       price_id:price_id
     });
 
-    await notification.addNotification(user_id, therapist_id, status, `Request Therapy section`, ` ${user.name} request ${service} therapy section to ${therapist.name}`, categoryimage)
+    await notification.addNotification(user_id, therapist_id, status, `Request Therapy section`, `${user.name} request ${service} therapy section to ${therapist.name}`, userimage)
 
     return res.send({
       result: true,

@@ -2,6 +2,7 @@ var https = require('https');
 var http = require('http');
 const fs = require('fs');
 const app = require('./app.js');
+const bodyparser = require("body-parser");
 
 // var privateKey = fs.readFileSync('/etc/ssl/private.key', 'utf8').toString();
 
@@ -14,6 +15,9 @@ const app = require('./app.js');
 // var server = https.createServer(options, app);
 
 var server = http.createServer(app);
+
+app.use(bodyparser.json({ limit: '100mb' }));
+app.use(bodyparser.urlencoded({ limit: '100mb', extended: true }));
 
 var io = require("socket.io")(server, {
   maxHttpBufferSize: 10e7,
