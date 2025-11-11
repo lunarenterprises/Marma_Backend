@@ -80,7 +80,7 @@ module.exports.EditProfile = async (req, res) => {
         where: { id: u_id }
       });
 
-      const updatedUser = await User.findByPk(u_id);
+      // const updatedUser = await User.findByPk(u_id);
 
       return res.send({
         result: true,
