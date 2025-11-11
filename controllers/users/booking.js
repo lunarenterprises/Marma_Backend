@@ -41,8 +41,8 @@ module.exports.AddBooking = async (req, res) => {
     // console.log(therapist.category.c_name, "therapisttt");
     // console.log(bookingdetails, "booking");
 
-    let categoryimage = therapist.category.c_image
-    let userimage = user.profile_pic
+    // let categoryimage = therapist.category.c_image
+    let userimage = user.profile_pic || null
 
     if (!therapist) {
       return res.send({
@@ -319,8 +319,9 @@ console.log("user:",user);
         }
       ]
     });
+    let userimage = user?.profile_pic || null
 
-    const categoryimage = therapistdetails?.category?.c_image || null;
+    // const categoryimage = therapistdetails?.category?.c_image || null;
 
     const updatestatus = await Booking.update(
       { status },
@@ -340,7 +341,7 @@ console.log("user:",user);
       status,
       ` Therapy Booking ${status}`,
       `${userdetails.name} ${status} ${bookingdetails.service} section`,
-      categoryimage
+      userimage
     );
 
     return res.send({
