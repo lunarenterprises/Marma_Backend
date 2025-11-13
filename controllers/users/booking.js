@@ -119,6 +119,7 @@ module.exports.ListBooking = async (req, res) => {
         include,
          order: [['createdAt', 'DESC']]
       });
+      
     } else if (cancelled) {
 
       Bookinglist = await Booking.findAll({

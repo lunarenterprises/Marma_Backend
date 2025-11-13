@@ -22,6 +22,7 @@ const WithdrawRequest = require('./withdrawRequest.js')
 const Doctors = require('./doctors.js')
 const Gallery = require('./Gallery.js')
 const priceDetails = require('./price.js')
+const Testimonial =require('./testimonial.js')
 
 
 // === Define Associations === //
@@ -187,6 +188,7 @@ module.exports = {
   Doctors,
   Gallery,
   priceDetails,
+  Testimonial,
   initRoles,
   createDefaultAdmin,
   initializeDatabase,
