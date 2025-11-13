@@ -88,4 +88,10 @@ router.post('/delete/price-details', DeletePriceDetails)
 const { ListWalletHistory } = require('../controllers/admin/wallethistory.js')
 router.post('/list/wallet-history', ListWalletHistory)
 
+const { AddTestimonial,listTestimonial,EditTestimonial,DeleteTestimonial } = require('../controllers/admin/testimonial.js')
+router.post('/add/testimonial', AddTestimonial)
+router.post('/list/testimonial', listTestimonial)
+router.post('/edit/testimonial', EditTestimonial)
+router.post('/delete/testimonial', DeleteTestimonial)
+
 module.exports = router;

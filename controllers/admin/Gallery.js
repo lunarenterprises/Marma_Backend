@@ -15,6 +15,7 @@ module.exports.AddGallery = async (req, res) => {
                 });
             }
 
+            let { description } = fields
             if (files.file) {
                 // console.log("filesss",files.file);
 
@@ -38,7 +39,7 @@ module.exports.AddGallery = async (req, res) => {
                 fs.writeFileSync(newPath, rawData);
                 console.log(fileType, imagePath);
 
-                var Insertgallery = await Gallery.create({ file: imagePath, type: fileType })
+                var Insertgallery = await Gallery.create({ file: imagePath, description: description, type: fileType })
 
                 if (Insertgallery) {
                     return res.send({
