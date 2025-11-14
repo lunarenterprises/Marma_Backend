@@ -297,8 +297,7 @@ module.exports.verifyOtp = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 roleid: user.roleId,
-                rolename: user.Role.name
-
+                rolename: user.Role.nam
 
             })
 
@@ -314,8 +313,8 @@ module.exports.verifyOtp = async (req, res) => {
                 u_id: user.id,
                 name: user.name,
                 role: user.roleId,
-                token: token
-
+                token: token,
+                image: user.profile_pic
             });
         } else {
             // const addotplog = await OtpLog.create({

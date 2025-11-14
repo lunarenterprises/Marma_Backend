@@ -141,6 +141,7 @@ module.exports.VerifyOtp = async (req, res) => {
                 phone: checkPhone.phone,
                 location: checkPhone.location,
                 role: checkPhone.roleId,
+                image:checkPhone.profile_pic,
                 token
             }
             return res.send({
