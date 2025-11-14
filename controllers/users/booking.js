@@ -119,7 +119,7 @@ module.exports.ListBooking = async (req, res) => {
         include,
          order: [['createdAt', 'DESC']]
       });
-      
+
     } else if (cancelled) {
 
       Bookinglist = await Booking.findAll({
@@ -128,6 +128,7 @@ module.exports.ListBooking = async (req, res) => {
           status: { [Op.in]: ['Cancelled'] }
         },
         include,
+        order: [['createdAt', 'DESC']]
       });
     } else if (appointment) {
       Bookinglist = await Booking.findAll({
@@ -172,6 +173,7 @@ module.exports.ListBooking = async (req, res) => {
           },
         },
         include,
+        order: [['createdAt', 'DESC']]
       });
     } else if (lastmonthbooking) {
       const lastMonthStart = moment().subtract(1, 'month').startOf('month').toDate();
@@ -186,12 +188,14 @@ module.exports.ListBooking = async (req, res) => {
           },
         },
         include,
+        order: [['createdAt', 'DESC']]
       });
     } else {
       // default booking list
       Bookinglist = await Booking.findAll({
         where: whereClause,
         include,
+        order: [['createdAt', 'DESC']]
       });
     }
 
