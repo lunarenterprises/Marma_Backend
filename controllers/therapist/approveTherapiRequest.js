@@ -40,13 +40,13 @@ module.exports.ApproveTherapiRequest = async (req, res) => {
         }
 
         const therapist = await Therapist.findOne({
-            where: { id: user.id },
+            where: { id: therapist_id },
             include: [
                 {
                     model: Category,
                     as: 'category',
                     attributes: ['c_id', 'c_name', 'c_image'],
-                    required: true,
+                    required: false,
                 }
             ]
         });
@@ -66,7 +66,7 @@ module.exports.ApproveTherapiRequest = async (req, res) => {
         );
 
         await notification.addNotification(
-            u_id,
+            request.userId,
             therapist_id,
             status,
             `Therapy Booking ${status}`,
