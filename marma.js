@@ -22,7 +22,11 @@ app.use(bodyparser.urlencoded({ limit: '100mb', extended: true }));
 var io = require("socket.io")(server, {
   maxHttpBufferSize: 10e7,
   cors: {
-    origin: "*",
+    origin: [
+      "http://localhost:6030",
+      "https://marma.reflexmarma.com",
+      "https://www.marma.reflexmarma.com"
+    ],
     methods: ["GET", "POST"]
   }
 });
