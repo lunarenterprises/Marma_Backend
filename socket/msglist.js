@@ -83,7 +83,6 @@ module.exports = function (io) {
                     raw: true
                 });
 
-                console.log("Chats fetched for user : ", JSON.stringify(chats));
 
                 const lastIds = chats.map(c => c.lastMessageId).filter(Boolean);
                 const lastMessages = await Messages.findAll({
@@ -110,8 +109,6 @@ module.exports = function (io) {
 
                 for (const c of chats) {
                     const isSender = c.sender_id == user_id;
-                    console.log("chat id : ", c.id);
-                    console.log("isSender : ", isSender);
 
                     const partner = isSender
                         ? { id: c["receiver.id"], name: c["receiver.name"], profile_pic: c["receiver.profile_pic"] }
