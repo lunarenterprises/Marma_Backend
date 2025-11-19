@@ -83,6 +83,8 @@ module.exports = function (io) {
                     raw: true
                 });
 
+                console.log("Chats fetched for user : ", JSON.stringify(chats));
+
                 const lastIds = chats.map(c => c.lastMessageId).filter(Boolean);
                 const lastMessages = await Messages.findAll({
                     where: { id: lastIds },
@@ -133,7 +135,7 @@ module.exports = function (io) {
                         booking
                     });
                 }
-                console.log("payload : ", JSON.stringify(payload));
+                // console.log("payload : ", JSON.stringify(payload));
 
                 socket.emit("chats", payload);
             } catch (error) {
