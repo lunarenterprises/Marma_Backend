@@ -107,11 +107,15 @@ module.exports.Payment = async (req, res) => {
             ph_date: date,
             ph_total_amount,
         };
-        console.log("ph_price_id",bookingdetails.price_id);
 
         if (role === 'user') {
             const price = await priceDetails.findOne({ where: { pd_id: bookingdetails.price_id } })
-            console.log("Price details fetched:", price);
+            if(!price){
+                return res.status(404).json({
+                    result: false,
+                    message: "Price details not found",
+                });
+            }
             paymentData.ph_user_id = user_id;
             paymentData.ph_therapist_id = therapist_id;
             paymentData.ph_booking_id = booking_id;
@@ -121,7 +125,6 @@ module.exports.Payment = async (req, res) => {
         } else {
             paymentData.ph_learner_id = learner_id;
         }
-        console.log("💰 Payment data to be saved:", paymentData);
 
         const addPaymentHistory = await PaymentHistory.create(paymentData);
         // console.log("🧾 Payment history added:", addPaymentHistory.ph_id);
