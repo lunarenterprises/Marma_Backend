@@ -1,7 +1,7 @@
 
 const axios = require("axios");
 const moment = require("moment");
-const { User, Therapist, PaymentHistory, Booking } = require('../../models/index');
+const { User, Therapist, PaymentHistory, Booking, priceDetails } = require('../../models/index');
 let generateOTP = require('../../utils/generateOTP')
 let createOtpLog = require('../../utils/addOtpLog')
 
@@ -107,17 +107,20 @@ module.exports.Payment = async (req, res) => {
             ph_date: date,
             ph_total_amount,
         };
-// console.log("ph_price_id",bookingdetails.price_id);
+        // console.log("ph_price_id",bookingdetails.price_id);
 
         if (role === 'user') {
+            const price = await priceDetails.findOne({ where: { pd_id: bookingdetails.price_id } })
+            console.log("Price details fetched:", price);
             paymentData.ph_user_id = user_id;
             paymentData.ph_therapist_id = therapist_id;
             paymentData.ph_booking_id = booking_id;
-            paymentData.ph_price_id = bookingdetails.price_id;
+            paymentData.ph_price_id = price.pd_price;
 
         } else {
             paymentData.ph_learner_id = learner_id;
         }
+        console.log("💰 Payment data to be saved:", paymentData);
 
         const addPaymentHistory = await PaymentHistory.create(paymentData);
         // console.log("🧾 Payment history added:", addPaymentHistory.ph_id);
