@@ -150,7 +150,7 @@ module.exports.Payment = async (req, res) => {
         };
 
         const paymentLinkData = {
-            amount: Number(ph_total_amount) * 100, // convert to paisa
+            amount: Number(paymentData.ph_total_amount) * 100, // convert to paisa
             currency: 'INR',
             description: role === 'user' ? 'Payment for Therapy' : 'Payment for Course',
             customer: {
