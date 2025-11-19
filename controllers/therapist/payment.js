@@ -107,7 +107,7 @@ module.exports.Payment = async (req, res) => {
             ph_date: date,
             ph_total_amount,
         };
-        // console.log("ph_price_id",bookingdetails.price_id);
+        console.log("ph_price_id",bookingdetails.price_id);
 
         if (role === 'user') {
             const price = await priceDetails.findOne({ where: { pd_id: bookingdetails.price_id } })
