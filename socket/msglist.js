@@ -109,7 +109,7 @@ module.exports = function (io) {
                 const payload = [];
 
                 for (const c of chats) {
-                    const isSender = c.sender_id === user_id;
+                    const isSender = c.sender_id == user_id;
                     console.log("chat id : ", c.id);
                     console.log("isSender : ", isSender);
 
