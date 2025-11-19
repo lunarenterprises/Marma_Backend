@@ -110,6 +110,7 @@ module.exports = function (io) {
 
                 for (const c of chats) {
                     const isSender = c.sender_id === user_id;
+                    console.log("isSender : ", isSender);
 
                     const partner = isSender
                         ? { id: c["receiver.id"], name: c["receiver.name"], profile_pic: c["receiver.profile_pic"] }
