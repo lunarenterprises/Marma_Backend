@@ -133,6 +133,7 @@ module.exports = function (io) {
                         booking
                     });
                 }
+                console.log("payload : ", JSON.stringify(payload));
 
                 socket.emit("chats", payload);
             } catch (error) {
