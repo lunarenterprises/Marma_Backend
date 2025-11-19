@@ -115,7 +115,8 @@ module.exports.Payment = async (req, res) => {
             paymentData.ph_user_id = user_id;
             paymentData.ph_therapist_id = therapist_id;
             paymentData.ph_booking_id = booking_id;
-            paymentData.ph_price_id = price.pd_price;
+            paymentData.ph_price_id = bookingdetails.price_id;
+            paymentData.ph_total_amount = price.pd_price;
 
         } else {
             paymentData.ph_learner_id = learner_id;
