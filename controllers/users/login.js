@@ -291,7 +291,7 @@ module.exports.verifyOtp = async (req, res) => {
                 message: "Invalid or expired OTP",
             });
         }
-        // if (type == 'login') {
+        if (type == 'login') {
             let token = await GenerateToken({
                 id: user.id,
                 name: user.name,
@@ -316,22 +316,22 @@ module.exports.verifyOtp = async (req, res) => {
                 token: token,
                 image: user.profile_pic
             });
-        // } else {
-        //     // const addotplog = await OtpLog.create({
-        //     //     phone: phone,
-        //     //     userId: user.id,
-        //     //     purpose: 'register',
-        //     // });
+        } else {
+            // const addotplog = await OtpLog.create({
+            //     phone: phone,
+            //     userId: user.id,
+            //     purpose: 'register',
+            // });
 
-        //     user.resetToken = null;
-        //     user.resetTokenExpiry = null;
-        //     await user.save();
+            user.resetToken = null;
+            user.resetTokenExpiry = null;
+            await user.save();
 
-        //     return res.json({
-        //         result: true,
-        //         message: "OTP verified successfully",
-        //     })
-        // }
+            return res.json({
+                result: true,
+                message: "OTP verified successfully",
+            })
+        }
     } catch (error) {
         return res.status(500).json({
             result: false,
