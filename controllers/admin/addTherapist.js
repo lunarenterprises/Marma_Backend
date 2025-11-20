@@ -82,12 +82,13 @@ exports.addTherapist = async (req, res) => {
                 })
                 imagepath = `/uploads/profiles_pic/${fileName}`;
             }
+            let formattedNumber = formatPhoneNumber(phone)
             const therapist = await Therapist.create({
                 name,
                 clinicName,
                 gender,
                 email,
-                phone,
+                phone: formattedNumber,
                 specialization,
                 experience,
                 availability,
