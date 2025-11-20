@@ -206,7 +206,7 @@ module.exports.ListBooking = async (req, res) => {
         list: Bookinglist,
       });
     } else {
-      return res.status(404).send({
+      return res.status(200).send({
         result: false,
         message: "No bookings found",
       });
