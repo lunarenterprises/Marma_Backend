@@ -16,8 +16,8 @@ const bodyparser = require("body-parser");
 
 var server = http.createServer(app);
 
-app.use(bodyparser.json({ limit: '100mb' }));
-app.use(bodyparser.urlencoded({ limit: '100mb', extended: true }));
+// app.use(bodyparser.json({ limit: '100mb' }));
+// app.use(bodyparser.urlencoded({ limit: '100mb', extended: true }));
 
 var io = require("socket.io")(server, {
   maxHttpBufferSize: 10e7,
