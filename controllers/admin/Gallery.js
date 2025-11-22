@@ -2,10 +2,10 @@ var { Gallery } = require('../../models/index.js')
 var formidable = require('formidable')
 var fs = require('fs')
 let path = require('path')
-
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB in bytes
 module.exports.AddGallery = async (req, res) => {
     try {
-        var form = new formidable.IncomingForm({ multiples: true });
+        var form = new formidable.IncomingForm({ multiples: true, maxFileSize: MAX_FILE_SIZE, });
         form.parse(req, async function (err, fields, files) {
             if (err) {
                 return res.send({
