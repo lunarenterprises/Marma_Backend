@@ -36,7 +36,7 @@ module.exports.PromoteLearner = async (req, res) => {
         }
 
         let promoteLearner = await Therapist.update(
-            { roleId: 3 },
+            { roleId: 3 ,status:'Approved'},
             { where: { id: learner_id } }
         );
 
