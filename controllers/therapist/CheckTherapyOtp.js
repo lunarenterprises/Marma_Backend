@@ -18,7 +18,6 @@ module.exports.CheckTherapyOTP = async (req, res) => {
             where: { id: b_id }
         });
 
-
         if (checkbooking.length > 0) {
 
             if (otp == checkbooking[0]?.otp) {
@@ -35,12 +34,12 @@ module.exports.CheckTherapyOTP = async (req, res) => {
                     if (updatestatus === 1) {
                         return res.send({
                             result: true,
-                            message: "Therapy secssion OTP verified sucessfully",
+                            message: "Therapy session OTP verified sucessfully",
                         });
                     } else {
                         return res.send({
                             result: false,
-                            message: "Failed to verify Therapy secssion OTP ",
+                            message: "Failed to verify Therapy session OTP ",
                         });
                     }
 
@@ -55,12 +54,12 @@ module.exports.CheckTherapyOTP = async (req, res) => {
                     if (verifyotp === 1) {
                         return res.send({
                             result: true,
-                            message: "Therapy secssion OTP verified sucessfully",
+                            message: "Therapy session OTP verified sucessfully",
                         });
                     } else {
                         return res.send({
                             result: false,
-                            message: "Failed to verify Therapy secssion OTP ",
+                            message: "Failed to verify Therapy session OTP ",
                         });
                     }
                 }
@@ -86,7 +85,6 @@ module.exports.CheckTherapyOTP = async (req, res) => {
 
     }
 }
-
 
 module.exports.EndTherapy = async (req, res) => {
     try {
@@ -176,7 +174,6 @@ module.exports.EndTherapy = async (req, res) => {
             }
 
         }
-
 
         if (checkbooking[0]?.status == 'Completed') {
             return res.send({
