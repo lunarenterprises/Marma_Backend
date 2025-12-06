@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
-const SECRET_KEY = process.env.JWT_SECRET || 'your_default_secret';
+const SECRET_KEY = process.env.JWT_SECRET;
 
 module.exports.GenerateToken = async (data) => {
-    return jwt.sign(data, SECRET_KEY); // adjust expiration as needed
+    return jwt.sign(data, SECRET_KEY, { expiresIn: '2h' }); 
 };
