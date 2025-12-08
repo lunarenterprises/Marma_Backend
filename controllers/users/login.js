@@ -129,118 +129,16 @@ module.exports.LoginOtp = async (req, res) => {
             }
         );
 
-        let message = `Your OTP is ${otp} for completing your registration with Reflex Marma. It is valid for 5 minutes. Do not share this code with anyone`
+        let message = `Your OTP is ${otp} for completing your login with Reflex Marma. It is valid for 5 minutes. Do not share this code with anyone`
 
-        await sendSMS(formattedNumber, message)
+        let sendotp = await sendSMS(formattedNumber, message)
+        if (!sendotp) {
+            return res.send({
+                result: false,
+                message: 'Failed to send OTP your phone number'
 
-        // Email setup
-        //         const transporter = nodemailer.createTransport({
-        //             host: 'smtp.hostinger.com',
-        //             port: 587,
-        //             auth: {
-        //                 type: 'custom',
-        //                 method: 'PLAIN',
-        //                 user: 'support@choiceglobal.in',
-        //                 pass: 'support123abcAB@',
-        //             },
-        //         });
-
-        //         const html = `
-        //     <!DOCTYPE html>
-        // <html lang="en">
-        // <head>
-        //   <meta charset="UTF-8">
-        //   <title>REFLEX MARMA - Login OTP</title>
-        //   <style>
-        //     body {
-        //       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        //       background-color: #f5f8fa;
-        //       margin: 0;
-        //       padding: 40px 0;
-        //     }
-
-        //     .email-container {
-        //       max-width: 600px;
-        //       background-color: #ffffff;
-        //       margin: auto;
-        //       padding: 30px 40px;
-        //       border-radius: 10px;
-        //       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        //     }
-
-        //     .header {
-        //       text-align: center;
-        //       margin-bottom: 25px;
-        //     }
-
-        //     .header h1 {
-        //       margin: 0;
-        //       font-size: 24px;
-        //       color: #1a202c;
-        //     }
-
-        //     .body-text {
-        //       font-size: 16px;
-        //       color: #4a5568;
-        //       line-height: 1.6;
-        //       margin-bottom: 25px;
-        //     }
-
-        //     .otp-code {
-        //       display: block;
-        //       text-align: center;
-        //       font-size: 32px;
-        //       font-weight: bold;
-        //       background-color: #edf7ff;
-        //       color: #007BFF;
-        //       padding: 15px 0;
-        //       border-radius: 8px;
-        //       letter-spacing: 6px;
-        //       margin-bottom: 20px;
-        //     }
-
-        //     .footer {
-        //       font-size: 14px;
-        //       color: #a0aec0;
-        //       text-align: center;
-        //       margin-top: 30px;
-        //     }
-
-        //     .brand {
-        //       color: #2b6cb0;
-        //       font-weight: 600;
-        //     }
-        //   </style>
-        // </head>
-        // <body>
-        //   <div class="email-container">
-        //     <div class="header">
-        //       <h1>Your Login OTP</h1>
-        //     </div>
-        //     <div class="body-text">
-        //       <p>Hello,</p>
-        //       <p>Use the following One-Time Password (OTP) to log in to your <span class="brand">REFLEX MARMA</span> account:</p>
-        //     </div>
-        //     <div class="otp-code">${otp}</div>
-        //     <div class="body-text">
-        //       <p>This OTP is valid for <strong>5 minutes</strong>. Please do not share it with anyone.</p>
-        //       <p>If you did not initiate this login, please contact us.</p>
-        //     </div>
-        //     <div class="footer">
-        //       &copy; 2025 <span class="brand">REFLEX MARMA</span>. All rights reserved.
-        //     </div>
-        //   </div>
-        // </body>
-        // </html>
-        // `;
-
-        //         await transporter.sendMail({
-        //             from: 'REFLEX MARMA <support@choiceglobal.in>',
-        //             to: email,
-        //             subject: 'REFLEX MARMA OTP',
-        //             html,
-        //         });
-
+            });
+        }
         return res.send({
             result: true,
             message: 'OTP send to your phone number'
