@@ -120,12 +120,12 @@ module.exports.RazorpayCallback = async (req, res) => {
         );
 
         const [updatebookingpaymentstatus] = await Therapist.update(
-          { status: 'paid' },
+          { payment_status: 'paid' },
           { where: { id: learner_id } }
         );
 
       }
-
+//=====================user  mail ================================
       let mailOptions = {
         from: `REFLEX MARMA <${process.env.EMAIL_USER}>`,
         to: Userdetails.email,
@@ -252,6 +252,145 @@ module.exports.RazorpayCallback = async (req, res) => {
 
       await sendEmail(mailOptions);
 
+//============================admin mail =======================//
+
+      let mailOptionsAdmin = {
+  from: `REFLEX MARMA <${process.env.EMAIL_USER}>`,
+  to: process.env.ADMIN_EMAIL,
+  subject: "New Course Payment Received",
+  html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Payment Notification</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+
+    .email-container {
+      max-width: 600px;
+      margin: 30px auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .header {
+      background-color: #2196f3;
+      color: white;
+      text-align: center;
+      padding: 30px 20px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .content {
+      padding: 30px 20px;
+      color: #333;
+    }
+
+    .content p {
+      line-height: 1.6;
+    }
+
+    .order-summary {
+      margin-top: 20px;
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-radius: 5px;
+    }
+
+    .order-summary table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .order-summary th, .order-summary td {
+      text-align: left;
+      padding: 8px;
+    }
+
+    .order-summary th {
+      background-color: #eeeeee;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="email-container">
+    <div class="header">
+      <h1>📢 New Course Payment Received</h1>
+    </div>
+
+    <div class="content">
+      <p>Hello Sir,</p>
+      <p>A student has successfully completed a course payment. Below are the details:</p>
+
+      <div class="order-summary">
+        <h3>🧾 Student & Payment Details</h3>
+        <table>
+          <tr>
+            <th>Student Name</th>
+            <td>${username}</td>
+          </tr>
+          <tr>
+            <th>Email</th>
+            <td>${Userdetails.email}</td>
+          </tr>
+          <tr>
+            <th>Phone</th>
+            <td>${Userdetails.phone}</td>
+          </tr>
+          <tr>
+            <th>Payment ID</th>
+            <td>${payment_id}</td>
+          </tr>
+          <tr>
+            <th>Amount</th>
+            <td>RS.${amount}</td>
+          </tr>
+          <tr>
+            <th>Date</th>
+            <td>${payment_date}</td>
+          </tr>
+        </table>
+      </div>
+
+      <p>Please review and update your records accordingly.</p>
+
+      <p>Regards,<br />
+      Reflex Marma</p>
+    </div>
+
+    <div class="footer">
+      © 2025 Reflex Marma. All rights reserved.
+    </div>
+  </div>
+
+</body>
+</html>
+
+  `
+};
+
+await sendEmail(mailOptionsAdmin);
+
+//------------------------------------------------------------------------//
       return res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
