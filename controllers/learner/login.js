@@ -29,7 +29,7 @@ module.exports.RegisterLearner = async (req, res) => {
         let checkEmail = await Therapist.findOne({
             where: { email: email.toLowerCase().trim(), phoneVerified: "true" }
         })
-        if (checkEmail) {
+        if (checkEmail && checkEmail.payment_status == 'Paid') {
             return res.send({
                 result: false,
                 message: "Email already registered"
@@ -38,15 +38,37 @@ module.exports.RegisterLearner = async (req, res) => {
         let checkPhone = await Therapist.findOne({
             where: { phone: formatPhoneNumber(phone), phoneVerified: "true" }
         })
-        if (checkPhone) {
+        if (checkPhone && checkPhone.payment_status == 'Paid') {
             return res.send({
                 result: false,
                 message: "Phone number is already registered"
             })
         }
+
+        if (checkPhone && checkPhone.payment_status == 'Pending') {
+            let token = generateOTP()
+            let smsBody = `Your student verification code for Marma App is: ${token}. Please do not share it with anyone.`
+            let formattedNumber = await formatPhoneNumber(phone)
+            console.log("formattedNumber : ", formattedNumber)
+
+            await sendSMS(formattedNumber, smsBody)
+            await sendSMS('+917994690247',
+                `A new student registered,
+                 Name : ${name},
+                 Email : ${email},
+                 Phone : ${phone}.`)
+
+                 return res.send({
+                result: true,
+                message: "Registration successful. OTP has been sent to your number.",
+                learner_id: checkPhone.id,
+            });
+
+        }
+
         let token = generateOTP()
         let smsBody = `Your student verification code for Marma App is: ${token}. Please do not share it with anyone.`
-        let formattedNumber = formatPhoneNumber(phone)
+        let formattedNumber = await formatPhoneNumber(phone)
         console.log("formattedNumber : ", formattedNumber)
         let createNew = await Therapist.create({
             name,
@@ -141,7 +163,7 @@ module.exports.VerifyOtp = async (req, res) => {
                 phone: checkPhone.phone,
                 location: checkPhone.location,
                 role: checkPhone.roleId,
-                image:checkPhone.profile_pic,
+                image: checkPhone.profile_pic,
                 token
             }
             return res.send({

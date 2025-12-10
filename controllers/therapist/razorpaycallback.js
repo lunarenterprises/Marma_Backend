@@ -74,7 +74,6 @@ module.exports.RazorpayCallback = async (req, res) => {
           console.log("getprice", getprice);
           console.log("getprice",getprice.pd_therapist_fee);
 
-
           await PaymentHistory.update(
             { ph_pay_therapist: getprice.pd_therapist_fee },
             { where: { ph_id: payment_id } }
@@ -84,7 +83,6 @@ module.exports.RazorpayCallback = async (req, res) => {
           console.log(therapistdetails.wallet, "wallet");
           console.log(getprice.pd_therapist_fee, "pd_therapist_fee");
           console.log(updatedWallet, "updatedWallet");
-
 
           await Therapist.update(
             { wallet: updatedWallet },
@@ -256,7 +254,8 @@ module.exports.RazorpayCallback = async (req, res) => {
 
       let mailOptionsAdmin = {
   from: `REFLEX MARMA <${process.env.EMAIL_USER}>`,
-  to: process.env.ADMIN_EMAIL,
+  // to: process.env.ADMIN_EMAIL,
+  to: "jaisonlunar701@gmail.com",
   subject: "New Course Payment Received",
   html: `<!DOCTYPE html>
 <html lang="en">
