@@ -48,7 +48,6 @@ const authenticateToken = async (req, res, next) => {
 
     // Attach user to request object
     req.user = user;
-    req.userId = userId;
     
     next();
     
