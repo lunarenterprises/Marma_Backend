@@ -15,9 +15,9 @@ router.get('/questions', LearnerAuthenticateToken, ListAllQuestions)
 router.post('/submit_questions', LearnerAuthenticateToken, SubmitQuestions)
 
 const { EditProfile, DeleteProfile, DeleteProfilePic, GetProfile } = require('../controllers/learner/profile')
-router.post('/update_profile', LearnerAuthenticateToken, EditProfile)
-router.post('/delete_profile', LearnerAuthenticateToken, DeleteProfile)
-router.post('/delete_profile_picture', LearnerAuthenticateToken, DeleteProfilePic)
+router.post('/update_profile', EditProfile)
+router.delete('/delete_profile', LearnerAuthenticateToken, DeleteProfile)
+router.delete('/delete_profile_picture', LearnerAuthenticateToken, DeleteProfilePic)
 router.get('/get_profile', LearnerAuthenticateToken, GetProfile)
 
 const { ListAllNotifications, UpdateNotificationStatus } = require('../controllers/learner/notification')

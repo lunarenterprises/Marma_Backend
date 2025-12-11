@@ -18,7 +18,13 @@ module.exports.EditProfile = async (req, res) => {
                     data: err,
                 });
             }
-            const { name, phone, email, location } = fields;
+            const { learner_id, name, phone, email, location } = fields;
+            if (!learner_id) {
+                return res.status(400).send({
+                    result: false,
+                    message: "Learner id is required",
+                });
+            }
             let imagepath = null
             if (files.image) {
                 let date = moment().format('YYYY-MM-DD')
@@ -90,18 +96,28 @@ module.exports.EditProfile = async (req, res) => {
 
 module.exports.DeleteProfilePic = async (req, res) => {
     try {
-        let user = req.user
+        const { learner_id } = req.query.learner_id;
+
+        const checklearner = await Therapist.findAll(
+            { where: { id: learner_id } }
+        );
+        if (!checklearner) {
+            return res.send({
+                result: false,
+                message: "Learner not found"
+            });
+        }
         let [affectedCount] = await Therapist.update(
             { file: null },
-            { where: { id: user.id } }
+            { where: { id: learner_id } }
         )
         if (affectedCount > 0) {
             await addNotification({
                 user_id: null,
-                therapist_id: user.id,
+                therapist_id: learner_id,
                 type: "Deleted Profile Picture",
                 title: "Profile Picture Deleted",
-                message: `${user.name} deleted their profile picture.`,
+                message: `${checklearner.name} profile picture deleted.`,
             })
             return res.send({
                 result: true,
@@ -124,22 +140,28 @@ module.exports.DeleteProfilePic = async (req, res) => {
 
 module.exports.DeleteProfile = async (req, res) => {
     try {
-        const user = req.user;
-        // const [affectedCount] = await Therapist.update(
-        //     { status: "inactive" },
-        //     { where: { id: user.id } }
-        // );
-        const [affectedCount] = await Therapist.destroy(
+        const { learner_id } = req.query.learner_id;
+
+        const checklearner = await Therapist.findAll(
             { where: { id: user.id } }
+        );
+        if (!checklearner) {
+            return res.send({
+                result: false,
+                message: "Learner not found"
+            });
+        }
+        const [affectedCount] = await Therapist.destroy(
+            { where: { id: learner_id } }
         );
 
         if (affectedCount > 0) {
             await addNotification({
                 user_id: null,
-                therapist_id: user.id,
+                therapist_id: learner_id,
                 type: "Deleted Profile",
-                title: "Profile Deleted",
-                message: `${user.name} deleted their profile.`,
+                title: "Learner Profile Deleted",
+                message: `Admin deleted learner ${checklearner.name} profile.`,
             })
             return res.send({
                 result: true,

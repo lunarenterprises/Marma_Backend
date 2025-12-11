@@ -52,11 +52,11 @@ module.exports.RegisterLearner = async (req, res) => {
             console.log("formattedNumber : ", formattedNumber)
 
             await sendSMS(formattedNumber, smsBody)
-            await sendSMS('+917994690247',
-                `A new student registered,
-                 Name : ${name},
-                 Email : ${email},
-                 Phone : ${phone}.`)
+            // await sendSMS('+917994690247',
+            //     `A new student registered,
+            //      Name : ${name},
+            //      Email : ${email},
+            //      Phone : ${phone}.`)
 
                  return res.send({
                 result: true,
@@ -169,6 +169,7 @@ module.exports.VerifyOtp = async (req, res) => {
             return res.send({
                 result: true,
                 message: "Verification successfull.",
+                payment_status: checkPhone.Role.name === "learner" ? checkPhone.payment_status : null,
                 data: type === "login" ? data : null
             })
         } else {

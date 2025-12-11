@@ -21,10 +21,20 @@ module.exports.ListAllVideos = async (req, res) => {
 
 module.exports.TestWhatsapp = async (req, res) => {
     try {
-        let { toNumber, message } = req.body
+        // let { toNumber, message } = req.body
+        let toNumber = "+919497042580"
+        let message = "sample test message"
+        let name = "Jack"
+        let phone ="9876543210"
+        let email ="jack@gmail.com"
+        let gender ="male"
         // await SendWhatsappMessage(toNumber, message)
-        const resposne = await sendUserDetailsToAdmin({ name: "sample", phone: "1236654789", email: "qwerty@gmail.com" })
-        console.log("resposne : ", resposne)
+        // const adminresposne = await sendUserDetailsToAdmin({ name: "sample", phone: "1236654789", email: "qwerty@gmail.com" })
+        const userresposne = await sendUserDetailsToAdmin(name, phone, email, gender)
+
+        // console.log("adminresposne : ", adminresposne)
+        console.log("userresposne : ", userresposne)
+
         return res.send({
             result: true,
             message: "Message sended successfully"
