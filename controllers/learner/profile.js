@@ -75,7 +75,6 @@ module.exports.EditProfile = async (req, res) => {
                     updateData,
                     { where: { id: learner_id } }
                 );
-                console.log("[affectedCount] ", [affectedCount]);
 
 
                 if (affectedCount > 0) {
@@ -154,7 +153,8 @@ module.exports.DeleteProfilePic = async (req, res) => {
 
 module.exports.DeleteProfile = async (req, res) => {
     try {
-        const { learner_id } = req.query.learner_id;
+        const { learner_id } = req.query.learner_id || {}
+console.log("learner_id",learner_id);
 
         const checklearner = await Therapist.findAll(
             { where: { id: user.id } }
