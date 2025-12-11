@@ -33,7 +33,7 @@ const authenticateToken = async (req, res, next) => {
       include: [
         {
           model: Role,
-          attributes: ['id', 'name', 'permissions'],
+          attributes: ['id', 'name'],
         },
       ],
     });

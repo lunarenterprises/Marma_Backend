@@ -1,6 +1,9 @@
 let { sendEmail } = require('../../utils/emailService');
 let { User, PaymentHistory, Therapist, WalletHistory, Booking, priceDetails } = require('../../models/index');
+const {sendUserDetailsToAdmin } = require('../../utils/whatsapp')
+
 let moment = require('moment')
+
 
 module.exports.RazorpayCallback = async (req, res) => {
   try {
@@ -123,6 +126,10 @@ module.exports.RazorpayCallback = async (req, res) => {
         );
 
       }
+      //==========whatsapp message===========
+      const sendadminwhatsappmessage = await sendUserDetailsToAdmin(username, Userdetails.phone, Userdetails.email, Userdetails.gender)
+      //===========================================
+
 //=====================user  mail ================================
       let mailOptions = {
         from: `REFLEX MARMA <${process.env.EMAIL_USER}>`,
