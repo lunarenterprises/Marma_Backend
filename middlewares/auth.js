@@ -2,17 +2,21 @@ const jwt = require('jsonwebtoken');
 const { Role, User, Therapist } = require('../models/index.js');
 
 const authenticateToken = async (req, res, next) => {
-  const authHeader = req.header('Authorization');
-  const token =
-    authHeader && authHeader.split(' ')[0].toLowerCase() === 'bearer'
-      ? authHeader.split(' ')[1]
-      : null;
-
-  if (!token) {
-    return res.status(403).json({ message: 'Access denied, token missing' });
-  }
-
   try {
+    const authHeader = req.headers.authorization;
+
+    // Validate Bearer token format
+    if (!authHeader) {
+      return res.status(403).json({ message: 'Access denied, token missing' });
+    }
+
+    const [scheme, token] = authHeader.split(' ');
+
+    if (!scheme || scheme.toLowerCase() !== 'bearer' || !token) {
+      return res.status(401).json({ message: 'Invalid authorization format' });
+    }
+
+    // Verify and decode token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const userId = decoded.id || decoded.userId;
@@ -24,23 +28,24 @@ const authenticateToken = async (req, res, next) => {
       });
     }
 
-    // Fetch user with associated Role (single query)
+    // Fetch user with role in one query
     const user = await User.findByPk(userId, {
-      include: [{
-        model: Role,
-        attributes: ['id', 'name', 'permissions'] // Specify needed Role fields
-      }]
+      include: [
+        {
+          model: Role,
+          attributes: ['id', 'name', 'permissions'],
+        },
+      ],
     });
 
-    // Check if user exists
     if (!user) {
       console.log('User not found for ID:', userId);
       return res.status(401).json({
-        message: 'User not found'
+        message: 'User not found',
       });
     }
 
-    req.user = user;
+    req.user = user; // Attach user object to request
 
     next();
   } catch (error) {
@@ -51,6 +56,7 @@ const authenticateToken = async (req, res, next) => {
     });
   }
 };
+
 
 // const LearnerAuthenticateToken = async (req, res, next) => {
 //   const authHeader = req.header('Authorization');
