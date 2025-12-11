@@ -79,6 +79,11 @@ router.post('/add/learner',authenticateToken, AddLearner)
 const { ListTherapist } = require('../controllers/admin/listTherapist.js')
 router.post('/list/therapist', ListTherapist)
 
+const { EditProfile, DeleteProfile, DeleteProfilePic } = require('../controllers/learner/profile')
+router.post('/update_profile',authenticateToken, EditProfile)
+router.delete('/delete_profile', authenticateToken, DeleteProfile)
+router.delete('/delete_profile_picture', authenticateToken, DeleteProfilePic)
+
 const { AddPriceDetails, ListPriceDetails, EditPriceDetails, DeletePriceDetails } = require('../controllers/admin/price.js')
 router.post('/add/price-details', AddPriceDetails)
 router.post('/list/price-details', ListPriceDetails)

@@ -1,8 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db.js');
 
-const Therapist = sequelize.define(
-  'Therapist',
+const Therapist = sequelize.define('Therapist',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -158,7 +157,7 @@ const Therapist = sequelize.define(
       defaultValue: 0,
     },
     payment_status: {
-      type: DataTypes.ENUM('Pending','Paid', 'Failed'),
+      type: DataTypes.ENUM('Pending', 'Paid', 'Failed'),
       defaultValue: 'Pending',
     },
     status: {

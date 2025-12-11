@@ -254,8 +254,7 @@ module.exports.RazorpayCallback = async (req, res) => {
 
       let mailOptionsAdmin = {
   from: `REFLEX MARMA <${process.env.EMAIL_USER}>`,
-  // to: process.env.ADMIN_EMAIL,
-  to: "jaisonlunar701@gmail.com",
+  to: process.env.ADMIN_EMAIL,
   subject: "New Course Payment Received",
   html: `<!DOCTYPE html>
 <html lang="en">
