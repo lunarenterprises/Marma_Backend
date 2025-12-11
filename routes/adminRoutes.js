@@ -52,8 +52,10 @@ router.post('/list/doctor', ListDoctor);
 const { DeleteDoctor } = require('../controllers/admin/doctors.js');
 router.post('/delete/doctor', authenticateToken, DeleteDoctor);
 
-const { PromoteLearner } = require('../controllers/admin/promoteLearner.js');
+const { PromoteLearner,ApproveLearner } = require('../controllers/admin/promoteLearner.js');
 router.post('/promote/learner', authenticateToken, PromoteLearner);
+router.post('/approve/learner', authenticateToken, ApproveLearner);
+
 
 const { DeleteSection } = require('../controllers/admin/deleteSection.js')
 router.post('/delete/section', authenticateToken, DeleteSection)

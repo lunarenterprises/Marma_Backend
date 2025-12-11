@@ -58,10 +58,14 @@ module.exports.RegisterLearner = async (req, res) => {
             //      Email : ${email},
             //      Phone : ${phone}.`)
 
-                 return res.send({
+            return res.send({
                 result: true,
                 message: "Registration successful. OTP has been sent to your number.",
                 learner_id: checkPhone.id,
+                name: checkPhone.name,
+                gender: checkPhone.gender,
+                phone: checkPhone.phone,
+                email: checkPhone.email
             });
 
         }
