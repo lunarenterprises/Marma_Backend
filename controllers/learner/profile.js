@@ -4,7 +4,8 @@ const { formatPhoneNumber } = require('../../utils/sms');
 const moment = require('moment')
 const path = require('path')
 const fs = require('fs')
-const { addNotification } = require('../../utils/addNotification')
+const { addNotification } = require('../../utils/addNotification');
+const { log } = require('console');
 
 
 module.exports.EditProfile = async (req, res) => {
@@ -153,21 +154,25 @@ module.exports.DeleteProfilePic = async (req, res) => {
 
 module.exports.DeleteProfile = async (req, res) => {
     try {
-        const { learner_id } = req.query.learner_id || {}
-console.log("learner_id",learner_id);
+        const learner_id = parseInt(req.query.learner_id); // Convert to integer
 
-        const checklearner = await Therapist.findAll(
-            { where: { id: user.id } }
-        );
+        if (!learner_id || isNaN(learner_id)) {
+            return res.send({
+                result: false,
+                message: "Invalid learner ID"
+            });
+        }
+
+        const checklearner = await Therapist.findByPk(learner_id); // Use findByPk for single record
+
         if (!checklearner) {
             return res.send({
                 result: false,
                 message: "Learner not found"
             });
         }
-        const [affectedCount] = await Therapist.destroy(
-            { where: { id: learner_id } }
-        );
+
+        const affectedCount = await Therapist.destroy({ where: { id: learner_id } }); // No destructuring
 
         if (affectedCount > 0) {
             await addNotification({
@@ -176,7 +181,7 @@ console.log("learner_id",learner_id);
                 type: "Deleted Profile",
                 title: "Learner Profile Deleted",
                 message: `Admin deleted learner ${checklearner.name} profile.`,
-            })
+            });
             return res.send({
                 result: true,
                 message: "Profile deleted successfully"
