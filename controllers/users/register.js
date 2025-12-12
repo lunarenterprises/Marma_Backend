@@ -22,12 +22,34 @@ module.exports.Register = async (req, res) => {
         } = req.body;
 
         if (type == 'userresend') {
+
+            let checkPhone = await User.findOne({
+                where: { phone: formatPhoneNumber(phone) }
+            })
+
+            if (!checkPhone) {
+                return res.send({
+                    result: false,
+                    message: "mobile number not found"
+                })
+            }
             let otp = generateOTP()
             let message = `Your OTP is ${otp} for completing your login with Reflex Marma. It is valid for 5 minutes. Do not share this code with anyone`
 
             let formattedNumber = await formatPhoneNumber(phone)
 
             await sendSMS(formattedNumber, message)
+
+            let updatedata = await User.update({
+                resetToken: otp
+            }, { where: { id: checkPhone.id } })
+
+            if (!updatedata) {
+                return res.send({
+                    result: false,
+                    message: "failed to update otp"
+                })
+            }
 
             return res.send({
                 result: true,

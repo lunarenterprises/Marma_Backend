@@ -14,7 +14,19 @@ module.exports.RegisterLearner = async (req, res) => {
                 message: "Name, phone, email and gender are required"
             })
         }
+
         if (type == 'learnerresend') {
+            let checkPhone = await Therapist.findOne({
+                where: { phone: formatPhoneNumber(phone) }
+            })
+
+            if (!checkPhone) {
+                return res.send({
+                    result: false,
+                    message: "mobile number not found"
+                })
+            }
+
             let token = generateOTP()
             let smsBody = `Your student verification code for Marma App is: ${token}. Please do not share it with anyone.`
             let formattedNumber = await formatPhoneNumber(phone)
@@ -22,6 +34,16 @@ module.exports.RegisterLearner = async (req, res) => {
 
             await sendSMS(formattedNumber, smsBody)
 
+            let updatedata = await Therapist.update({
+                resetToken: token
+            }, { where: { id: checkPhone.id } })
+            
+            if (!updatedata) {
+                return res.send({
+                    result: false,
+                    message: "failed to update otp"
+                })
+            }
             return res.send({
                 result: true,
                 message: "OTP has been sent to your number.",
