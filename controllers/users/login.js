@@ -94,6 +94,7 @@ module.exports.LoginOtp = async (req, res) => {
                 message: 'Phone number is required',
             });
         }
+
         const formattedNumber = formatPhoneNumber(phone)
         const user = await User.findOne({ where: { phone: formattedNumber } });
 
@@ -104,16 +105,8 @@ module.exports.LoginOtp = async (req, res) => {
             });
         }
 
-
         const otp = Math.floor(1000 + Math.random() * 9000).toString();
         const expirationDate = moment().add(5, 'minutes').format('YYYY-MM-DD HH:mm:ss');
-        // const localTime = moment.utc(expirationDate).local().format('YYYY-MM-DD HH:mm:ss');
-
-        //         console.log(expirationDate, "eeee");
-        //         console.log(localTime, "utc");
-        //         console.log(user.resetTokenExpiry, "dbbb");
-        //         // Store OTP and expiry in User table
-
         user.resetToken = otp;
 
         // user.resetTokenExpiry = expirationDate;

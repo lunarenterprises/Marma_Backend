@@ -7,12 +7,26 @@ const { SendWhatsappMessage } = require('../../utils/whatsapp')
 
 module.exports.RegisterLearner = async (req, res) => {
     try {
-        let { name, gender, phone, email } = req.body || {}
+        let { name, gender, phone, email, type } = req.body || {}
         if (!name || !gender || !email || !phone) {
             return res.send({
                 result: false,
                 message: "Name, phone, email and gender are required"
             })
+        }
+        if (type == 'learnerresend') {
+            let token = generateOTP()
+            let smsBody = `Your student verification code for Marma App is: ${token}. Please do not share it with anyone.`
+            let formattedNumber = await formatPhoneNumber(phone)
+            console.log("formattedNumber : ", formattedNumber)
+
+            await sendSMS(formattedNumber, smsBody)
+
+            return res.send({
+                result: true,
+                message: "OTP has been sent to your number.",
+
+            });
         }
         await Therapist.destroy({
             where: {
@@ -59,7 +73,6 @@ module.exports.RegisterLearner = async (req, res) => {
                 roleId: 2,
                 resetToken: token
             }, { where: { id: checkPhone.id } })
-            console.log("createNew : ", createNew)
             if (updatedata) {
                 await sendSMS(formattedNumber, smsBody)
 

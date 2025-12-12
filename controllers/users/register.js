@@ -18,7 +18,23 @@ module.exports.Register = async (req, res) => {
             location,
             role,
             password,
+            type
         } = req.body;
+
+        if (type == 'userresend') {
+            let otp = generateOTP()
+            let message = `Your OTP is ${otp} for completing your login with Reflex Marma. It is valid for 5 minutes. Do not share this code with anyone`
+
+            let formattedNumber = await formatPhoneNumber(phone)
+
+            await sendSMS(formattedNumber, message)
+
+            return res.send({
+                result: true,
+                message: "OTP has been sent to your number.",
+
+            });
+        }
 
         phone = formatPhoneNumber(phone);
         let deletemobile = await User.destroy({
