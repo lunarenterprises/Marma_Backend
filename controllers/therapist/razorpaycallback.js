@@ -215,7 +215,7 @@ module.exports.RazorpayCallback = async (req, res) => {
         width: 100%;
       }
     }
-      
+
   </style>
 </head>
 <body>
@@ -488,7 +488,7 @@ module.exports.RazorpayCallback = async (req, res) => {
     <div class="icon">🎉</div>
     <h1>Payment Successful</h1>
     <p>Thank you for your purchase! Your transaction has been completed successfully.</p>
-    <a href="myapp://" class="btn">Back to Home</a>
+    // <a href="myapp://" class="btn">Back to Home</a>
   </div>
 </body>
 </html>
@@ -608,7 +608,7 @@ module.exports.RazorpayCallback = async (req, res) => {
     <h1>Payment Failed</h1>
     <p>Unfortunately, your payment could not be completed.</p>
     <p>Please try again or contact our support team if the problem continues.</p>
-    <a href="https://marma.com" class="btn">Back to Home</a>
+    // <a href="https://marma.com" class="btn">Back to Home</a>
   </div>
 </body>
 </html>`);
