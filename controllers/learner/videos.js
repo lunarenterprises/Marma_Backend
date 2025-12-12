@@ -1,5 +1,5 @@
 const { LearnerVideo } = require('../../models')
-const { SendWhatsappMessage, sendUserDetailsToAdmin } = require('../../utils/whatsapp')
+const { sendUserDetailsToUser, sendUserDetailsToAdmin } = require('../../utils/whatsapp')
 
 
 module.exports.ListAllVideos = async (req, res) => {
@@ -25,12 +25,12 @@ module.exports.TestWhatsapp = async (req, res) => {
         let toNumber = "+919497042580"
         let message = "sample test message"
         let name = "Jack"
-        let phone ="9876543210"
+        let phone ="+919497042580"
         let email ="jack@gmail.com"
         let gender ="male"
         // await SendWhatsappMessage(toNumber, message)
         // const adminresposne = await sendUserDetailsToAdmin({ name: "sample", phone: "1236654789", email: "qwerty@gmail.com" })
-        const userresposne = await sendUserDetailsToAdmin(name, phone, email, gender)
+        const userresposne = await sendUserDetailsToUser(name, phone, email, gender)
 
         // console.log("adminresposne : ", adminresposne)
         console.log("userresposne : ", userresposne)

@@ -1,6 +1,6 @@
 let { sendEmail } = require('../../utils/emailService');
 let { User, PaymentHistory, Therapist, WalletHistory, Booking, priceDetails } = require('../../models/index');
-const {sendUserDetailsToAdmin } = require('../../utils/whatsapp')
+const { sendUserDetailsToAdmin, sendUserDetailsToUser } = require('../../utils/whatsapp')
 
 let moment = require('moment')
 
@@ -75,7 +75,7 @@ module.exports.RazorpayCallback = async (req, res) => {
           });
 
           console.log("getprice", getprice);
-          console.log("getprice",getprice.pd_therapist_fee);
+          console.log("getprice", getprice.pd_therapist_fee);
 
           await PaymentHistory.update(
             { ph_pay_therapist: getprice.pd_therapist_fee },
@@ -126,11 +126,15 @@ module.exports.RazorpayCallback = async (req, res) => {
         );
 
       }
+
       //==========whatsapp message===========
+
       const sendadminwhatsappmessage = await sendUserDetailsToAdmin(username, Userdetails.phone, Userdetails.email, Userdetails.gender)
+      const senduserwhatsappmessage = await sendUserDetailsToUser(username, Userdetails.phone, Userdetails.email, Userdetails.gender)
+
       //===========================================
 
-//=====================user  mail ================================
+      //=====================user  mail ================================
       let mailOptions = {
         from: `REFLEX MARMA <${process.env.EMAIL_USER}>`,
         to: Userdetails.email,
@@ -211,6 +215,7 @@ module.exports.RazorpayCallback = async (req, res) => {
         width: 100%;
       }
     }
+      
   </style>
 </head>
 <body>
@@ -257,13 +262,13 @@ module.exports.RazorpayCallback = async (req, res) => {
 
       await sendEmail(mailOptions);
 
-//============================admin mail =======================//
+      //============================admin mail =======================//
 
       let mailOptionsAdmin = {
-  from: `REFLEX MARMA <${process.env.EMAIL_USER}>`,
-  to: process.env.ADMIN_EMAIL,
-  subject: "New Course Payment Received",
-  html: `<!DOCTYPE html>
+        from: `REFLEX MARMA <${process.env.EMAIL_USER}>`,
+        to: process.env.ADMIN_EMAIL,
+        subject: "New Course Payment Received",
+        html: `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -391,11 +396,11 @@ module.exports.RazorpayCallback = async (req, res) => {
 </html>
 
   `
-};
+      };
 
-await sendEmail(mailOptionsAdmin);
+      await sendEmail(mailOptionsAdmin);
 
-//------------------------------------------------------------------------//
+      //------------------------------------------------------------------------//
       return res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>

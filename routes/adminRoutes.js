@@ -72,8 +72,10 @@ router.post('/list/gallery', listGallery)
 const { DeleteGallery } = require('../controllers/admin/Gallery.js')
 router.post('/delete/gallery', DeleteGallery)
 
-const { addTherapist } = require('../controllers/admin/addTherapist.js')
+const { addTherapist,TherapistEditProfile } = require('../controllers/admin/addTherapist.js')
 router.post('/add/therapist',authenticateToken, addTherapist)
+router.post('/edit/therapist',authenticateToken, TherapistEditProfile)
+
 
 const { AddLearner } = require('../controllers/admin/addLearners.js')
 router.post('/add/learner',authenticateToken, AddLearner)
