@@ -12,6 +12,7 @@ const authenticateToken = async (req, res, next) => {
     }
 
     const [scheme, token] = authHeader.split(' ');
+console.log("token",token);
 
     // Ensure proper "Bearer <token>" format
     if (!scheme || scheme.toLowerCase() !== 'bearer' || !token) {
@@ -22,6 +23,10 @@ const authenticateToken = async (req, res, next) => {
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log("jwt.verify(token, process.env.JWT_SECRET)",jwt.verify(token, process.env.JWT_SECRET));
+
+      console.log("decoded token",decoded);
+      
     } catch (err) {
       console.error('JWT verification failed:', err);
       return res.status(401).json({
@@ -56,8 +61,6 @@ const authenticateToken = async (req, res, next) => {
     });
   }
 };
-
-module.exports = authenticateToken;
 
 
 const LearnerAuthenticateToken = async (req, res, next) => {
