@@ -56,7 +56,6 @@ const { PromoteLearner,ApproveLearner } = require('../controllers/admin/promoteL
 router.post('/promote/learner', authenticateToken, PromoteLearner);
 router.post('/approve/learner', authenticateToken, ApproveLearner);
 
-
 const { DeleteSection } = require('../controllers/admin/deleteSection.js')
 router.post('/delete/section', authenticateToken, DeleteSection)
 
