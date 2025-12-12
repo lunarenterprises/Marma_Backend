@@ -89,11 +89,9 @@ const getUserList = async (req, res) => {
     const includeClause = {
       model: Role,
       attributes: ['id', 'name'],
+      where: { name: role || 'user' }
     };
 
-    if (role) {
-      includeClause.where = { name: role };
-    }
 
     const allowedSortFields = [
       'id',
