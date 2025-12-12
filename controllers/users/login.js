@@ -96,12 +96,11 @@ module.exports.LoginOtp = async (req, res) => {
         }
         const formattedNumber = formatPhoneNumber(phone)
         const user = await User.findOne({ where: { phone: formattedNumber } });
-        console.log(user, "user");
 
         if (!user) {
             return res.send({
                 result: false,
-                message: 'Phone number is missing or invalid.',
+                message: 'Phone number/User is missing or invalid.',
             });
         }
 
@@ -113,11 +112,12 @@ module.exports.LoginOtp = async (req, res) => {
         //         console.log(expirationDate, "eeee");
         //         console.log(localTime, "utc");
         //         console.log(user.resetTokenExpiry, "dbbb");
-
-
         //         // Store OTP and expiry in User table
+
         user.resetToken = otp;
+
         // user.resetTokenExpiry = expirationDate;
+
         await user.save();
         const updateUser = await User.update(
             {
@@ -132,6 +132,8 @@ module.exports.LoginOtp = async (req, res) => {
         let message = `Your OTP is ${otp} for completing your login with Reflex Marma. It is valid for 5 minutes. Do not share this code with anyone`
 
         let sendotp = await sendSMS(formattedNumber, message)
+        console.log(sendotp, "sendotp");
+
         if (!sendotp) {
             return res.send({
                 result: false,
