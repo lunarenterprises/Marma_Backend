@@ -1,61 +1,64 @@
 const jwt = require('jsonwebtoken');
 const { Role, User, Therapist } = require('../models/index.js');
 
+
 const authenticateToken = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
 
-    // Validate Bearer token format
+    // Ensure Authorization header exists
     if (!authHeader) {
-      return res.status(403).json({ message: 'Access denied, token missing' });
+      return res.status(403).json({ message: 'Access denied: token missing' });
     }
 
     const [scheme, token] = authHeader.split(' ');
 
+    // Ensure proper "Bearer <token>" format
     if (!scheme || scheme.toLowerCase() !== 'bearer' || !token) {
       return res.status(401).json({ message: 'Invalid authorization format' });
     }
 
-    // Verify and decode token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // Verify JWT
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      console.error('JWT verification failed:', err);
+      return res.status(401).json({
+        message: 'Invalid or expired token',
+      });
+    }
 
-    const userId = decoded.id || decoded.userId;
+    const userId = decoded?.id || decoded?.userId;
 
     if (!userId) {
       return res.status(401).json({
-        message: 'Invalid token structure: no user ID found',
-        tokenData: decoded,
+        message: 'Invalid token: missing user identifier',
       });
     }
 
-    // Fetch user with role in one query
+    // Fetch user + role
     const user = await User.findByPk(userId, {
-      include: [
-        {
-          model: Role,
-          attributes: ['id', 'name'],
-        },
-      ],
+      include: [{ model: Role, attributes: ['id', 'name'] }],
     });
 
+    // User not found in DB (maybe deleted)
     if (!user) {
-      console.log('User not found for ID:', userId);
-      return res.status(401).json({
-        message: 'User not found',
-      });
+      return res.status(401).json({ message: 'User not found' });
     }
 
-    req.user = user; // Attach user object to request
-
+    req.user = user; // Attach user to request
     next();
   } catch (error) {
-    console.error('Token verification error:', error);
-    return res.status(401).json({
-      message: 'Invalid or expired token',
-      error: error.message,
+    console.error('Token middleware error:', error);
+    return res.status(500).json({
+      message: 'Server error in authentication middleware',
     });
   }
 };
+
+module.exports = authenticateToken;
+
 
 const LearnerAuthenticateToken = async (req, res, next) => {
 
