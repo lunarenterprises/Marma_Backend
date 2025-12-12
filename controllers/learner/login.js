@@ -51,23 +51,33 @@ module.exports.RegisterLearner = async (req, res) => {
             let formattedNumber = await formatPhoneNumber(phone)
             console.log("formattedNumber : ", formattedNumber)
 
-            await sendSMS(formattedNumber, smsBody)
-            // await sendSMS('+917994690247',
-            //     `A new student registered,
-            //      Name : ${name},
-            //      Email : ${email},
-            //      Phone : ${phone}.`)
+            let updatedata = await Therapist.update({
+                name,
+                gender,
+                phone: formattedNumber,
+                email,
+                roleId: 2,
+                resetToken: token
+            }, { where: { id: checkPhone.id } })
+            console.log("createNew : ", createNew)
+            if (updatedata) {
+                await sendSMS(formattedNumber, smsBody)
 
-            return res.send({
-                result: true,
-                message: "Registration successful. OTP has been sent to your number.",
-                learner_id: checkPhone.id,
-                name: checkPhone.name,
-                gender: checkPhone.gender,
-                phone: checkPhone.phone,
-                email: checkPhone.email
-            });
-
+                return res.send({
+                    result: true,
+                    message: "Registration successful. OTP has been sent to your number.",
+                    learner_id: checkPhone.id,
+                    name: checkPhone.name,
+                    gender: checkPhone.gender,
+                    phone: checkPhone.phone,
+                    email: checkPhone.email
+                });
+            } else {
+                return res.send({
+                    result: false,
+                    message: "Failed to register ."
+                })
+            }
         }
 
         let token = generateOTP()
