@@ -118,8 +118,15 @@ module.exports.TherapistEditProfile = async (req, res) => {
                     data: err,
                 });
             }
-            let {therapist_id} = fields;
+            let { therapist_id } = fields;
 
+            if (!therapist_id) {
+                return res.send({
+                    result: false,
+                    message: "therapist id is required"
+                });
+            }
+            
             let imagepath = null;
 
             // Handle file upload
