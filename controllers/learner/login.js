@@ -96,7 +96,7 @@ module.exports.RegisterLearner = async (req, res) => {
                 resetToken: token
             }, { where: { id: checkPhone.id } })
             if (updatedata) {
-                await sendSMS(formattedNumber, smsBody)
+                // await sendSMS(formattedNumber, smsBody)
 
                 return res.send({
                     result: true,
@@ -129,13 +129,9 @@ module.exports.RegisterLearner = async (req, res) => {
         })
         console.log("createNew : ", createNew)
         if (createNew) {
-            await sendSMS(formattedNumber, smsBody)
-            await sendSMS('+917994690247',
-                `A new student registered,
-                 Name : ${name},
-                 Email : ${email},
-                 Phone : ${phone}.`)
-            // await SendWhatsappMessage()
+
+            // await sendSMS(formattedNumber, smsBody)
+
             return res.send({
                 result: true,
                 message: "Registration successful. OTP has been sent to your number.",
@@ -263,7 +259,7 @@ module.exports.Login = async (req, res) => {
             { resetToken: token }, // values to set
             { where: { phone: formattedNumber } } // condition
         );
-        await sendSMS(formattedNumber, smsBody)
+        // await sendSMS(formattedNumber, smsBody)
         return res.send({
             result: true,
             message: "OTP sended to phone number."
