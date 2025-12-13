@@ -24,14 +24,23 @@ const faqs = [
 
 // ===================== GREETINGS =====================
 const greetings = [
-    "hi", "hello", "hey", "hai",
-    "good morning", "good afternoon", "good evening"
+    "hi",
+    "hello",
+    "hey",
+    "hai",
+    "good morning",
+    "good afternoon",
+    "good evening"
 ];
 
 // ===================== HELPERS =====================
+
+// ✅ FIXED greeting detection (word-boundary safe)
 const isGreeting = (text) => {
-    text = text.toLowerCase();
-    return greetings.some(word => text.includes(word));
+    const lowerText = text.toLowerCase().trim();
+    return greetings.some(greet =>
+        new RegExp(`\\b${greet}\\b`, "i").test(lowerText)
+    );
 };
 
 const getQuestionList = (excludeQuestion = null) => {
@@ -62,6 +71,7 @@ const getBestMatch = (search) => {
         }
     }
 
+    // Require at least 2 keyword matches
     return maxMatches >= 2 ? bestMatch : null;
 };
 
@@ -78,8 +88,16 @@ module.exports.GetAnswer = async (req, res) => {
             });
         }
 
+        // 👋 Greeting → list all questions
+        if (isGreeting(search)) {
+            return res.send({
+                result: true,
+                message: "Hello! Please select a question below:",
+                questions: getQuestionList()
+            });
+        }
 
-        // Find best answer
+        // 🔍 Find best answer
         const match = getBestMatch(search);
 
         // ✅ Answer + remaining questions
@@ -92,7 +110,7 @@ module.exports.GetAnswer = async (req, res) => {
             });
         }
 
-        // Unknown input → suggest questions
+        // ❌ Unknown input → suggest questions
         return res.send({
             result: false,
             message: "I couldn't understand your question. Please choose from below:",
