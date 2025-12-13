@@ -32,7 +32,7 @@ module.exports.RegisterLearner = async (req, res) => {
             let formattedNumber = await formatPhoneNumber(phone)
             console.log("formattedNumber : ", formattedNumber)
 
-            // await sendSMS(formattedNumber, smsBody)
+            await sendSMS(formattedNumber, smsBody)
 
             let updatedata = await Therapist.update({
                 resetToken: token
@@ -96,7 +96,7 @@ module.exports.RegisterLearner = async (req, res) => {
                 resetToken: token
             }, { where: { id: checkPhone.id } })
             if (updatedata) {
-                // await sendSMS(formattedNumber, smsBody)
+                await sendSMS(formattedNumber, smsBody)
 
                 return res.send({
                     result: true,
@@ -130,7 +130,7 @@ module.exports.RegisterLearner = async (req, res) => {
         console.log("createNew : ", createNew)
         if (createNew) {
 
-            // await sendSMS(formattedNumber, smsBody)
+            await sendSMS(formattedNumber, smsBody)
 
             return res.send({
                 result: true,
@@ -259,7 +259,7 @@ module.exports.Login = async (req, res) => {
             { resetToken: token }, // values to set
             { where: { phone: formattedNumber } } // condition
         );
-        // await sendSMS(formattedNumber, smsBody)
+        await sendSMS(formattedNumber, smsBody)
         return res.send({
             result: true,
             message: "OTP sended to phone number."
