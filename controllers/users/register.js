@@ -4,6 +4,8 @@ const moment = require('moment');
 const { sendEmail, emailUser } = require('../../utils/emailService');
 const createOtpLog = require('../../utils/addOtpLog');
 var { formatPhoneNumber, sendSMS } = require('../../utils/sms')
+var { generateOTP } = require('../../utils/generateOTP')
+
 
 module.exports.Register = async (req, res) => {
     try {
@@ -146,7 +148,7 @@ module.exports.Register = async (req, res) => {
         });
 
         if (adduser) {
-            const otp = Math.floor(1000 + Math.random() * 9000);
+            const otp = generateOTP()
             const otpExpire = moment().add(5, 'minutes').toDate(); // Use Date object
 
             const userId = adduser.id;
