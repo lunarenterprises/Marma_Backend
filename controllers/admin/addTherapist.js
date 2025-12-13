@@ -126,7 +126,7 @@ module.exports.TherapistEditProfile = async (req, res) => {
                     message: "therapist id is required"
                 });
             }
-            
+
             let imagepath = null;
 
             // Handle file upload
@@ -163,6 +163,7 @@ module.exports.TherapistEditProfile = async (req, res) => {
             if (fields.state) updateData.state = fields.state;
             if (fields.district) updateData.district = fields.district;
             if (fields.location) updateData.location = fields.location;
+            if (fields.status) updateData.status = fields.status;
             if (imagepath) updateData.file = imagepath;
 
             // Update in DB
