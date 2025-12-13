@@ -40,7 +40,7 @@ module.exports.Register = async (req, res) => {
 
             let formattedNumber = await formatPhoneNumber(phone)
 
-            await sendSMS(formattedNumber, message)
+            // await sendSMS(formattedNumber, message)
 
             let updatedata = await User.update({
                 resetToken: otp
@@ -169,7 +169,7 @@ module.exports.Register = async (req, res) => {
 
             let message = `Your OTP is ${otp} for completing your registration with Reflex Marma. It is valid for 5 minutes. Do not share this code with anyone`
 
-            let sendsms = await sendSMS(phone, message)
+            // let sendsms = await sendSMS(phone, message)
 
 
             return res.status(201).json({
