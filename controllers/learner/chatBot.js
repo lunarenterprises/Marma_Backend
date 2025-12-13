@@ -106,7 +106,7 @@ module.exports.GetAnswer = async (req, res) => {
                 result: true,
                 question: match.question,
                 answer: match.answer,
-                nextQuestions: getQuestionList(match.question)
+                questions: getQuestionList(match.question)
             });
         }
 
