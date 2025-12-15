@@ -144,7 +144,7 @@ module.exports.ListBooking = async (req, res) => {
       Bookinglist = await Booking.findAll({
         where: {
           ...whereClause,
-          status: 'Completed',
+          status: 'Approved',
           date: today,
         },
         include,
@@ -167,7 +167,7 @@ module.exports.ListBooking = async (req, res) => {
       Bookinglist = await Booking.findAll({
         where: {
           ...whereClause,
-          status: 'Completed',
+          status: 'Approved',
           date: {
             [Op.between]: [weekStart, weekEnd],
           },
