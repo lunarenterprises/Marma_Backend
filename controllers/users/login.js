@@ -124,7 +124,7 @@ module.exports.LoginOtp = async (req, res) => {
 
         let message = `Your OTP is ${otp} for completing your login with Reflex Marma. It is valid for 5 minutes. Do not share this code with anyone`
 
-        let sendotp = await sendSMS(formattedNumber, message)
+        // let sendotp = await sendSMS(formattedNumber, message)
 
         return res.send({
             result: true,
