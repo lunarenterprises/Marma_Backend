@@ -55,6 +55,7 @@ module.exports.EditProfile = async (req, res) => {
             if (fields.state) updateData.state = fields.state;
             if (fields.district) updateData.district = fields.district;
             if (fields.location) updateData.location = fields.location;
+            if (fields.availability) updateData.availability = fields.availability;
             if (imagepath) updateData.file = imagepath;
 
             // Update in DB
