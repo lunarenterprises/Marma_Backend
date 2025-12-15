@@ -84,6 +84,7 @@ module.exports.ListBooking = async (req, res) => {
       cancelled,
       appointment,
       todysbooking,
+      upcoming,
       yesturdaybooking,
       lastweekbooking,
       lastmonthbooking
@@ -144,7 +145,7 @@ module.exports.ListBooking = async (req, res) => {
       Bookinglist = await Booking.findAll({
         where: {
           ...whereClause,
-          status: 'Approved',
+          status: 'Completed',
           date: today,
         },
         include,
@@ -167,7 +168,7 @@ module.exports.ListBooking = async (req, res) => {
       Bookinglist = await Booking.findAll({
         where: {
           ...whereClause,
-          status: 'Approved',
+          status: 'Completed',
           date: {
             [Op.between]: [weekStart, weekEnd],
           },
@@ -190,7 +191,15 @@ module.exports.ListBooking = async (req, res) => {
         include,
         order: [['createdAt', 'DESC']]
       });
-    } else {
+    } else if (upcoming) {
+      Bookinglist = await Booking.findAll({
+        where: {
+          ...whereClause,
+          status: 'Upcoming',
+        },
+        include,
+      });
+    }else {
       // default booking list
       Bookinglist = await Booking.findAll({
         where: whereClause,
