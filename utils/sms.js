@@ -18,7 +18,6 @@ module.exports.sendSMS = async (toNumber, message) => {
 };
 
 
-
 module.exports.formatPhoneNumber = (phone, defaultCountryCode = '+91') => {
   if (!phone) return null;
 
