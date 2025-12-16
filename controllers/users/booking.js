@@ -4,7 +4,7 @@ var moment = require('moment')
 
 module.exports.AddBooking = async (req, res) => {
   try {
-    var { service, user_id, therapist_id, duration,price_id } = req.body;
+    var { service, user_id, therapist_id, duration, price_id } = req.body;
     if (!service || !user_id || !therapist_id || !duration || !price_id) {
       return res.send({
         result: false,
@@ -55,7 +55,7 @@ module.exports.AddBooking = async (req, res) => {
       userId: user_id,
       therapistId: therapist_id,
       duration: duration,
-      price_id:price_id
+      price_id: price_id
     });
 
     await notification.addNotification(user_id, therapist_id, status, `Request Therapy section`, `${user.name} request ${service} therapy section to ${therapist.name}`, userimage)
@@ -85,6 +85,7 @@ module.exports.ListBooking = async (req, res) => {
       appointment,
       todysbooking,
       upcoming,
+      ongoing,
       yesturdaybooking,
       lastweekbooking,
       lastmonthbooking
@@ -118,7 +119,7 @@ module.exports.ListBooking = async (req, res) => {
           status: { [Op.in]: ['Completed'] }
         },
         include,
-         order: [['createdAt', 'DESC']]
+        order: [['createdAt', 'DESC']]
       });
 
     } else if (cancelled) {
@@ -199,7 +200,15 @@ module.exports.ListBooking = async (req, res) => {
         },
         include,
       });
-    }else {
+    } else if (ongoing) {
+      Bookinglist = await Booking.findAll({
+        where: {
+          ...whereClause,
+          status: 'Ongoing',
+        },
+        include,
+      });
+    } else {
       // default booking list
       Bookinglist = await Booking.findAll({
         where: whereClause,
@@ -290,7 +299,7 @@ module.exports.UpdateBooking = async (req, res) => {
 module.exports.UpdateBookingStatus = async (req, res) => {
   try {
     let user = req.user
-console.log("user:",user);
+    console.log("user:", user);
 
     const { b_id, status } = req.body;
 
@@ -310,14 +319,14 @@ console.log("user:",user);
     }
 
 
-      var userdetails = await User.findByPk(user.id);
-      if (!userdetails) {
-        return res.send({
-          result: false,
-          message: "User not found."
-        });
-      }
-    
+    var userdetails = await User.findByPk(user.id);
+    if (!userdetails) {
+      return res.send({
+        result: false,
+        message: "User not found."
+      });
+    }
+
 
     let u_id = bookingdetails.userId;
     let therapist_id = bookingdetails.therapistId;
