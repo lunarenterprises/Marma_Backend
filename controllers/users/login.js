@@ -167,65 +167,62 @@ module.exports.verifyOtp = async (req, res) => {
         }
 
         // Validate OTP and expiry
-        // if (user.resetToken != otp
-        //     // || moment().isAfter(moment(user.resetTokenExpiry)
-        // )
-        if ('1111' != otp) 
-
-            {
-                return res.status(400).json({
-                    result: false,
-                    message: "Invalid or expired OTP",
-                });
-            }
-            if (type == 'login') {
-                let token = await GenerateToken({
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    roleid: user.roleId,
-                    rolename: user.Role.nam
-
-                })
-
-
-                // OTP is valid, clear it
-                user.resetToken = null;
-                user.resetTokenExpiry = null;
-                await user.save();
-
-                return res.json({
-                    result: true,
-                    message: "OTP verified successfully",
-                    u_id: user.id,
-                    name: user.name,
-                    role: user.roleId,
-                    token: token,
-                    image: user.profile_pic
-                });
-            } else {
-                // const addotplog = await OtpLog.create({
-                //     phone: phone,
-                //     userId: user.id,
-                //     purpose: 'register',
-                // });
-
-                user.resetToken = null;
-                user.resetTokenExpiry = null;
-                await user.save();
-
-                return res.json({
-                    result: true,
-                    message: "OTP verified successfully",
-                })
-            }
-        } catch (error) {
-            return res.status(500).json({
+        if (user.resetToken != otp
+            // || moment().isAfter(moment(user.resetTokenExpiry)
+        )
+        {
+            return res.status(400).json({
                 result: false,
-                message: error.message,
+                message: "Invalid or expired OTP",
             });
         }
-    };
+        if (type == 'login') {
+            let token = await GenerateToken({
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                roleid: user.roleId,
+                rolename: user.Role.nam
+
+            })
+
+            // OTP is valid, clear it
+            user.resetToken = null;
+            user.resetTokenExpiry = null;
+            await user.save();
+
+            return res.json({
+                result: true,
+                message: "OTP verified successfully",
+                u_id: user.id,
+                name: user.name,
+                role: user.roleId,
+                token: token,
+                image: user.profile_pic
+            });
+        } else {
+            // const addotplog = await OtpLog.create({
+            //     phone: phone,
+            //     userId: user.id,
+            //     purpose: 'register',
+            // });
+
+            user.resetToken = null;
+            user.resetTokenExpiry = null;
+            await user.save();
+
+            return res.json({
+                result: true,
+                message: "OTP verified successfully",
+            })
+        }
+    } catch (error) {
+        return res.status(500).json({
+            result: false,
+            message: error.message,
+        });
+    }
+};
 
 
 
