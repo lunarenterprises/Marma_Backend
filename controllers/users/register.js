@@ -40,7 +40,7 @@ module.exports.Register = async (req, res) => {
 
             let formattedNumber = await formatPhoneNumber(phone)
 
-            await sendSMS(formattedNumber, message)
+            // await sendSMS(formattedNumber, message)
 
             let updatedata = await User.update({
                 resetToken: otp
