@@ -116,7 +116,7 @@ module.exports.RegisterLearner = async (req, res) => {
         }
 
         let token = generateOTP()
-        let smsBody = `Your student verification code for Marma App is: ${token}. Please do not share it with anyone.`
+        let smsBody = `Your verification code for Marma App is: ${token}. Please do not share it with anyone.`
         let formattedNumber = await formatPhoneNumber(phone)
         console.log("formattedNumber : ", formattedNumber)
         let createNew = await Therapist.create({
