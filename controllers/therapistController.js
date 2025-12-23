@@ -4,9 +4,9 @@ const { Therapist, Role } = require('../models/index.js');
 // Add a new therapist
 exports.addTherapist = async (req, res) => {
   try {
-    const { name, clinicName, email, phone, specialization, experience, availability,description } = req.body;
+    const { name, clinicName, email, phone, specialization, experience, availability, description } = req.body;
 
-      const file = req.file ? req.file.filename : null;
+    const file = req.file ? req.file.filename : null;
 
     await Therapist.destroy({
       where: {
@@ -21,7 +21,7 @@ exports.addTherapist = async (req, res) => {
       },
     })
     let checkEmail = await Therapist.findOne({
-      where: { email: email.toLowerCase().trim()}
+      where: { email: email.toLowerCase().trim() }
     })
     if (checkEmail) {
       return res.send({
@@ -81,7 +81,11 @@ exports.getTherapists = async (req, res) => {
     }
 
     const therapists = await Therapist.findAll({
-      where: whereClause,
+      where: {
+        ...whereClause,
+        status: 'Approved',
+        roleId: 3,
+      },
       attributes: [
         'id',
         'name',
