@@ -5,6 +5,7 @@ const { GenerateToken } = require('../../utils/generateToken')
 // var nodemailer = require('nodemailer');
 var moment = require('moment');
 var { formatPhoneNumber, sendSMS } = require('../../utils/sms')
+const logger = require('../../utils/logger')
 
 
 module.exports.Login = async (req, res) => {
@@ -75,6 +76,7 @@ module.exports.Login = async (req, res) => {
         });
 
     } catch (error) {
+        logger.error(error)
         return res.send({
             result: false,
             message: error.message
@@ -132,6 +134,7 @@ module.exports.LoginOtp = async (req, res) => {
 
         });
     } catch (error) {
+        logger.error(error)
         return res.send({
             result: false,
             message: error.message,
@@ -190,6 +193,17 @@ module.exports.verifyOtp = async (req, res) => {
             user.resetTokenExpiry = null;
             await user.save();
 
+            // FCM TOKEN
+            if (fcm_token) {
+                let checkuserlogin = await model.CheckUserLogin(user.u_id);
+
+                if (checkuserlogin.length > 0) {
+                    await model.UpdateUserToken(user.u_id, fcm_token);
+                } else {
+                    await model.AddUserToken(user.u_id, fcm_token);
+                }
+            }
+
             return res.json({
                 result: true,
                 message: "OTP verified successfully",
@@ -216,6 +230,7 @@ module.exports.verifyOtp = async (req, res) => {
             })
         }
     } catch (error) {
+        logger.error(error)
         return res.status(500).json({
             result: false,
             message: error.message,
