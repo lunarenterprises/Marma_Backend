@@ -6,51 +6,7 @@ const sendEmail = require('../utils/emailService');
 const { emailTemplates } = require('../utils/emailService');
 const { successResponse, errorResponse } = require('../utils/responseHandler');
 const { GenerateToken } = require('../utils/generateToken')
-
-
-// Create admin user if not exists
-const createDefaultAdmin = async () => {
-  try {
-    const existingAdmin = await User.findOne({
-      where: {
-        [Op.or]: [{ name: 'Admin' }, { email: 'admin@gmail.com' }],
-      },
-    });
-
-    if (!existingAdmin) {
-      let adminRole = await Role.findOne({ where: { name: 'admin' } });
-
-      if (!adminRole) {
-        adminRole = await Role.create({
-          name: 'admin',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        });
-      }
-
-      const adminData = {
-        email: 'admin@gmail.com',
-        name: 'Admin',
-        password: 'Admin@123',
-        roleId: adminRole.id,
-        status: 'active',
-        phone: '1234567890',
-        address: 'Default admin address',
-        location: 'Head Office',
-      };
-
-      console.log("Creating admin user with data:", adminData);
-
-      await User.create(adminData);
-
-      console.log('Admin user created successfully!');
-    } else {
-      console.log('Admin user already exists!');
-    }
-  } catch (error) {
-    console.error('Error creating admin user:', error);
-  }
-};
+const logger = require('../utils/logger');
 
 
 // Login
@@ -58,7 +14,6 @@ const login = async (req, res) => {
   try {
     const { emailOrUsername, password } = req.body;
 
-    await createDefaultAdmin();
 
     const user = await User.findOne({
       where: {
@@ -83,15 +38,14 @@ const login = async (req, res) => {
 
     await user.update({ lastLogin: new Date() });
 
-    let token = await GenerateToken({
+    const token = await GenerateToken({
       id: user.id,
       name: user.name,
       email: user.email,
       phone: user.phone,
       roleid: user.roleId,
       role: user.Role.name
-    })
-    console.log("token : ", token);
+    });
 
     return successResponse(res, 200, 'Login successful', {
       user: {
@@ -103,7 +57,7 @@ const login = async (req, res) => {
       token,
     });
   } catch (error) {
-    console.error('Login error:', error);
+    logger.error(error);
     return errorResponse(res, 500, 'Server error');
   }
 };
@@ -142,7 +96,7 @@ const forgotPassword = async (req, res) => {
         html: emailTemplates.resetPassword(resetUrl, user.name),
       });
     } catch (emailError) {
-      console.error('Email sending failed:', emailError);
+      logger.error(emailError);
       await user.update({ resetToken: null, resetTokenExpiry: null });
     }
 
@@ -152,7 +106,7 @@ const forgotPassword = async (req, res) => {
       'If your email exists in our system, you will receive reset instructions.'
     );
   } catch (error) {
-    console.error('Forgot password error:', error);
+    logger.error(error);
     return errorResponse(res, 500, 'Server error');
   }
 };
@@ -182,7 +136,7 @@ const resetPassword = async (req, res) => {
 
     return successResponse(res, 200, 'Password reset successful');
   } catch (error) {
-    console.error('Reset password error:', error);
+    logger.error(error);
     return errorResponse(res, 500, 'Server error');
   }
 };

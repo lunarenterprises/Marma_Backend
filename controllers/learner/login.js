@@ -3,6 +3,7 @@ const { generateOTP } = require('../../utils/generateOTP')
 const { sendSMS, formatPhoneNumber } = require('../../utils/sms')
 const { GenerateToken } = require('../../utils/generateToken')
 const { SendWhatsappMessage } = require('../../utils/whatsapp')
+const logger = require('../../utils/logger')
 
 
 module.exports.RegisterLearner = async (req, res) => {
@@ -47,7 +48,6 @@ module.exports.RegisterLearner = async (req, res) => {
             return res.send({
                 result: true,
                 message: "OTP has been sent to your number.",
-
             });
         }
         await Therapist.destroy({
@@ -145,7 +145,7 @@ module.exports.RegisterLearner = async (req, res) => {
             })
         }
     } catch (error) {
-        console.log("error : ", error)
+        logger.error(error)
         return res.send({
             result: false,
             message: error.message
@@ -181,7 +181,7 @@ module.exports.VerifyOtp = async (req, res) => {
                 message: "Phone not registered yet"
             })
         }
-        // eslint-disable-next-line eqeqeq
+         
         // if (checkPhone.resetToken != otp) {
         if ('1111' !== otp) {
             return res.send({
