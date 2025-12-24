@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { Role, User, Therapist } = require('../models/index.js');
+const logger = require('../utils/logger');
 
 
 const authenticateToken = async (req, res, next) => {
@@ -12,7 +13,6 @@ const authenticateToken = async (req, res, next) => {
     }
 
     const [scheme, token] = authHeader.split(' ');
-console.log("token",token);
 
     // Ensure proper "Bearer <token>" format
     if (!scheme || scheme.toLowerCase() !== 'bearer' || !token) {
@@ -20,16 +20,14 @@ console.log("token",token);
     }
 
     // Verify JWT
+    // Verify JWT
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
-      console.log("jwt.verify(token, process.env.JWT_SECRET)",jwt.verify(token, process.env.JWT_SECRET));
-
-      console.log("decoded token",decoded);
-      
     } catch (err) {
-      console.error('JWT verification failed:', err);
+      logger.error('JWT verification failed: ' + err.message);
       return res.status(401).json({
+        result:false,
         message: 'Invalid or expired token',
       });
     }
@@ -55,7 +53,7 @@ console.log("token",token);
     req.user = user; // Attach user to request
     next();
   } catch (error) {
-    console.error('Token middleware error:', error);
+    logger.error(error);
     return res.status(500).json({
       message: 'Server error in authentication middleware',
     });
