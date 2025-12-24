@@ -108,76 +108,84 @@ module.exports.GetWithdrawRequests = async (req, res) => {
 
 
 module.exports.WithdrawRequestApprovel = async (req, res) => {
+    const transaction = await sequelize.transaction();
     try {
-        let user = req.user;
-        var { wr_id, status } = req.body || {};
-        let role = user.Role.name;
+        const user = req.user;
+        const { wr_id, status } = req.body || {};
+        const role = user?.Role?.name;
 
         if (role !== 'admin') {
             return res.send({ result: false, message: "You are not Authorized" });
         }
 
-        if (!wr_id) {
-            return res.send({ result: false, message: "withdraw request id is required" });
+        if (!wr_id || !status) {
+            return res.send({ result: false, message: "withdraw request id and status are required" });
         }
 
-        const withdrawrequest = await WithdrawRequest.findByPk(wr_id);
+        if (!['Approved', 'Rejected'].includes(status)) {
+            return res.send({ result: false, message: "Invalid status" });
+        }
+
+        const withdrawrequest = await WithdrawRequest.findByPk(wr_id, { transaction });
 
         if (!withdrawrequest) {
+            return res.send({ result: false, message: "Withdraw Request not found" });
+        }
+
+        // Prevent double approval/rejection
+        if (withdrawrequest.wr_status !== 'Pending') {
             return res.send({
                 result: false,
-                message: "Withdraw Request not found"
+                message: `Withdraw request already ${withdrawrequest.wr_status}`
             });
         }
 
-        let therapist_id = withdrawrequest.wr_therapist_id;
-        let Amount = withdrawrequest.wr_amount;
+        const therapist_id = withdrawrequest.wr_therapist_id;
+        const amount = Number(withdrawrequest.wr_amount);
 
-
-        // If approved → deduct wallet amount
-        if (status == 'Approved') {
-
-            // 1. Fetch therapist wallet
-            let therapist = await Therapist.findByPk(therapist_id);
+        if (status === 'Approved') {
+            const therapist = await Therapist.findByPk(therapist_id, {
+                transaction,
+                lock: transaction.LOCK.UPDATE
+            });
 
             if (!therapist) {
-                return res.send({
-                    result: false,
-                    message: "Therapist not found"
-                });
+                return res.send({ result: false, message: "Therapist not found" });
             }
-console.log("testttt",therapist.wallet , Amount);
 
-            // 2. Check wallet balance
-            if (therapist.wallet < Amount) {
+            const walletBalance = Number(therapist.wallet);
+console.log("Wallet Balance:", walletBalance,amount);
+console.log(walletBalance < amount);
+
+            if (walletBalance < amount) {
                 return res.send({
                     result: false,
                     message: "Insufficient wallet balance"
                 });
             }
 
-            // 3. Subtract withdrawal amount
-            let updatedWallet = therapist.wallet - Amount;
-
-            // 4. Update therapist wallet
-            await Therapist.update(
-                { wallet: updatedWallet },
-                { where: { id: therapist_id } }
+            // Update wallet
+            await therapist.update(
+                { wallet: walletBalance - amount },
+                { transaction }
             );
 
-            // 5. Create wallet history (Debit)
+            // Wallet history
             await WalletHistory.create({
                 wh_therapist_id: therapist_id,
-                wh_amount: Amount,
-                wh_type: 'Debit'
-            });
+                wh_amount: amount,
+                wh_type: 'Debit',
+                wh_description: 'Withdrawal approved'
+            }, { transaction });
         }
 
-        // Update request status
-        await WithdrawRequest.update(
+        // Update withdraw request status
+        await withdrawrequest.update(
             { wr_status: status },
-            { where: { wr_id: wr_id } }
+            { transaction }
         );
+
+        await transaction.commit();
 
         return res.send({
             result: true,
@@ -185,9 +193,11 @@ console.log("testttt",therapist.wallet , Amount);
         });
 
     } catch (error) {
+        await transaction.rollback();
         return res.send({
             result: false,
             message: error.message
         });
     }
 };
+
