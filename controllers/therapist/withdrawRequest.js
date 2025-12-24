@@ -146,6 +146,7 @@ module.exports.WithdrawRequestApprovel = async (req, res) => {
                     message: "Therapist not found"
                 });
             }
+console.log("testttt",therapist.wallet , Amount);
 
             // 2. Check wallet balance
             if (therapist.wallet < Amount) {
