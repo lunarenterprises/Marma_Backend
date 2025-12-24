@@ -108,7 +108,6 @@ module.exports.GetWithdrawRequests = async (req, res) => {
 
 
 module.exports.WithdrawRequestApprovel = async (req, res) => {
-    const transaction = await sequelize.transaction();
     try {
         const user = req.user;
         const { wr_id, status } = req.body || {};
@@ -119,44 +118,54 @@ module.exports.WithdrawRequestApprovel = async (req, res) => {
         }
 
         if (!wr_id || !status) {
-            return res.send({ result: false, message: "withdraw request id and status are required" });
+            return res.send({
+                result: false,
+                message: "withdraw request id and status are required"
+            });
         }
 
         if (!['Approved', 'Rejected'].includes(status)) {
-            return res.send({ result: false, message: "Invalid status" });
-        }
-
-        const withdrawrequest = await WithdrawRequest.findByPk(wr_id, { transaction });
-
-        if (!withdrawrequest) {
-            return res.send({ result: false, message: "Withdraw Request not found" });
-        }
-
-        // Prevent double approval/rejection
-        if (withdrawrequest.wr_status !== 'Pending') {
             return res.send({
                 result: false,
-                message: `Withdraw request already ${withdrawrequest.wr_status}`
+                message: "Invalid status"
+            });
+        }
+
+        const withdrawrequest = await WithdrawRequest.findByPk(wr_id);
+
+        if (!withdrawrequest) {
+            return res.send({
+                result: false,
+                message: "Withdraw Request not found"
+            });
+        }
+
+        // Prevent double approval
+        if (withdrawrequest.wr_status === 'Approved') {
+            return res.send({
+                result: false,
+                message: "Withdraw request already approved"
             });
         }
 
         const therapist_id = withdrawrequest.wr_therapist_id;
         const amount = Number(withdrawrequest.wr_amount);
 
+        // If approved → deduct wallet amount
         if (status === 'Approved') {
-            const therapist = await Therapist.findByPk(therapist_id, {
-                transaction,
-                lock: transaction.LOCK.UPDATE
-            });
+
+            const therapist = await Therapist.findByPk(therapist_id);
 
             if (!therapist) {
-                return res.send({ result: false, message: "Therapist not found" });
+                return res.send({
+                    result: false,
+                    message: "Therapist not found"
+                });
             }
 
             const walletBalance = Number(therapist.wallet);
-console.log("Wallet Balance:", walletBalance,amount);
-console.log(walletBalance < amount);
 
+            // Check wallet balance
             if (walletBalance < amount) {
                 return res.send({
                     result: false,
@@ -165,27 +174,22 @@ console.log(walletBalance < amount);
             }
 
             // Update wallet
-            await therapist.update(
-                { wallet: walletBalance - amount },
-                { transaction }
-            );
+            therapist.wallet = walletBalance - amount;
+            await therapist.save();
 
             // Wallet history
             await WalletHistory.create({
                 wh_therapist_id: therapist_id,
                 wh_amount: amount,
-                wh_type: 'Debit',
-                wh_description: 'Withdrawal approved'
-            }, { transaction });
+                wh_type: 'Debit'
+            });
         }
 
         // Update withdraw request status
-        await withdrawrequest.update(
+        await WithdrawRequest.update(
             { wr_status: status },
-            { transaction }
+            { where: { wr_id } }
         );
-
-        await transaction.commit();
 
         return res.send({
             result: true,
@@ -193,11 +197,11 @@ console.log(walletBalance < amount);
         });
 
     } catch (error) {
-        await transaction.rollback();
         return res.send({
             result: false,
             message: error.message
         });
     }
 };
+
 
