@@ -62,48 +62,48 @@ module.exports.WithdrawRequest = async (req, res) => {
 }
 
 module.exports.GetWithdrawRequests = async (req, res) => {
-  try {
-    const { therapist_id,status } = req.body || {}
+    try {
+        const { therapist_id, status } = req.body || {}
 
-    const whereClause = {};
-    if (therapist_id) whereClause.wr_therapist_id = therapist_id;
-    if (status) whereClause.wr_status = status;
+        const whereClause = {};
+        if (therapist_id) whereClause.wr_therapist_id = therapist_id;
+        if (status) whereClause.wr_status = status;
 
 
-    const includeOptions = [
-      {
-        model: Therapist,
-        as: 'therapist', // must match your association alias
-        attributes: ['name','clinicName','phone','specialization','file'],
-        required: false, // left join — includes therapists even without matches
-      },
-    ];
+        const includeOptions = [
+            {
+                model: Therapist,
+                as: 'therapist', // must match your association alias
+                attributes: ['name', 'clinicName', 'phone', 'specialization', 'file'],
+                required: false, // left join — includes therapists even without matches
+            },
+        ];
 
-    // Fetch data
-    const data = await WithdrawRequest.findAll({
-      where: whereClause,
-      include: includeOptions,
-    });
+        // Fetch data
+        const data = await WithdrawRequest.findAll({
+            where: whereClause,
+            include: includeOptions,
+        });
 
-    // Response handling
-    if (data && data.length > 0) {
-      return res.send({
-        result: true,
-        message: 'Data retrieved successfully',
-        data,
-      });
-    } else {
-      return res.send({
-        result: false,
-        message: 'No data found',
-      });
+        // Response handling
+        if (data && data.length > 0) {
+            return res.send({
+                result: true,
+                message: 'Data retrieved successfully',
+                data,
+            });
+        } else {
+            return res.send({
+                result: false,
+                message: 'No data found',
+            });
+        }
+    } catch (error) {
+        return res.status(500).send({
+            result: false,
+            message: error.message,
+        });
     }
-  } catch (error) {
-    return res.status(500).send({
-      result: false,
-      message: error.message,
-    });
-  }
 };
 
 
@@ -133,11 +133,6 @@ module.exports.WithdrawRequestApprovel = async (req, res) => {
         let therapist_id = withdrawrequest.wr_therapist_id;
         let Amount = withdrawrequest.wr_amount;
 
-        // Update request status
-        await WithdrawRequest.update(
-            { wr_status: status },
-            { where: { wr_id: wr_id } }
-        );
 
         // If approved → deduct wallet amount
         if (status == 'Approved') {
@@ -176,6 +171,12 @@ module.exports.WithdrawRequestApprovel = async (req, res) => {
                 wh_type: 'Debit'
             });
         }
+
+        // Update request status
+        await WithdrawRequest.update(
+            { wr_status: status },
+            { where: { wr_id: wr_id } }
+        );
 
         return res.send({
             result: true,
