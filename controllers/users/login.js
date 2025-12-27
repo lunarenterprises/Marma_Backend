@@ -193,15 +193,15 @@ module.exports.verifyOtp = async (req, res) => {
             await user.save();
 
             // FCM TOKEN
-            if (fcm_token) {
-                let checkuserlogin = await model.CheckUserLogin(user.u_id);
+            // if (fcm_token) {
+            //     let checkuserlogin = await model.CheckUserLogin(user.u_id);
 
-                if (checkuserlogin.length > 0) {
-                    await model.UpdateUserToken(user.u_id, fcm_token);
-                } else {
-                    await model.AddUserToken(user.u_id, fcm_token);
-                }
-            }
+            //     if (checkuserlogin.length > 0) {
+            //         await model.UpdateUserToken(user.u_id, fcm_token);
+            //     } else {
+            //         await model.AddUserToken(user.u_id, fcm_token);
+            //     }
+            // }
 
             return res.json({
                 result: true,
