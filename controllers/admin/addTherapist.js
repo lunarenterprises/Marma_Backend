@@ -7,7 +7,7 @@ const moment = require('moment');
 const formidable = require('formidable');
 
 // Add a new therapist
-exports.addTherapist = async (req, res) => {
+module.exports.addTherapist = async (req, res) => {
     try {
         const form = new formidable.IncomingForm({ multiples: true });
         let user = req.user
