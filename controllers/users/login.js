@@ -85,7 +85,6 @@ module.exports.Login = async (req, res) => {
 };
 
 
-
 module.exports.LoginOtp = async (req, res) => {
     try {
         const { phone } = req.body;
