@@ -195,11 +195,16 @@ module.exports.verifyOtp = async (req, res) => {
             // FCM TOKEN
             if (fcm_token) {
                 let checkuserlogin = await fcmtoken.findOne({ where: { ft_u_id: user.id } });
+                console.log("user.id", user.id);
 
-                if (checkuserlogin.length > 0) {
+                if (checkuserlogin) {
                     await fcmtoken.update({ ft_fcm_token: fcm_token }, { where: { ft_u_id: user.id } });
+                    console.log("upadte", user.id);
+
                 } else {
                     await fcmtoken.create({ ft_fcm_token: fcm_token, ft_u_id: user.id });
+                    console.log("create", user.id);
+
                 }
             }
 
@@ -213,6 +218,17 @@ module.exports.verifyOtp = async (req, res) => {
                 image: user.profile_pic
             });
         } else {
+
+            // FCM TOKEN
+            if (fcm_token) {
+                let checkuserlogin = await fcmtoken.findOne({ where: { ft_u_id: user.id } });
+
+                if (checkuserlogin) {
+                    await fcmtoken.update({ ft_fcm_token: fcm_token }, { where: { ft_u_id: user.id } });
+                } else {
+                    await fcmtoken.create({ ft_fcm_token: fcm_token, ft_u_id: user.id });
+                }
+            }
             // const addotplog = await OtpLog.create({
             //     phone: phone,
             //     userId: user.id,

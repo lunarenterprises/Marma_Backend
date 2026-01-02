@@ -217,7 +217,7 @@ module.exports.VerifyOtp = async (req, res) => {
             if (fcm_token) {
                 let checkuserlogin = await fcmtoken.findOne({ where: { ft_therapist_id: checkPhone.id } });
 
-                if (checkuserlogin.length > 0) {
+                if (checkuserlogin) {
                     await fcmtoken.update({ ft_fcm_token: fcm_token }, { where: { ft_therapist_id: checkPhone.id } });
                 } else {
                     await fcmtoken.create({ ft_fcm_token: fcm_token, ft_therapist_id: checkPhone.id });
