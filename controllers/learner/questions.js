@@ -1,6 +1,6 @@
 let { Questions, SubmitQuestions } = require('../../models/index')
 const { Sequelize } = require('sequelize');
-let { addNotification } = require('../../utils/addNotification')
+let { SendNotification } = require('../../utils/sendnotification')
 
 
 module.exports.ListAllQuestions = async (req, res) => {
@@ -60,7 +60,7 @@ module.exports.SubmitQuestions = async (req, res) => {
             });
         }
         await SubmitQuestions.bulkCreate(records);
-        await addNotification({
+        await SendNotification({
             user_id: null,
             therapist_id: user.id,
             type: "Mock Test Submission",

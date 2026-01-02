@@ -4,6 +4,8 @@ const moment = require("moment");
 const { User, Therapist, PaymentHistory, Booking, priceDetails } = require('../../models/index');
 let generateOTP = require('../../utils/generateOTP')
 let createOtpLog = require('../../utils/addOtpLog')
+let { SendNotification } = require('../../utils/sendnotification')
+
 
 module.exports.Payment = async (req, res) => {
     try {
@@ -110,7 +112,7 @@ module.exports.Payment = async (req, res) => {
 
         if (role === 'user') {
             const price = await priceDetails.findOne({ where: { pd_id: bookingdetails.price_id } })
-            if(!price){
+            if (!price) {
                 return res.status(404).json({
                     result: false,
                     message: "Price details not found",
@@ -192,6 +194,15 @@ module.exports.Payment = async (req, res) => {
                     { otp: therapyOTP },
                     { where: { id: booking_id } }
                 );
+            }
+            if (user_id && therapist_id) {
+                await SendNotification({
+                    user_id: user_id,
+                    therapist_id: therapist_id,
+                    type: "Payment Link Generated",
+                    title: "Payment Link Created",
+                    message: `Payment link for therapy session has been created.`,
+                });
             }
 
             // console.log('✅ Payment link created successfully:', response.data);

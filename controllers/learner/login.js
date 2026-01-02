@@ -1,4 +1,4 @@
-const { Therapist, Role } = require('../../models')
+const { Therapist, Role, fcmtoken } = require('../../models/index')
 const { generateOTP } = require('../../utils/generateOTP')
 const { sendSMS, formatPhoneNumber } = require('../../utils/sms')
 const { GenerateToken } = require('../../utils/generateToken')
@@ -156,7 +156,7 @@ module.exports.RegisterLearner = async (req, res) => {
 
 module.exports.VerifyOtp = async (req, res) => {
     try {
-        let { phone, otp, type } = req.body || {}
+        let { phone, otp, fcm_token, type } = req.body || {}
         if (!phone || !otp || !type) {
             return res.send({
                 result: false,
@@ -181,7 +181,7 @@ module.exports.VerifyOtp = async (req, res) => {
                 message: "Phone not registered yet"
             })
         }
-         
+
         // if (checkPhone.resetToken != otp) {
         if ('1111' !== otp) {
             return res.send({
@@ -212,6 +212,18 @@ module.exports.VerifyOtp = async (req, res) => {
                 image: checkPhone.profile_pic,
                 token
             }
+
+            // FCM TOKEN
+            if (fcm_token) {
+                let checkuserlogin = await fcmtoken.findOne({ where: { ft_therapist_id: checkPhone.id } });
+
+                if (checkuserlogin.length > 0) {
+                    await fcmtoken.update({ ft_fcm_token: fcm_token }, { where: { ft_therapist_id: checkPhone.id } });
+                } else {
+                    await fcmtoken.create({ ft_fcm_token: fcm_token, ft_therapist_id: checkPhone.id });
+                }
+            }
+
             return res.send({
                 result: true,
                 message: "Verification successfull.",

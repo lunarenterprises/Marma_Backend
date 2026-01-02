@@ -33,6 +33,14 @@ const Notification = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+      n_date: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+      n_time: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     n_status: {
       type: DataTypes.STRING,
       allowNull: false,
