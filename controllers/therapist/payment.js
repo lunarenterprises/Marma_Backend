@@ -202,6 +202,7 @@ module.exports.Payment = async (req, res) => {
                     type: "Payment Link Generated",
                     title: "Payment Link Created",
                     message: `Payment link for therapy session has been created.`,
+                    image: null,
                 });
             }
 

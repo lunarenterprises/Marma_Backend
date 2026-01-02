@@ -89,12 +89,12 @@ async function initializeFirebase() {
 
 let getUser = async (receiver_id, role) => {
     if (role === 'therapist') {
-        const Query = `SELECT ft_fcm_token FROM fcm_tokens_therapist WHERE ft_therapist_id = ? LIMIT 1`;
+        const Query = `SELECT fcmtokens FROM fcm_tokens_therapist WHERE ft_therapist_id = ? LIMIT 1`;
         const data = await query(Query, [receiver_id]);
         return data && data.length ? data[0] : null;
     }
     if (role === 'user') {
-        const Query = `SELECT ft_fcm_token FROM fcm_tokens WHERE ft_u_id = ? LIMIT 1`;
+        const Query = `SELECT fcmtokens FROM fcm_tokens WHERE ft_u_id = ? LIMIT 1`;
         const data = await query(Query, [receiver_id]);
         return data && data.length ? data[0] : null;
 
