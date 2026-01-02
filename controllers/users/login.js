@@ -1,12 +1,11 @@
-const { User, Role, OtpLog } = require('../../models/index'); // Sequelize model
+const { User, Role, OtpLog, fcmtoken } = require('../../models/index'); // Sequelize model
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { GenerateToken } = require('../../utils/generateToken')
 // var nodemailer = require('nodemailer');
 var moment = require('moment');
-var { formatPhoneNumber, sendSMS } = require('../../utils/sms')
+var { formatPhoneNumber } = require('../../utils/sms')
 const logger = require('../../utils/logger')
-
 
 module.exports.Login = async (req, res) => {
     try {
@@ -143,7 +142,7 @@ module.exports.LoginOtp = async (req, res) => {
 
 module.exports.verifyOtp = async (req, res) => {
     try {
-        const { phone, otp, type } = req.body;
+        const { phone, otp, fcm_token, type } = req.body;
 
         if (!phone || !otp) {
             return res.status(400).json({
@@ -161,6 +160,7 @@ module.exports.verifyOtp = async (req, res) => {
                 }
             ]
         });
+
         if (!user) {
             return res.status(404).json({
                 result: false,
@@ -183,7 +183,7 @@ module.exports.verifyOtp = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 roleid: user.roleId,
-                rolename: user.Role.nam
+                rolename: user.Role.name
 
             })
 
@@ -193,15 +193,15 @@ module.exports.verifyOtp = async (req, res) => {
             await user.save();
 
             // FCM TOKEN
-            // if (fcm_token) {
-            //     let checkuserlogin = await model.CheckUserLogin(user.u_id);
+            if (fcm_token) {
+                let checkuserlogin = await fcmtoken.findOne({ where: { ft_u_id: user.id } });
 
-            //     if (checkuserlogin.length > 0) {
-            //         await model.UpdateUserToken(user.u_id, fcm_token);
-            //     } else {
-            //         await model.AddUserToken(user.u_id, fcm_token);
-            //     }
-            // }
+                if (checkuserlogin.length > 0) {
+                    await fcmtoken.update({ ft_fcm_token: fcm_token }, { where: { ft_u_id: user.id } });
+                } else {
+                    await fcmtoken.create({ ft_fcm_token: fcm_token, ft_u_id: user.id });
+                }
+            }
 
             return res.json({
                 result: true,

@@ -8,7 +8,6 @@ const { successResponse, errorResponse } = require('../utils/responseHandler');
 const { GenerateToken } = require('../utils/generateToken')
 const logger = require('../utils/logger');
 
-
 // Login
 const login = async (req, res) => {
   try {

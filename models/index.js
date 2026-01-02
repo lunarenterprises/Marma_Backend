@@ -23,6 +23,7 @@ const Doctors = require('./doctors.js')
 const Gallery = require('./Gallery.js')
 const priceDetails = require('./price.js')
 const Testimonial =require('./testimonial.js')
+const fcmtoken = require('./fcmtoken.js')
 
 
 // === Define Associations === //
@@ -189,6 +190,7 @@ module.exports = {
   Gallery,
   priceDetails,
   Testimonial,
+  fcmtoken,
   initRoles,
   createDefaultAdmin,
   initializeDatabase,

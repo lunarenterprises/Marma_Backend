@@ -1,5 +1,5 @@
 const { Booking, Therapist, Category } = require('../../models/index.js');
-const notification = require('../../utils/addNotification.js')
+const notification = require('../../utils/sendnotification.js')
 
 
 module.exports.ApproveTherapiRequest = async (req, res) => {
@@ -65,7 +65,7 @@ module.exports.ApproveTherapiRequest = async (req, res) => {
             { where: { id: request_id } }
         );
 
-        await notification.addNotification(
+        await notification.SendNotification(
             request.userId,
             therapist_id,
             status,

@@ -1,5 +1,5 @@
 const { Therapist } = require('../../models/index.js');
-const notification = require('../../utils/addNotification.js')
+const notification = require('../../utils/sendnotification.js')
 
 
 module.exports.PromoteLearner = async (req, res) => {
@@ -42,7 +42,7 @@ module.exports.PromoteLearner = async (req, res) => {
 
         let status = 'Promote Learner'
 
-        await notification.addNotification(
+        await notification.SendNotification(
             admin_id,
             learner_id,
             status,
@@ -110,7 +110,7 @@ module.exports.ApproveLearner = async (req, res) => {
         }
         let status = 'Approve Learner'
 
-        await notification.addNotification(
+        await notification.SendNotification(
             admin_id,
             learner_id,
             status,

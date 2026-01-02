@@ -1,5 +1,5 @@
 const { Booking, User, Therapist, Category, Op } = require('../../models/index.js');
-const notification = require('../../utils/addNotification.js')
+const notification = require('../../utils/sendnotification.js')
 var moment = require('moment')
 
 module.exports.AddBooking = async (req, res) => {
@@ -50,6 +50,7 @@ module.exports.AddBooking = async (req, res) => {
         message: "Therapist not found"
       })
     }
+
     let addboking = await Booking.create({
       service: service,
       userId: user_id,
@@ -58,7 +59,7 @@ module.exports.AddBooking = async (req, res) => {
       price_id: price_id
     });
 
-    await notification.addNotification(user_id, therapist_id, status, `Request Therapy section`, `${user.name} request ${service} therapy section to ${therapist.name}`, userimage)
+    await notification.SendNotification(user_id, therapist_id, status, `Request Therapy section`, `${user.name} request ${service} therapy section to ${therapist.name}`, userimage)
 
     return res.send({
       result: true,
@@ -358,7 +359,7 @@ module.exports.UpdateBookingStatus = async (req, res) => {
       });
     }
 
-    await notification.addNotification(
+    await notification.SendNotification(
       u_id,
       therapist_id,
       status,
