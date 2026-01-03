@@ -1,6 +1,6 @@
 const { Booking, Therapist, Category } = require('../../models/index.js');
 const notification = require('../../utils/addNotification.js')
-
+const { sendSMS } = require('../../utils/sms')
 
 module.exports.ApproveTherapiRequest = async (req, res) => {
     try {
