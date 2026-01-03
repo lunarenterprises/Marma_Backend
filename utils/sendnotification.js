@@ -9,7 +9,7 @@ module.exports.SendNotification = async ({ user_id, therapist_id, type, title, m
     const date = moment().format("YYYY-MM-DD");
     const time = moment().format("HH:mm:ss");
 
-    if (!message || !receiver_id) {
+    if (!message || !user_id) {
       return {
         result: false,
         message: "insufficient parameters",
@@ -39,11 +39,10 @@ module.exports.SendNotification = async ({ user_id, therapist_id, type, title, m
       n_date: date,
       n_time: time,
     });
-
     if (addnotification.affectedRows > 0) {
       return {
         result: true,
-        message: send,
+        message: "Notification sent successfully",
       };
     } else {
       return {
@@ -51,6 +50,7 @@ module.exports.SendNotification = async ({ user_id, therapist_id, type, title, m
         message: "failed to send notification",
       };
     }
+
   } catch (error) {
     console.error(error);
     return {

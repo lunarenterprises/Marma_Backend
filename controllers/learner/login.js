@@ -33,7 +33,7 @@ module.exports.RegisterLearner = async (req, res) => {
             let formattedNumber = await formatPhoneNumber(phone)
             console.log("formattedNumber : ", formattedNumber)
 
-            // await sendSMS(formattedNumber, smsBody)
+            await sendSMS(formattedNumber, smsBody)
 
             let updatedata = await Therapist.update({
                 resetToken: token
