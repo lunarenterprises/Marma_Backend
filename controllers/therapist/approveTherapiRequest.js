@@ -1,4 +1,4 @@
-const { Booking, Therapist, Category } = require('../../models/index.js');
+const { Booking, Therapist, Category, User } = require('../../models/index.js');
 const notification = require('../../utils/addNotification.js')
 const { sendSMS } = require('../../utils/sms')
 
@@ -39,6 +39,16 @@ module.exports.ApproveTherapiRequest = async (req, res) => {
             })
         }
 
+        const userdetails = await User.findOne({
+            where: { id: request.userId },
+            attributes: ['name', 'gender', 'address', 'email', 'phone', 'location', 'profile_pic']
+        });
+        if (!userdetails) {
+            return res.send({
+                result: false,
+                message: "User details not found"
+            })
+        }
         const therapist = await Therapist.findOne({
             where: { id: therapist_id },
             include: [
@@ -65,7 +75,7 @@ module.exports.ApproveTherapiRequest = async (req, res) => {
             { where: { id: request_id } }
         );
 
-        let smsBody = `Hi, Therapist ${therapist.name} ${status} your therapy booking request.`;
+        let smsBody = `Hi, Your therapy request ${status} by therapist ${therapist.name}.`;
 
         if (status.toLowerCase() === 'approved') {
             smsBody += ' Please confirm therapy date and time through the app.';
@@ -73,7 +83,7 @@ module.exports.ApproveTherapiRequest = async (req, res) => {
         if (status.toLowerCase() === 'rejected') {
             smsBody += 'due to his unavailability,please choose another therapist for your therapy.';
         }
-        await sendSMS(therapist.phone, smsBody);
+        await sendSMS(userdetails.phone, smsBody);
 
         await notification.addNotification({
             user_id: request.userId,
