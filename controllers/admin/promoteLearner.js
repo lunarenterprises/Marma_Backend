@@ -1,5 +1,5 @@
 const { Therapist } = require('../../models/index.js');
-const notification = require('../../utils/sendnotification.js')
+const notification = require('../../utils/addNotification.js')
 
 
 module.exports.PromoteLearner = async (req, res) => {
@@ -42,14 +42,14 @@ module.exports.PromoteLearner = async (req, res) => {
 
         let status = 'Promote Learner'
 
-        await notification.SendNotification(
-            admin_id,
-            learner_id,
-            status,
-            `Promoting Learner to Therapist`,
-            `${therapistdata.name} Promoted from Learner to Therapist`,
-            therapistdata.file
-        );
+        await notification.addNotification({
+            user_id: admin_id,
+            therapist_id: learner_id,
+            type: status,
+            title: `Promoting Learner to Therapist`,
+            message: `${therapistdata.name} Promoted from Learner to Therapist`,
+            image: therapistdata.file
+        });
 
         return res.send({
             result: true,
@@ -110,14 +110,14 @@ module.exports.ApproveLearner = async (req, res) => {
         }
         let status = 'Approve Learner'
 
-        await notification.SendNotification(
-            admin_id,
-            learner_id,
-            status,
-            `Approve Learner`,
-            `${therapistdata.name} details approved`,
-            therapistdata.file
-        );
+        await notification.addNotification({
+            user_id: admin_id,
+            therapist_id: learner_id,
+            type: status,
+            title: `Approve Learner`,
+            message: `${therapistdata.name} details approved`,
+            image: therapistdata.file
+        });
 
         return res.send({
             result: true,

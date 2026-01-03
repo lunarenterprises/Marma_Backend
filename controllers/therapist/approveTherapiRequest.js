@@ -1,5 +1,5 @@
 const { Booking, Therapist, Category } = require('../../models/index.js');
-const notification = require('../../utils/sendnotification.js')
+const notification = require('../../utils/addNotification.js')
 
 
 module.exports.ApproveTherapiRequest = async (req, res) => {
@@ -65,14 +65,24 @@ module.exports.ApproveTherapiRequest = async (req, res) => {
             { where: { id: request_id } }
         );
 
-        await notification.SendNotification(
-            request.userId,
-            therapist_id,
-            status,
-            `Therapy Booking ${status}`,
-            `${therapist.name} ${status} ${request.service} section`,
-            categoryimage
-        );
+        let smsBody = `Hi, Therapist ${therapist.name} ${status} your therapy booking request.`;
+
+        if (status.toLowerCase() === 'approved') {
+            smsBody += ' Please confirm therapy date and time through the app.';
+        }
+        if (status.toLowerCase() === 'rejected') {
+            smsBody += 'due to his unavailability,please choose another therapist for your therapy.';
+        }
+        await sendSMS(therapist.phone, smsBody);
+
+        await notification.addNotification({
+            user_id: request.userId,
+            therapist_id: therapist_id,
+            type: status,
+            title: `Therapy Booking ${status}`,
+            message: `${therapist.name} ${status} ${request.service} section`,
+            image: categoryimage
+        });
         console.log(updateBooking, "addbooking");
 
         return res.send({

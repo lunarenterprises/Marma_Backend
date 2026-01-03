@@ -4,7 +4,8 @@ const moment = require("moment");
 const { User, Therapist, PaymentHistory, Booking, priceDetails } = require('../../models/index');
 let generateOTP = require('../../utils/generateOTP')
 let createOtpLog = require('../../utils/addOtpLog')
-let { SendNotification } = require('../../utils/sendnotification')
+let { addNotification } = require('../../utils/addNotification')
+const { sendSMS } = require('../../utils/sms')
 
 
 module.exports.Payment = async (req, res) => {
@@ -31,7 +32,7 @@ module.exports.Payment = async (req, res) => {
             }
 
         }
-
+        let therapistphone
         const date = moment().format('YYYY-MM-DD');
         let bookingdetails
         // Booking validation (only if booking_id exists)
@@ -67,6 +68,7 @@ module.exports.Payment = async (req, res) => {
             }
 
             let therapist = await Therapist.findByPk(therapist_id);
+            therapistphone = therapist.phone
             if (!therapist) {
                 return res.status(404).json({
                     result: false,
@@ -186,7 +188,6 @@ module.exports.Payment = async (req, res) => {
 
             } else {
                 await createOtpLog(phone, user_id, null, purpose);
-
             }
 
             if (booking_id) {
@@ -195,13 +196,17 @@ module.exports.Payment = async (req, res) => {
                     { where: { id: booking_id } }
                 );
             }
+
             if (user_id && therapist_id) {
-                await SendNotification({
+                let smsBody = `Hi, Your therapy session payment link has been created.Please make payment to confirm your booking.`
+                await sendSMS(therapistphone, smsBody)
+
+                await addNotification({
                     user_id: user_id,
                     therapist_id: therapist_id,
                     type: "Payment Link Generated",
                     title: "Payment Link Created",
-                    message: `Payment link for therapy session has been created.`,
+                    message: "Payment link for therapy session has been created.",
                     image: null,
                 });
             }

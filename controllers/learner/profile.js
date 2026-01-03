@@ -4,7 +4,7 @@ const { formatPhoneNumber } = require('../../utils/sms');
 const moment = require('moment')
 const path = require('path')
 const fs = require('fs')
-const { SendNotification } = require('../../utils/sendnotification');
+const { addNotification } = require('../../utils/addNotification');
 const { log } = require('console');
 
 
@@ -126,7 +126,7 @@ module.exports.DeleteProfilePic = async (req, res) => {
             { where: { id: learner_id } }
         )
         if (affectedCount > 0) {
-        
+
             return res.send({
                 result: true,
                 message: "Profile picture removed successfully"
@@ -169,12 +169,13 @@ module.exports.DeleteProfile = async (req, res) => {
         const affectedCount = await Therapist.destroy({ where: { id: learner_id } }); // No destructuring
 
         if (affectedCount > 0) {
-            await SendNotification({
+            await addNotification({
                 user_id: null,
                 therapist_id: learner_id,
                 type: "Deleted Profile",
                 title: "Learner Profile Deleted",
                 message: `Admin deleted learner ${checklearner.name} profile.`,
+                image:null  
             });
             return res.send({
                 result: true,
