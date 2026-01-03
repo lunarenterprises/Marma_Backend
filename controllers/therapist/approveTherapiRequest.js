@@ -65,6 +65,16 @@ module.exports.ApproveTherapiRequest = async (req, res) => {
             { where: { id: request_id } }
         );
 
+        let smsBody = `Hi, Therapist ${therapist.name} ${status} your therapy booking request.`;
+
+        if (status.toLowerCase() === 'approved') {
+            smsBody += ' Please confirm therapy date and time through the app.';
+        }
+        if (status.toLowerCase() === 'rejected') {
+            smsBody += 'due to his unavailability,please choose another therapist for your therapy.';
+        }
+        await sendSMS(therapist.phone, smsBody);
+
         await notification.addNotification({
             user_id: request.userId,
             therapist_id: therapist_id,

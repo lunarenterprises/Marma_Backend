@@ -1,5 +1,6 @@
 const { Booking, User, Therapist, Category, Op } = require('../../models/index.js');
 const notification = require('../../utils/addNotification.js')
+const { sendSMS } = require('../../utils/sms')
 var moment = require('moment')
 
 module.exports.AddBooking = async (req, res) => {
@@ -58,6 +59,9 @@ module.exports.AddBooking = async (req, res) => {
       duration: duration,
       price_id: price_id
     });
+
+    let smsBody = `Hello ${therapist.name}, ${user.name} request a therapy section to you.`
+    await sendSMS(therapist.phone, smsBody)
 
     await notification.addNotification({
       user_id: user_id,

@@ -5,6 +5,7 @@ const { User, Therapist, PaymentHistory, Booking, priceDetails } = require('../.
 let generateOTP = require('../../utils/generateOTP')
 let createOtpLog = require('../../utils/addOtpLog')
 let { addNotification } = require('../../utils/addNotification')
+const { sendSMS } = require('../../utils/sms')
 
 
 module.exports.Payment = async (req, res) => {
@@ -31,7 +32,7 @@ module.exports.Payment = async (req, res) => {
             }
 
         }
-
+        let therapistphone
         const date = moment().format('YYYY-MM-DD');
         let bookingdetails
         // Booking validation (only if booking_id exists)
@@ -67,6 +68,7 @@ module.exports.Payment = async (req, res) => {
             }
 
             let therapist = await Therapist.findByPk(therapist_id);
+            therapistphone = therapist.phone
             if (!therapist) {
                 return res.status(404).json({
                     result: false,
@@ -196,6 +198,9 @@ module.exports.Payment = async (req, res) => {
             }
 
             if (user_id && therapist_id) {
+                let smsBody = `Hi, Your therapy session payment link has been created.Please make payment to confirm your booking.`
+                await sendSMS(therapistphone, smsBody)
+
                 await addNotification({
                     user_id: user_id,
                     therapist_id: therapist_id,
