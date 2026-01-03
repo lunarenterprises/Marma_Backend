@@ -32,7 +32,7 @@ module.exports.Payment = async (req, res) => {
             }
 
         }
-        let therapistphone
+        let userphone
         const date = moment().format('YYYY-MM-DD');
         let bookingdetails
         // Booking validation (only if booking_id exists)
@@ -60,6 +60,8 @@ module.exports.Payment = async (req, res) => {
             }
 
             const user = await User.findByPk(user_id);
+            userphone = user.phone
+
             if (!user) {
                 return res.status(404).json({
                     result: false,
@@ -68,7 +70,6 @@ module.exports.Payment = async (req, res) => {
             }
 
             let therapist = await Therapist.findByPk(therapist_id);
-            therapistphone = therapist.phone
             if (!therapist) {
                 return res.status(404).json({
                     result: false,
@@ -199,7 +200,7 @@ module.exports.Payment = async (req, res) => {
 
             if (user_id && therapist_id) {
                 let smsBody = `Hi, Your therapy session payment link has been created.Please make payment to confirm your booking.`
-                await sendSMS(therapistphone, smsBody)
+                await sendSMS(userphone, smsBody)
 
                 await addNotification({
                     user_id: user_id,
