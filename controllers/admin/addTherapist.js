@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const moment = require('moment');
 const formidable = require('formidable');
+const logger = require('../../utils/logger');
 
 // Add a new therapist
 module.exports.addTherapist = async (req, res) => {
