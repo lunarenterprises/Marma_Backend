@@ -8,103 +8,151 @@ const formidable = require('formidable');
 
 // Add a new therapist
 module.exports.addTherapist = async (req, res) => {
+    logger.info("Add therapist request received");
+
     try {
-        const form = new formidable.IncomingForm({ multiples: true });
-        let user = req.user
+        const form = new formidable.IncomingForm({ multiples: false });
+        const user = req.user;
+
         form.parse(req, async (err, fields, files) => {
-            if (err) {
-                return res.status(400).send({
-                    result: false,
-                    message: "File Upload Failed!",
-                    data: err,
-                });
-            }
-            const { name, clinicName, gender, email, phone, specialization, experience, availability, description } = fields
-
-            await Therapist.destroy({
-                where: {
-                    phone: formatPhoneNumber(phone),
-                    phoneVerified: 'false',
-                },
-            });
-
-            await Therapist.destroy({
-                where: {
-                    email: email.toLowerCase().trim(),
-                    phoneVerified: 'false',
-                },
-            })
-            let checkEmail = await Therapist.findOne({
-                where: { email: email.toLowerCase().trim() }
-            })
-            if (checkEmail) {
-                return res.send({
-                    result: false,
-                    message: "Email already registered"
-                })
-            }
-            let checkPhone = await Therapist.findOne({
-                where: { phone: formatPhoneNumber(phone), phoneVerified: "true" }
-            })
-            if (checkPhone) {
-                return res.send({
-                    result: false,
-                    message: "Phone number is already registered"
-                })
-            }
-
-            if (files.image) {
-                let date = moment().format('YYYY-MM-DD')
-                const uploadDir = path.join(process.cwd(), 'uploads', 'profiles_pic');
-                if (!fs.existsSync(uploadDir)) {
-                    fs.mkdirSync(uploadDir, { recursive: true });
-                }
-
-                if (!files.image || !files.image.filepath || !files.image.originalFilename) {
-                    return res.status(400).send({
+            try {
+                if (err) {
+                    logger.error("Formidable parse error", err);
+                    return res.status(400).json({
                         result: false,
-                        message: "Invalid image file upload.",
-                        data: files.image || null,
+                        message: "File upload failed",
                     });
                 }
-                const oldPath = files.image.filepath;
-                const fileName = date + '-' + files.image.originalFilename;
-                const newPath = path.join(uploadDir, fileName);
-                const rawData = fs.readFileSync(oldPath);
-                fs.writeFile(newPath, rawData, async (err) => {
-                    if (err) {
-                        return res.status(500).send({
-                            result: false,
-                            message: "File save failed.",
-                            data: err,
-                        });
-                    }
-                })
-                imagepath = `/uploads/profiles_pic/${fileName}`;
-            }
-            let formattedNumber = formatPhoneNumber(phone)
-            const therapist = await Therapist.create({
-                name,
-                clinicName,
-                gender,
-                email,
-                phone: formattedNumber,
-                specialization,
-                experience,
-                availability,
-                description,
-                file: imagepath,
-                roleId: '3',
-                status: "Approved"
-            });
 
-            res.status(201).json({ success: true, data: therapist });
-        })
+                logger.info("Form parsed successfully");
+
+                let {
+                    name,
+                    clinicName,
+                    gender,
+                    email,
+                    phone,
+                    specialization,
+                    experience,
+                    availability,
+                    description
+                } = fields;
+
+                email = email?.toLowerCase().trim();
+                const formattedNumber = formatPhoneNumber(phone);
+
+                logger.info("Checking and cleaning unverified therapists", {
+                    email,
+                    phone: formattedNumber,
+                });
+
+                /** Remove unverified duplicates */
+                await Therapist.destroy({
+                    where: {
+                        [Sequelize.Op.or]: [
+                            { phone: formattedNumber },
+                            { email }
+                        ],
+                        phoneVerified: false,
+                    },
+                });
+
+                logger.info("Checking if email already exists", { email });
+
+                const checkEmail = await Therapist.findOne({ where: { email } });
+                if (checkEmail) {
+                    logger.warn("Duplicate email detected", { email });
+                    return res.status(409).json({
+                        result: false,
+                        message: "Email already registered",
+                    });
+                }
+
+                logger.info("Checking if phone already exists", { phone: formattedNumber });
+
+                const checkPhone = await Therapist.findOne({
+                    where: {
+                        phone: formattedNumber,
+                        phoneVerified: true,
+                    },
+                });
+
+                if (checkPhone) {
+                    logger.warn("Duplicate phone detected", { phone: formattedNumber });
+                    return res.status(409).json({
+                        result: false,
+                        message: "Phone number already registered",
+                    });
+                }
+
+                /** Handle image upload */
+                let imagepath = null;
+
+                if (files?.image) {
+                    logger.info("Image upload detected");
+
+                    const uploadDir = path.join(process.cwd(), "uploads", "profiles_pic");
+                    if (!fs.existsSync(uploadDir)) {
+                        fs.mkdirSync(uploadDir, { recursive: true });
+                        logger.info("Upload directory created", { uploadDir });
+                    }
+
+                    const date = moment().format("YYYY-MM-DD");
+                    const fileName = `${date}-${files.image.originalFilename}`;
+                    const newPath = path.join(uploadDir, fileName);
+
+                    await fs.promises.copyFile(files.image.filepath, newPath);
+
+                    imagepath = `/uploads/profiles_pic/${fileName}`;
+                    logger.info("Image saved successfully", { imagepath });
+                }
+
+                logger.info("Creating therapist record");
+
+                const therapist = await Therapist.create({
+                    name,
+                    clinicName,
+                    gender,
+                    email,
+                    phone: formattedNumber,
+                    specialization,
+                    experience,
+                    availability,
+                    description,
+                    file: imagepath,
+                    roleId: 3,
+                    status: "Approved",
+                });
+
+                logger.info("Therapist created successfully", {
+                    therapistId: therapist.id,
+                    email,
+                });
+
+                return res.status(201).json({
+                    success: true,
+                    data: therapist,
+                });
+
+            } catch (innerError) {
+                logger.error("Error while processing add therapist form", innerError);
+                return res.status(500).json({
+                    success: false,
+                    message: "Failed to add therapist",
+                });
+            }
+        });
+
     } catch (error) {
-        console.error('Error creating therapist:', error);
-        res.status(500).json({ success: false, message: 'Failed to add therapist.' });
+        logger.fatal("Unexpected error in addTherapist controller", error);
+        return res.status(500).json({
+            success: false,
+            message: "Server error",
+        });
     }
 };
+
+
 
 module.exports.TherapistEditProfile = async (req, res) => {
     try {
