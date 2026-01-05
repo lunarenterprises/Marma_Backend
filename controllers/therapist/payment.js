@@ -199,7 +199,7 @@ module.exports.Payment = async (req, res) => {
             }
 
             if (user_id && therapist_id) {
-                let smsBody = `Hi, Your therapy session payment link has been created.Please make payment to confirm your booking.`
+                let smsBody = `Hi, Your therapy session payment link has been created.Please make payment to confirm your booking. Payment Link:${response.data.short_url}`
                 await sendSMS(userphone, smsBody)
 
                 await addNotification({
