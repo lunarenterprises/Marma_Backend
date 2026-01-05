@@ -6,7 +6,6 @@ const path = require('path');
 const moment = require('moment');
 const formidable = require('formidable');
 const logger = require('../../utils/logger');
-const { log } = require('console');
 
 // Add a new therapist
 module.exports.addTherapist = async (req, res) => {
@@ -122,7 +121,6 @@ module.exports.addTherapist = async (req, res) => {
                     roleId: 3,
                     status: "Approved",
                 });
-                console.log("therapist", therapist);
 
                 logger.info("Therapist created successfully", {
                     therapistId: therapist.id,
