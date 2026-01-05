@@ -1,11 +1,12 @@
 const { Op } = require('sequelize');
-const { Therapist } = require('../../models/index');
+const { Therapist, Sequelize } = require('../../models/index');
 const { formatPhoneNumber } = require('../../utils/sms')
 const fs = require('fs');
 const path = require('path');
 const moment = require('moment');
 const formidable = require('formidable');
 const logger = require('../../utils/logger');
+const { log } = require('console');
 
 // Add a new therapist
 module.exports.addTherapist = async (req, res) => {
@@ -39,7 +40,6 @@ module.exports.addTherapist = async (req, res) => {
                     description
                 } = fields;
 
-                email = email?.toLowerCase().trim();
                 const formattedNumber = formatPhoneNumber(phone);
 
                 logger.info("Checking and cleaning unverified therapists", {
@@ -50,13 +50,11 @@ module.exports.addTherapist = async (req, res) => {
                 /** Remove unverified duplicates */
                 await Therapist.destroy({
                     where: {
-                        [Sequelize.Op.or]: [
-                            { phone: formattedNumber },
-                            { email }
-                        ],
+                        phone: formattedNumber,
                         phoneVerified: false,
                     },
                 });
+
 
                 logger.info("Checking if email already exists", { email });
 
@@ -124,6 +122,7 @@ module.exports.addTherapist = async (req, res) => {
                     roleId: 3,
                     status: "Approved",
                 });
+                console.log("therapist", therapist);
 
                 logger.info("Therapist created successfully", {
                     therapistId: therapist.id,
