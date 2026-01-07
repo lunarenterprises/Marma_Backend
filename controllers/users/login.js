@@ -6,6 +6,7 @@ const { GenerateToken } = require('../../utils/generateToken')
 var moment = require('moment');
 var { formatPhoneNumber } = require('../../utils/sms')
 const logger = require('../../utils/logger')
+var { formatPhoneNumber, sendSMS } = require('../../utils/sms')
 
 module.exports.Login = async (req, res) => {
     try {
@@ -169,8 +170,8 @@ module.exports.verifyOtp = async (req, res) => {
         }
 
         // Validate OTP and expiry
-        // if (user.resetToken != otp) {
-        if ('1111' !== otp) {
+        if (user.resetToken != otp) {
+            // if ('1111' !== otp) {
 
             return res.status(400).json({
                 result: false,

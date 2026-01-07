@@ -182,8 +182,8 @@ module.exports.VerifyOtp = async (req, res) => {
             })
         }
 
-        // if (checkPhone.resetToken != otp) {
-        if ('1111' !== otp) {
+        if (checkPhone.resetToken != otp) {
+            // if ('1111' !== otp) {
             return res.send({
                 result: false,
                 message: "Invalid otp"
