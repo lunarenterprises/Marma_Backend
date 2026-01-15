@@ -139,6 +139,10 @@ const Therapist = sequelize.define('Therapist',
       type: DataTypes.ENUM('Online', 'Offline'),
       defaultValue: 'Offline',
     },
+    available_time: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     rating: {
       type: DataTypes.DECIMAL(2, 1),
       defaultValue: 0,

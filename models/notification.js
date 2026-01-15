@@ -33,11 +33,11 @@ const Notification = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-      n_date: {
+    n_date: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-      n_time: {
+    n_time: {
       type: DataTypes.STRING,
       allowNull: true,
     },
@@ -46,12 +46,12 @@ const Notification = sequelize.define(
       allowNull: false,
       defaultValue: 'unread',
     },
-     n_user_read: {
-      type:INTEGER,
+    n_user_read: {
+      type: INTEGER,
       allowNull: false,
       defaultValue: '0',
     },
-     n_therapist_read: {
+    n_therapist_read: {
       type: INTEGER,
       allowNull: false,
       defaultValue: '0',

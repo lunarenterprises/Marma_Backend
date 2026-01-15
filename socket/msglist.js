@@ -28,23 +28,39 @@ module.exports = function (io) {
         }, 10000); // 10 seconds
 
 
-        socket.on("userOnline", ({ user_id, role }) => {
-            if (!user_id || !role) return;
-            clearTimeout(timer); // Prevent memory leak
+        socket.on("userOnline", async ({ user_id, role }) => {
+            try {
+                if (!user_id || !role) return;
 
-            const key = `${role}-${user_id}`;
-
-            // Remove old socket for this user
-            for (const [existingKey, existingSocketId] of onlineUsers.entries()) {
-                if (existingKey === key && existingSocketId !== socket.id) {
-                    onlineUsers.delete(existingKey);
+                // Clear per-socket timer
+                if (socket.data.timer) {
+                    clearTimeout(socket.data.timer);
                 }
+
+                const key = `${role}-${user_id}`;
+
+                // Store data for disconnect
+                socket.data.userId = user_id;
+                socket.data.userKey = key;
+                socket.data.role = role;
+
+                // Update availability based on role
+                if (role === "therapist") {
+                    await Therapist.update(
+                        { availability: "Online" },
+                        { where: { id: user_id } }
+                    );
+                }
+
+                // Replace existing socket (single-session policy)
+                onlineUsers.set(key, socket.id);
+
+                console.log("✅ Online user registered:", key);
+
+                broadcastOnlineList();
+            } catch (err) {
+                console.error("userOnline error:", err);
             }
-
-            onlineUsers.set(key, socket.id);
-            console.log("✅ Online user registered:", key);
-
-            broadcastOnlineList();
         });
 
 
@@ -259,22 +275,30 @@ module.exports = function (io) {
             console.log(`📡 Action '${action}' triggered in chat ${chat_id}`);
         });
 
-        socket.on("disconnect", () => {
-            let disconnectedKey;
-            for (const [userKey, sockId] of onlineUsers.entries()) {
-                if (sockId === socket.id) {
-                    disconnectedKey = userKey;
-                    onlineUsers.delete(userKey);
-                    break;
-                }
+        socket.on("disconnect", async () => {
+            try {
+                const { userKey, userId } = socket.data;
+
+                if (!userKey || !userId) return;
+
+                // Remove from online users
+                onlineUsers.delete(userKey);
+
+                // Update availability
+                await Therapist.update(
+                    { availability: "Offline" },
+                    { where: { id: userId } }
+                );
+
+                // Broadcast updated list
+                broadcastOnlineList();
+
+                console.log("User disconnected:", userKey);
+            } catch (err) {
+                console.error("Disconnect error:", err);
             }
-            if (!disconnectedKey) return;
-
-            // ✅ Broadcast updated list to remaining users
-            broadcastOnlineList();
-
-            console.log("User disconnected:", disconnectedKey);
         });
+
     });
 };
 

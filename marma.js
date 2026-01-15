@@ -32,6 +32,7 @@ var io = require("socket.io")(server, {
 });
 
 require('./socket/msglist.js')(io);
+require('./cron/cronfuction.js');
 
 
 const PORT = process.env.PORT || 3000;
