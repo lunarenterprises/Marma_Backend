@@ -1,6 +1,7 @@
 const cron = require('node-cron');
-const { Inactivity } = require('./Inactivity');
+const { bookingTimeout } = require('./bookingtimeout');
 
-// cron.schedule('* * * * *', Inactivity); //1 min
-// cron.schedule('0 */12 * * *', Inactivity); // 12 hr
+// cron.schedule('* * * * *', bookingTimeout); //1 min
+cron.schedule('*/30 * * * *', bookingTimeout); // 30 min    
+
 

@@ -85,6 +85,14 @@ const User = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    latitude: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    longitude: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     deletedAt: {
       type: DataTypes.DATE,
       allowNull: true,
@@ -101,7 +109,7 @@ const User = sequelize.define(
       type: DataTypes.DATE,
       allowNull: true,
     },
-     phoneVerified: {
+    phoneVerified: {
       type: DataTypes.ENUM('true', 'false'),
       allowNull: true,
       defaultValue: 'false',

@@ -79,6 +79,14 @@ const Therapist = sequelize.define('Therapist',
       type: DataTypes.STRING,
       allowNull: true,
     },
+    latitude: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    longitude: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     qualification: {
       type: DataTypes.STRING,
       allowNull: true,

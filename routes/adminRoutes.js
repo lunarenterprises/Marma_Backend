@@ -36,7 +36,7 @@ router.post('/list/learners', ListLearners);
 const { UploadQuestions } = require('../controllers/admin/addQuestions.js')
 router.post('/upload_question', UploadQuestions)
 
-const { WithdrawRequestApprovel,GetWithdrawRequests } = require('../controllers/therapist/withdrawRequest.js');
+const { WithdrawRequestApprovel, GetWithdrawRequests } = require('../controllers/therapist/withdrawRequest.js');
 router.post('/approve/withdraw-request', authenticateToken, WithdrawRequestApprovel);
 router.post('/list/withdraw-request', GetWithdrawRequests);
 
@@ -52,7 +52,7 @@ router.post('/list/doctor', ListDoctor);
 const { DeleteDoctor } = require('../controllers/admin/doctors.js');
 router.post('/delete/doctor', authenticateToken, DeleteDoctor);
 
-const { PromoteLearner,ApproveLearner } = require('../controllers/admin/promoteLearner.js');
+const { PromoteLearner, ApproveLearner } = require('../controllers/admin/promoteLearner.js');
 router.post('/promote/learner', authenticateToken, PromoteLearner);
 router.post('/approve/learner', authenticateToken, ApproveLearner);
 
@@ -71,19 +71,19 @@ router.post('/list/gallery', listGallery)
 const { DeleteGallery } = require('../controllers/admin/Gallery.js')
 router.post('/delete/gallery', DeleteGallery)
 
-const { addTherapist,TherapistEditProfile } = require('../controllers/admin/addTherapist.js')
-router.post('/add/therapist',authenticateToken, addTherapist)
-router.post('/edit/therapist',authenticateToken, TherapistEditProfile)
+const { addTherapist, TherapistEditProfile } = require('../controllers/admin/addTherapist.js')
+router.post('/add/therapist', authenticateToken, addTherapist)
+router.post('/edit/therapist', authenticateToken, TherapistEditProfile)
 
 
 const { AddLearner } = require('../controllers/admin/addLearners.js')
-router.post('/add/learner',authenticateToken, AddLearner)
+router.post('/add/learner', authenticateToken, AddLearner)
 
 const { ListTherapist } = require('../controllers/admin/listTherapist.js')
 router.post('/list/therapist', ListTherapist)
 
 const { EditProfile, DeleteProfile, DeleteProfilePic } = require('../controllers/learner/profile')
-router.post('/update_profile',authenticateToken, EditProfile)
+router.post('/update_profile', authenticateToken, EditProfile)
 router.delete('/delete_profile', authenticateToken, DeleteProfile)
 router.delete('/delete_profile_picture', authenticateToken, DeleteProfilePic)
 
@@ -96,7 +96,7 @@ router.post('/delete/price-details', DeletePriceDetails)
 const { ListWalletHistory } = require('../controllers/admin/wallethistory.js')
 router.post('/list/wallet-history', ListWalletHistory)
 
-const { AddTestimonial,listTestimonial,EditTestimonial,DeleteTestimonial } = require('../controllers/admin/testimonial.js')
+const { AddTestimonial, listTestimonial, EditTestimonial, DeleteTestimonial } = require('../controllers/admin/testimonial.js')
 router.post('/add/testimonial', AddTestimonial)
 router.post('/list/testimonial', listTestimonial)
 router.post('/edit/testimonial', EditTestimonial)

@@ -1,15 +1,25 @@
-const { Booking, User } = require('../models/index'); // adjust path
+const { Booking, User, Op } = require('../models/index'); // adjust path
 const logger = require('../utils/logger');
-const sendSMS = require('../utils/sms');
+const { sendSMS } = require('../utils/sms');
+const moment = require('moment');
 
 module.exports.bookingTimeout = async () => {
     try {
-        const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+        const thirtyMinutesAgo = moment()
+            .subtract(30, 'minutes')
+            .toDate();
+        console.log('thirtyMinutesAgo:', thirtyMinutesAgo);
 
-        const expiredRequests = await Booking.find({
-            status: 'Upcoming',
-            createdAt: { $lte: thirtyMinutesAgo }
+
+        const expiredRequests = await Booking.findAll({
+            where: {
+                status: 'Upcoming',
+                createdAt: {
+                    [Op.lte]: thirtyMinutesAgo
+                }
+            }
         });
+
 
         if (expiredRequests.length === 0) {
             logger.info('No expired bookings found');
@@ -25,8 +35,8 @@ module.exports.bookingTimeout = async () => {
                     continue;
                 }
 
-                const smsBody =
-                    'Hi, Therapist you requested is not responding. Kindly select another therapist.';
+                const smsBody = `Hi, Therapist you requested is not responding. Kindly select another therapist.`;
+
 
                 await sendSMS(userdata.phone, smsBody);
 
@@ -48,5 +58,3 @@ module.exports.bookingTimeout = async () => {
         logger.error(`Booking timeout cron error: ${error.message}`);
     }
 };
-
-
