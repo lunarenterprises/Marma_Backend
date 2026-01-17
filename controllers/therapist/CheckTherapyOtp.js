@@ -1,5 +1,6 @@
 const { Booking, PaymentHistory, priceDetails, Doctors, WalletHistory } = require('../../models/index')
 let { generateOTP } = require('../../utils/generateOTP')
+const moment = require("moment");
 
 module.exports.CheckTherapyOTP = async (req, res) => {
     try {
@@ -111,19 +112,21 @@ module.exports.EndTherapy = async (req, res) => {
         if (doctor_id) {
 
             let doctordetails = await Doctors.findOne({
-                where: { d_id: doctor_id}
+                where: { d_id: doctor_id }
             });
+
             if (!doctordetails) {
-                 return res.send({
+                return res.send({
                     result: false,
                     message: "Doctor details not found",
                 });
             }
+
             let payment_details = await PaymentHistory.findOne({
                 where: { ph_booking_id: b_id, ph_payment_status: 'paid' }
             });
             // console.log("payment_details",payment_details);
-            
+
             if (payment_details) {
 
                 let getprice = await priceDetails.findOne({
@@ -153,6 +156,7 @@ module.exports.EndTherapy = async (req, res) => {
                         message: "Failed to add doctors wallet amount  ",
                     });
                 }
+
                 let addwallethistory = await WalletHistory.create({
                     wh_doctor_id: doctor_id,
                     wh_user_id: payment_details.ph_user_id,
@@ -172,7 +176,6 @@ module.exports.EndTherapy = async (req, res) => {
                     message: "Payment details not found",
                 });
             }
-
         }
 
         if (checkbooking[0]?.status == 'Completed') {
@@ -185,8 +188,9 @@ module.exports.EndTherapy = async (req, res) => {
 
         if (checkbooking.length > 0) {
 
+
             let endtherapy = await Booking.update(
-                { otp: therapyOTP },
+                { otp: therapyOTP, completed_time: moment().format('YYYY-MM-DD') },
                 { where: { id: b_id } }
             );
 

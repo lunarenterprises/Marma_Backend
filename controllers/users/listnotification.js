@@ -12,6 +12,7 @@ module.exports.GetNotification = async (req, res) => {
         let data = await Notification.findAll({
             where: { n_user_id: user_id }
         })
+        
         if (data.length > 0) {
             return res.send({
                 result: true,

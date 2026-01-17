@@ -55,13 +55,17 @@ module.exports.EditProfile = async (req, res) => {
             if (fields.state) updateData.state = fields.state;
             if (fields.district) updateData.district = fields.district;
             if (fields.location) updateData.location = fields.location;
+            if (fields.longitude) updateData.longitude = fields.longitude;
+            if (fields.latitude) updateData.latitude = fields.latitude;
             if (fields.availability) updateData.availability = fields.availability;
+            if (fields.available_time) updateData.available_time = fields.available_time;
             if (imagepath) updateData.file = imagepath;
 
             // Update in DB
             const affectedCount = await Therapist.update(updateData, {
                 where: { id: user.id }
             });
+
             console.log(user.id, affectedCount, "eee");
 
             if (affectedCount > 0) {
@@ -76,6 +80,7 @@ module.exports.EditProfile = async (req, res) => {
                 });
             }
         });
+
     } catch (error) {
         return res.send({
             result: false,

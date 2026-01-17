@@ -1,6 +1,7 @@
 const { Booking, Therapist, Category, User } = require('../../models/index.js');
 const notification = require('../../utils/addNotification.js')
 const { sendSMS } = require('../../utils/sms')
+const moment = require("moment");
 
 module.exports.ApproveTherapiRequest = async (req, res) => {
     try {
@@ -70,8 +71,15 @@ module.exports.ApproveTherapiRequest = async (req, res) => {
 
         const categoryimage = therapist?.category?.c_image || null;
 
-        let updateBooking = await Booking.update(
-            { status },
+        let updateData = { status };
+
+        if (status.toLowerCase() === 'approved') {
+            updateData.accepted_time = moment().format('YYYY-MM-DD');
+
+        }
+
+        const updatestatus = await Booking.update(
+            updateData,
             { where: { id: request_id } }
         );
 
@@ -93,7 +101,6 @@ module.exports.ApproveTherapiRequest = async (req, res) => {
             message: `${therapist.name} ${status} ${request.service} section`,
             image: categoryimage
         });
-        console.log(updateBooking, "addbooking");
 
         return res.send({
             result: true,

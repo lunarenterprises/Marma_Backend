@@ -3,13 +3,25 @@ const { Sequelize } = require('sequelize');
 
 module.exports.ListTherapist = async (req, res) => {
     try {
-        const { therapist_id, gender, category_id, featured, topratedinarea, user_id, district, mostbooked, highlyreviewed, search } = req.body || {}
+        const { therapist_id, gender, category_id, featured, topratedinarea, user_id, district, mostbooked, highlyreviewed, search, latitude, longitude, nearbytherapist } = req.body || {}
+
+        if (user_id && latitude && longitude) {
+
+            const updateuserlocation = await User.update({
+                latitude: latitude,
+                longitude: longitude
+            }, {
+                where: { id: user_id }
+            });
+            console.log("updateuserlocation", updateuserlocation);
+        }
+
+
 
         let whereClause = {};
         if (therapist_id) whereClause.id = therapist_id;
         if (category_id) whereClause.category_id = category_id;
         if (gender) whereClause.gender = gender;
-
 
         if (search) {
             whereClause[Op.or] = [
@@ -52,6 +64,66 @@ module.exports.ListTherapist = async (req, res) => {
 
         // For aggregation, group by therapist and category fields
         const groupByFields = ['Therapist.id', 'category.c_id', 'category.c_name'];
+
+        // ------------------- Nearby therapists -------------------
+
+        if (nearbytherapist) {
+            if (!user_id) {
+                return res.send({
+                    result: false,
+                    message: "User id is required"
+                });
+            }
+
+            const user = await User.findOne({
+                where: { id: user_id }
+            });
+
+            if (!user) {
+                return res.send({
+                    result: false,
+                    message: "User not found"
+                });
+            }
+
+
+            const getnearbytherapist = await Therapist.findAll({
+                attributes: {
+                    include: [
+                        [
+                            Sequelize.literal(`6371 * ACOS(
+                    COS(RADIANS(${user.latitude})) *
+                    COS(RADIANS(latitude)) *
+                    COS(RADIANS(longitude) - RADIANS(${user.longitude})) +
+                    SIN(RADIANS(${user.latitude})) *
+                    SIN(RADIANS(latitude))
+                )`),
+                            "distance"
+                        ]
+                    ]
+                },
+                where: {
+                    status: "Approved",
+                    roleId: 3,
+
+                    latitude: { [Op.ne]: null },
+                    longitude: { [Op.ne]: null },
+
+                    ...whereClause
+                },
+                order: [[Sequelize.literal("distance"), "ASC"]],
+                limit: 10
+            });
+
+
+
+            return res.send({
+                result: getnearbytherapist.length > 0,
+                message: getnearbytherapist.length > 0 ? "Nearby therapists retrieved" : "No nearby therapists found",
+                data: getnearbytherapist
+            });
+
+        }
 
         // ------------------- Featured therapists -------------------
         if (featured) {
@@ -182,7 +254,6 @@ module.exports.ListTherapist = async (req, res) => {
                 data: therapists
             });
         }
-
 
         // ------------------- Most Booked Therapists -------------------
         if (mostbooked) {

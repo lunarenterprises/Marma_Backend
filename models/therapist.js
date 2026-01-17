@@ -79,6 +79,14 @@ const Therapist = sequelize.define('Therapist',
       type: DataTypes.STRING,
       allowNull: true,
     },
+    latitude: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    longitude: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     qualification: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -138,6 +146,10 @@ const Therapist = sequelize.define('Therapist',
     availability: {
       type: DataTypes.ENUM('Online', 'Offline'),
       defaultValue: 'Offline',
+    },
+    available_time: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     rating: {
       type: DataTypes.DECIMAL(2, 1),

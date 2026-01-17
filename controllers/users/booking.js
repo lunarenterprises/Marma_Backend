@@ -358,8 +358,15 @@ module.exports.UpdateBookingStatus = async (req, res) => {
 
     // const categoryimage = therapistdetails?.category?.c_image || null;
 
+    let updateData = { status };
+
+    if (status == "Approved") {
+      updateData.accepted_time = moment().format('YYYY-MM-DD');
+
+    }
+
     const updatestatus = await Booking.update(
-      { status },
+      updateData,
       { where: { id: b_id } }
     );
 
