@@ -68,23 +68,23 @@ module.exports.ListTherapist = async (req, res) => {
         // ------------------- Nearby therapists -------------------
 
         if (nearbytherapist) {
-            if (!user_id) {
-                return res.send({
-                    result: false,
-                    message: "User id is required"
-                });
-            }
+            // if (!user_id) {
+            //     return res.send({
+            //         result: false,
+            //         message: "User id is required"
+            //     });
+            // }
 
-            const user = await User.findOne({
-                where: { id: user_id }
-            });
+            // const user = await User.findOne({
+            //     where: { id: user_id }
+            // });
 
-            if (!user) {
-                return res.send({
-                    result: false,
-                    message: "User not found"
-                });
-            }
+            // if (!user) {
+            //     return res.send({
+            //         result: false,
+            //         message: "User not found"
+            //     });
+            // }
 
 
             const getnearbytherapist = await Therapist.findAll({
