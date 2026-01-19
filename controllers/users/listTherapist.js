@@ -92,10 +92,10 @@ module.exports.ListTherapist = async (req, res) => {
                     include: [
                         [
                             Sequelize.literal(`6371 * ACOS(
-                    COS(RADIANS(${user.latitude})) *
+                    COS(RADIANS(${latitude})) *
                     COS(RADIANS(latitude)) *
-                    COS(RADIANS(longitude) - RADIANS(${user.longitude})) +
-                    SIN(RADIANS(${user.latitude})) *
+                    COS(RADIANS(longitude) - RADIANS(${longitude})) +
+                    SIN(RADIANS(${latitude})) *
                     SIN(RADIANS(latitude))
                 )`),
                             "distance"
