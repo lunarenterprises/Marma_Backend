@@ -91,6 +91,9 @@ module.exports.ApproveTherapiRequest = async (req, res) => {
         if (status.toLowerCase() === 'rejected') {
             smsBody += 'due to his unavailability,please choose another therapist for your therapy.';
         }
+        if (status.toLowerCase() === 'resheduled') {
+            smsBody += 'due to therapist unavailability therapy session rescheduled,please confirm new therapy date and time through the app.';
+        }
         await sendSMS(userdetails.phone, smsBody);
 
         await notification.addNotification({
