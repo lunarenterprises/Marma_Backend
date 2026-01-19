@@ -58,3 +58,6 @@ module.exports.bookingTimeout = async () => {
         logger.error(`Booking timeout cron error: ${error.message}`);
     }
 };
+
+
+
