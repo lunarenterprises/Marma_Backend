@@ -97,7 +97,7 @@ module.exports.ListBooking = async (req, res) => {
       appointment,
       todysbooking,
       upcoming,
-      resheduled,
+      rescheduled,
       ongoing,
       yesturdaybooking,
       lastweekbooking,
@@ -153,7 +153,7 @@ module.exports.ListBooking = async (req, res) => {
         },
         include,
       });
-    } else if (resheduled) {
+    } else if (rescheduled) {
       Bookinglist = await Booking.findAll({
         where: {
           ...whereClause,
