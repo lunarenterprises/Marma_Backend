@@ -122,6 +122,7 @@ module.exports.ListBooking = async (req, res) => {
       if (!checkTherapist) return res.status(404).send({ result: false, message: "Therapist not found" });
       whereClause.therapistId = therapist_id;
     }
+    console.log(whereClause, "whereClause");
 
     let Bookinglist = [];
 
@@ -154,6 +155,7 @@ module.exports.ListBooking = async (req, res) => {
         include,
       });
     } else if (rescheduled) {
+      console.log('rescheduled');
       Bookinglist = await Booking.findAll({
         where: {
           ...whereClause,
