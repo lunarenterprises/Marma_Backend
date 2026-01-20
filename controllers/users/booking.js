@@ -335,7 +335,7 @@ module.exports.ListBooking = async (req, res) => {
       whereClause.status = 'Approved';
 
     } else if (rescheduled) {
-      whereClause.status = 'Rescheduled';
+      whereClause.status = { [Op.like]: 'Rescheduled' }
 
     } else if (upcoming) {
       whereClause.status = 'Upcoming';
