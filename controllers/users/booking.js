@@ -103,7 +103,7 @@ module.exports.ListBooking = async (req, res) => {
       lastweekbooking,
       lastmonthbooking
     } = req.body || {};
-
+    console.log(req.body, "req.body");
     const include = [
       { model: User, as: 'user', attributes: ['name', 'gender', 'address', 'email', 'phone', 'location', 'profile_pic'] },
       { model: Therapist, as: 'therapist', attributes: ['name', 'specialty', 'file', 'location'] },
@@ -237,7 +237,7 @@ module.exports.ListBooking = async (req, res) => {
         order: [['createdAt', 'DESC']]
       });
     }
-
+    console.log(Bookinglist, "Bookinglist");
     if (Bookinglist.length > 0) {
       return res.status(200).send({
         result: true,
