@@ -34,7 +34,7 @@ const Booking = sequelize.define(
       allowNull: true,
     },
     status: {
-      type: DataTypes.ENUM('Upcoming', 'Approved', 'Ongoing', 'Completed', 'Cancelled', 'Resheduled', 'Rejected', 'Timeout'),
+      type: DataTypes.ENUM('Upcoming', 'Approved', 'Ongoing', 'Completed', 'Cancelled', 'Rescheduled', 'Rejected', 'Timeout'),
       defaultValue: 'Upcoming',
     },
     otp: {

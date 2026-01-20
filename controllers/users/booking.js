@@ -159,11 +159,13 @@ module.exports.ListBooking = async (req, res) => {
       Bookinglist = await Booking.findAll({
         where: {
           ...whereClause,
-          status: { [Op.like]: 'Rescheduled' }
+          status: { [Op.in]: ['Rescheduled'] }
         },
         include,
+        order: [['createdAt', 'DESC']]
+
       });
-      console.log(whereClause, where, "Bookinglist where");
+      console.log(whereClause, Bookinglist, "Bookinglist where");
     } else if (todysbooking) {
       const today = moment().format('YYYY-MM-DD');
 
@@ -264,132 +266,6 @@ module.exports.ListBooking = async (req, res) => {
 };
 
 
-// module.exports.ListBooking = async (req, res) => {
-//   try {
-//     const {
-//       u_id,
-//       therapist_id,
-//       previous,
-//       cancelled,
-//       appointment,
-//       todaysBooking,
-//       upcoming,
-//       rescheduled,
-//       ongoing,
-//       yesterdayBooking,
-//       lastweekbooking,
-//       lastmonthbooking
-//     } = req.body || {};
-
-//     const include = [
-//       {
-//         model: User,
-//         as: 'user',
-//         attributes: ['name', 'gender', 'address', 'email', 'phone', 'location', 'profile_pic']
-//       },
-//       {
-//         model: Therapist,
-//         as: 'therapist',
-//         attributes: ['name', 'specialty', 'file', 'location']
-//       }
-//     ];
-
-//     const whereClause = {};
-
-//     if (u_id) {
-//       const user = await User.findByPk(u_id);
-//       if (!user) {
-//         return res.status(404).json({ result: false, message: "User not found" });
-//       }
-//       whereClause.userId = u_id;
-//     }
-
-//     if (therapist_id) {
-//       const therapist = await Therapist.findByPk(therapist_id);
-//       if (!therapist) {
-//         return res.status(404).json({ result: false, message: "Therapist not found" });
-//       }
-//       whereClause.therapistId = therapist_id;
-//     }
-
-//     /* ---------------- DATE HELPERS ---------------- */
-//     const todayStart = moment().startOf('day').toDate();
-//     const todayEnd = moment().endOf('day').toDate();
-
-//     const yesterdayStart = moment().subtract(1, 'day').startOf('day').toDate();
-//     const yesterdayEnd = moment().subtract(1, 'day').endOf('day').toDate();
-
-//     const lastWeekStart = moment().subtract(6, 'days').startOf('day').toDate();
-//     const lastWeekEnd = moment().endOf('day').toDate();
-
-//     const lastMonthStart = moment().subtract(1, 'month').startOf('month').toDate();
-//     const lastMonthEnd = moment().subtract(1, 'month').endOf('month').toDate();
-
-//     /* ---------------- FILTER LOGIC ---------------- */
-//     if (previous) {
-//       whereClause.status = 'Completed';
-
-//     } else if (cancelled) {
-//       whereClause.status = 'Cancelled';
-
-//     } else if (appointment) {
-//       whereClause.status = 'Approved';
-
-//     } else if (rescheduled) {
-//       whereClause.status = { [Op.like]: 'Rescheduled' }
-
-//     } else if (upcoming) {
-//       whereClause.status = 'Upcoming';
-
-//     } else if (ongoing) {
-//       whereClause.status = 'Ongoing';
-
-//     } else if (todaysBooking) {
-//       whereClause.date = { [Op.between]: [todayStart, todayEnd] };
-//       whereClause.status = { [Op.in]: ['Approved', 'Ongoing'] };
-
-//     } else if (yesterdayBooking) {
-//       whereClause.date = { [Op.between]: [yesterdayStart, yesterdayEnd] };
-//       whereClause.status = 'Completed';
-
-//     } else if (lastweekbooking) {
-//       whereClause.date = { [Op.between]: [lastWeekStart, lastWeekEnd] };
-//       whereClause.status = 'Completed';
-
-//     } else if (lastmonthbooking) {
-//       whereClause.date = { [Op.between]: [lastMonthStart, lastMonthEnd] };
-//       whereClause.status = 'Completed';
-//     }
-
-//     const bookings = await Booking.findAll({
-//       where: whereClause,
-//       include,
-//       order: [['createdAt', 'DESC']]
-//     });
-
-//     if (!bookings.length) {
-//       return res.status(200).json({
-//         result: false,
-//         message: "No bookings found"
-//       });
-//     }
-
-//     return res.status(200).json({
-//       result: true,
-//       message: "Data retrieved successfully",
-//       list: bookings
-//     });
-
-//   } catch (error) {
-//     console.error("List Booking Error:", error);
-//     return res.status(500).json({
-//       result: false,
-//       message: "Internal server error",
-//       error: error.message
-//     });
-//   }
-// };
-
 module.exports.UpdateBooking = async (req, res) => {
   try {
     const { b_id, date, time, location, duration, type } = req.body;
@@ -428,10 +304,7 @@ module.exports.UpdateBooking = async (req, res) => {
     await Booking.update(updatedFields, {
       where: { id: b_id }
     });
-    //     if (type = 'rescheduled') {
-    // // let otp=
 
-    //     }
     return res.send({
       result: true,
       message: "Therapy booking updated successfully."
@@ -449,7 +322,6 @@ module.exports.UpdateBooking = async (req, res) => {
 module.exports.UpdateBookingStatus = async (req, res) => {
   try {
     let user = req.user
-    console.log("user:", user);
 
     const { b_id, status } = req.body;
 
@@ -457,6 +329,23 @@ module.exports.UpdateBookingStatus = async (req, res) => {
       return res.send({
         result: false,
         message: "Booking id and status is required."
+      });
+    }
+
+    const ALLOWED_STATUS = [
+      'Upcoming',
+      'Approved',
+      'Ongoing',
+      'Completed',
+      'Cancelled',
+      'Rescheduled',
+      'Rejected',
+      'Timeout'
+    ];
+    if (!ALLOWED_STATUS.includes(status)) {
+      return res.send({
+        result: false,
+        message: `Invalid status value`
       });
     }
 
