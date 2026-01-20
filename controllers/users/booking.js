@@ -87,6 +87,182 @@ module.exports.AddBooking = async (req, res) => {
 }
 
 
+// module.exports.ListBooking = async (req, res) => {
+//   try {
+//     const {
+//       u_id,
+//       therapist_id,
+//       previous,
+//       cancelled,
+//       appointment,
+//       todysbooking,
+//       upcoming,
+//       rescheduled,
+//       ongoing,
+//       yesturdaybooking,
+//       lastweekbooking,
+//       lastmonthbooking
+//     } = req.body || {};
+//     console.log(req.body, "req.body");
+//     const include = [
+//       { model: User, as: 'user', attributes: ['name', 'gender', 'address', 'email', 'phone', 'location', 'profile_pic'] },
+//       { model: Therapist, as: 'therapist', attributes: ['name', 'specialty', 'file', 'location'] },
+//     ];
+
+//     let whereClause = {};
+
+//     if (u_id) {
+//       const checkUser = await User.findOne({ where: { id: u_id } });
+//       if (!checkUser) return res.status(404).send({ result: false, message: "User not found" });
+//       whereClause.userId = u_id;
+//     }
+
+//     if (therapist_id) {
+//       const checkTherapist = await Therapist.findOne({ where: { id: therapist_id } });
+//       if (!checkTherapist) return res.status(404).send({ result: false, message: "Therapist not found" });
+//       whereClause.therapistId = therapist_id;
+//     }
+//     console.log(whereClause, "whereClause");
+
+//     let Bookinglist = [];
+
+//     if (previous) {
+//       Bookinglist = await Booking.findAll({
+//         where: {
+//           ...whereClause,
+//           status: { [Op.in]: ['Completed'] }
+//         },
+//         include,
+//         order: [['createdAt', 'DESC']]
+//       });
+
+//     } else if (cancelled) {
+
+//       Bookinglist = await Booking.findAll({
+//         where: {
+//           ...whereClause,
+//           status: { [Op.in]: ['Cancelled'] }
+//         },
+//         include,
+//         order: [['createdAt', 'DESC']]
+//       });
+//     } else if (appointment) {
+//       Bookinglist = await Booking.findAll({
+//         where: {
+//           ...whereClause,
+//           status: 'Approved',
+//         },
+//         include,
+//       });
+//     } else if (rescheduled) {
+//       console.log('rescheduled');
+//       Bookinglist = await Booking.findAll({
+//         where: {
+//           ...whereClause,
+//           status: 'Rescheduled',
+//         },
+//         include,
+//       });
+//     } else if (todysbooking) {
+//       const today = moment().format('YYYY-MM-DD');
+
+//       Bookinglist = await Booking.findAll({
+//         where: {
+//           ...whereClause,
+//           status: 'Completed',
+//           date: today,
+//         },
+//         include,
+//       });
+//     } else if (yesturdaybooking) {
+//       const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+//       Bookinglist = await Booking.findAll({
+//         where: {
+//           ...whereClause,
+//           status: 'Completed',
+//           date: yesterday,
+//         },
+//         include,
+//       });
+//     } else if (lastweekbooking) {
+//       const weekStart = moment().subtract(6, 'days').startOf('day').toDate();
+//       const weekEnd = moment().endOf('day').toDate();
+
+//       Bookinglist = await Booking.findAll({
+//         where: {
+//           ...whereClause,
+//           status: 'Completed',
+//           date: {
+//             [Op.between]: [weekStart, weekEnd],
+//           },
+//         },
+//         include,
+//         order: [['createdAt', 'DESC']]
+//       });
+//     } else if (lastmonthbooking) {
+//       const lastMonthStart = moment().subtract(1, 'month').startOf('month').toDate();
+//       const lastMonthEnd = moment().subtract(1, 'month').endOf('month').toDate();
+
+//       Bookinglist = await Booking.findAll({
+//         where: {
+//           ...whereClause,
+//           status: 'Completed',
+//           date: {
+//             [Op.between]: [lastMonthStart, lastMonthEnd],
+//           },
+//         },
+//         include,
+//         order: [['createdAt', 'DESC']]
+//       });
+//     } else if (upcoming) {
+//       Bookinglist = await Booking.findAll({
+//         where: {
+//           ...whereClause,
+//           status: 'Upcoming',
+//         },
+//         include,
+//       });
+//     } else if (ongoing) {
+//       Bookinglist = await Booking.findAll({
+//         where: {
+//           ...whereClause,
+//           status: 'Ongoing',
+//         },
+//         include,
+//       });
+//     } else {
+//       // default booking list
+//       Bookinglist = await Booking.findAll({
+//         where: whereClause,
+//         include,
+//         order: [['createdAt', 'DESC']]
+//       });
+//     }
+//     console.log(Bookinglist, "Bookinglist");
+//     if (Bookinglist.length > 0) {
+//       return res.status(200).send({
+//         result: true,
+//         message: "Data retrieved successfully",
+//         list: Bookinglist,
+//       });
+//     } else {
+//       return res.status(200).send({
+//         result: false,
+//         message: "No bookings found",
+//       });
+//     }
+
+//   } catch (error) {
+//     console.error("List Booking Error:", error);
+//     return res.status(500).send({
+//       result: false,
+//       message: "Internal server error: " + error.message,
+//     });
+//   }
+// };
+
+
 module.exports.ListBooking = async (req, res) => {
   try {
     const {
@@ -95,173 +271,123 @@ module.exports.ListBooking = async (req, res) => {
       previous,
       cancelled,
       appointment,
-      todysbooking,
+      todaysBooking,
       upcoming,
       rescheduled,
       ongoing,
-      yesturdaybooking,
+      yesterdayBooking,
       lastweekbooking,
       lastmonthbooking
     } = req.body || {};
-    console.log(req.body, "req.body");
+
     const include = [
-      { model: User, as: 'user', attributes: ['name', 'gender', 'address', 'email', 'phone', 'location', 'profile_pic'] },
-      { model: Therapist, as: 'therapist', attributes: ['name', 'specialty', 'file', 'location'] },
+      {
+        model: User,
+        as: 'user',
+        attributes: ['name', 'gender', 'address', 'email', 'phone', 'location', 'profile_pic']
+      },
+      {
+        model: Therapist,
+        as: 'therapist',
+        attributes: ['name', 'specialty', 'file', 'location']
+      }
     ];
 
-    let whereClause = {};
+    const whereClause = {};
 
     if (u_id) {
-      const checkUser = await User.findOne({ where: { id: u_id } });
-      if (!checkUser) return res.status(404).send({ result: false, message: "User not found" });
+      const user = await User.findByPk(u_id);
+      if (!user) {
+        return res.status(404).json({ result: false, message: "User not found" });
+      }
       whereClause.userId = u_id;
     }
 
     if (therapist_id) {
-      const checkTherapist = await Therapist.findOne({ where: { id: therapist_id } });
-      if (!checkTherapist) return res.status(404).send({ result: false, message: "Therapist not found" });
+      const therapist = await Therapist.findByPk(therapist_id);
+      if (!therapist) {
+        return res.status(404).json({ result: false, message: "Therapist not found" });
+      }
       whereClause.therapistId = therapist_id;
     }
-    console.log(whereClause, "whereClause");
 
-    let Bookinglist = [];
+    /* ---------------- DATE HELPERS ---------------- */
+    const todayStart = moment().startOf('day').toDate();
+    const todayEnd = moment().endOf('day').toDate();
 
+    const yesterdayStart = moment().subtract(1, 'day').startOf('day').toDate();
+    const yesterdayEnd = moment().subtract(1, 'day').endOf('day').toDate();
+
+    const lastWeekStart = moment().subtract(6, 'days').startOf('day').toDate();
+    const lastWeekEnd = moment().endOf('day').toDate();
+
+    const lastMonthStart = moment().subtract(1, 'month').startOf('month').toDate();
+    const lastMonthEnd = moment().subtract(1, 'month').endOf('month').toDate();
+
+    /* ---------------- FILTER LOGIC ---------------- */
     if (previous) {
-      Bookinglist = await Booking.findAll({
-        where: {
-          ...whereClause,
-          status: { [Op.in]: ['Completed'] }
-        },
-        include,
-        order: [['createdAt', 'DESC']]
-      });
+      whereClause.status = 'Completed';
 
     } else if (cancelled) {
+      whereClause.status = 'Cancelled';
 
-      Bookinglist = await Booking.findAll({
-        where: {
-          ...whereClause,
-          status: { [Op.in]: ['Cancelled'] }
-        },
-        include,
-        order: [['createdAt', 'DESC']]
-      });
     } else if (appointment) {
-      Bookinglist = await Booking.findAll({
-        where: {
-          ...whereClause,
-          status: 'Approved',
-        },
-        include,
-      });
+      whereClause.status = 'Approved';
+
     } else if (rescheduled) {
-      console.log('rescheduled');
-      Bookinglist = await Booking.findAll({
-        where: {
-          ...whereClause,
-          status: 'Rescheduled',
-        },
-        include,
-      });
-    } else if (todysbooking) {
-      const today = moment().format('YYYY-MM-DD');
+      whereClause.status = 'Rescheduled';
 
-      Bookinglist = await Booking.findAll({
-        where: {
-          ...whereClause,
-          status: 'Completed',
-          date: today,
-        },
-        include,
-      });
-    } else if (yesturdaybooking) {
-      const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
-
-      Bookinglist = await Booking.findAll({
-        where: {
-          ...whereClause,
-          status: 'Completed',
-          date: yesterday,
-        },
-        include,
-      });
-    } else if (lastweekbooking) {
-      const weekStart = moment().subtract(6, 'days').startOf('day').toDate();
-      const weekEnd = moment().endOf('day').toDate();
-
-      Bookinglist = await Booking.findAll({
-        where: {
-          ...whereClause,
-          status: 'Completed',
-          date: {
-            [Op.between]: [weekStart, weekEnd],
-          },
-        },
-        include,
-        order: [['createdAt', 'DESC']]
-      });
-    } else if (lastmonthbooking) {
-      const lastMonthStart = moment().subtract(1, 'month').startOf('month').toDate();
-      const lastMonthEnd = moment().subtract(1, 'month').endOf('month').toDate();
-
-      Bookinglist = await Booking.findAll({
-        where: {
-          ...whereClause,
-          status: 'Completed',
-          date: {
-            [Op.between]: [lastMonthStart, lastMonthEnd],
-          },
-        },
-        include,
-        order: [['createdAt', 'DESC']]
-      });
     } else if (upcoming) {
-      Bookinglist = await Booking.findAll({
-        where: {
-          ...whereClause,
-          status: 'Upcoming',
-        },
-        include,
-      });
+      whereClause.status = 'Upcoming';
+
     } else if (ongoing) {
-      Bookinglist = await Booking.findAll({
-        where: {
-          ...whereClause,
-          status: 'Ongoing',
-        },
-        include,
-      });
-    } else {
-      // default booking list
-      Bookinglist = await Booking.findAll({
-        where: whereClause,
-        include,
-        order: [['createdAt', 'DESC']]
-      });
+      whereClause.status = 'Ongoing';
+
+    } else if (todaysBooking) {
+      whereClause.date = { [Op.between]: [todayStart, todayEnd] };
+      whereClause.status = { [Op.in]: ['Approved', 'Ongoing'] };
+
+    } else if (yesterdayBooking) {
+      whereClause.date = { [Op.between]: [yesterdayStart, yesterdayEnd] };
+      whereClause.status = 'Completed';
+
+    } else if (lastweekbooking) {
+      whereClause.date = { [Op.between]: [lastWeekStart, lastWeekEnd] };
+      whereClause.status = 'Completed';
+
+    } else if (lastmonthbooking) {
+      whereClause.date = { [Op.between]: [lastMonthStart, lastMonthEnd] };
+      whereClause.status = 'Completed';
     }
-    console.log(Bookinglist, "Bookinglist");
-    if (Bookinglist.length > 0) {
-      return res.status(200).send({
-        result: true,
-        message: "Data retrieved successfully",
-        list: Bookinglist,
-      });
-    } else {
-      return res.status(200).send({
+
+    const bookings = await Booking.findAll({
+      where: whereClause,
+      include,
+      order: [['createdAt', 'DESC']]
+    });
+
+    if (!bookings.length) {
+      return res.status(200).json({
         result: false,
-        message: "No bookings found",
+        message: "No bookings found"
       });
     }
+
+    return res.status(200).json({
+      result: true,
+      message: "Data retrieved successfully",
+      list: bookings
+    });
 
   } catch (error) {
     console.error("List Booking Error:", error);
-    return res.status(500).send({
+    return res.status(500).json({
       result: false,
-      message: "Internal server error: " + error.message,
+      message: "Internal server error",
+      error: error.message
     });
   }
 };
-
 
 module.exports.UpdateBooking = async (req, res) => {
   try {
