@@ -8,7 +8,7 @@ let moment = require('moment')
 module.exports.RazorpayCallback = async (req, res) => {
   try {
     let payment_id = req.query.payment_id;
-    console.log("callback :", payment_id, req.query.razorpay_payment_link_status);
+    // console.log("callback :", payment_id, req.query.razorpay_payment_link_status);
 
     if (req.query.razorpay_payment_link_status === 'paid') {
 
@@ -74,8 +74,8 @@ module.exports.RazorpayCallback = async (req, res) => {
             where: { pd_id: payment_details.ph_price_id }
           });
 
-          console.log("getprice", getprice);
-          console.log("getprice", getprice.pd_therapist_fee);
+          // console.log("getprice", getprice);
+          // console.log("getprice", getprice.pd_therapist_fee);
 
           await PaymentHistory.update(
             { ph_pay_therapist: getprice.pd_therapist_fee },
@@ -83,9 +83,9 @@ module.exports.RazorpayCallback = async (req, res) => {
           );
           let updatedWallet = Number(therapistdetails.wallet) + Number(getprice.pd_therapist_fee);
 
-          console.log(therapistdetails.wallet, "wallet");
-          console.log(getprice.pd_therapist_fee, "pd_therapist_fee");
-          console.log(updatedWallet, "updatedWallet");
+          // console.log(therapistdetails.wallet, "wallet");
+          // console.log(getprice.pd_therapist_fee, "pd_therapist_fee");
+          // console.log(updatedWallet, "updatedWallet");
 
           await Therapist.update(
             { wallet: updatedWallet },

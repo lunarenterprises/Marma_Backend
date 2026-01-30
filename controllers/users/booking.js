@@ -293,6 +293,12 @@ module.exports.UpdateBooking = async (req, res) => {
     if (location) updatedFields.location = location;
     if (duration) updatedFields.duration = duration;
 
+
+    // If booking is rescheduled, update status
+    if (type === 'rescheduled') {
+      updatedFields.status = 'Approved';
+    }
+
     // Only update if any fields are provided
     if (Object.keys(updatedFields).length === 0) {
       return res.send({

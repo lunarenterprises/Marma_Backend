@@ -77,11 +77,11 @@ module.exports.Payment = async (req, res) => {
                 });
             }
         }
-
+        let learner
         // Learner validation (only if learner_id exists)
         if (learner_id) {
 
-            const learner = await Therapist.findByPk(learner_id);
+            learner = await Therapist.findByPk(learner_id);
 
             if (!learner) {
                 return res.status(404).json({
@@ -140,13 +140,13 @@ module.exports.Payment = async (req, res) => {
 
         // test api key
 
-        // const key_id = process.env.TEST_KEY_ID;
-        // const key_secret = process.env.TEST_KEY_SECRET;
+        const key_id = process.env.TEST_KEY_ID;
+        const key_secret = process.env.TEST_KEY_SECRET;
 
         //live api keys
 
-        const key_id = process.env.KEY_ID;
-        const key_secret = process.env.KEY_SECRET;
+        // const key_id = process.env.KEY_ID;
+        // const key_secret = process.env.KEY_SECRET;
 
         const callback_url = `https://www.marma.reflexmarma.com/api/therapist/razorpay/callback?payment_id=${payment_id}`;
 
@@ -198,6 +198,23 @@ module.exports.Payment = async (req, res) => {
                     { where: { id: booking_id } }
                 );
             }
+
+            // if (learner_id) {
+            //     let smsBody = `Dear ${learner.name}, Your student registration for Cp's Reflex Marmaa Therapy is completed.
+            //                 Thank you.
+            //                 Team Stylus Wellness,
+            //                 If you have any query regarding training pls WhatsApp : +91 7025050147`
+            //     await sendSMS(learner.phone, smsBody)
+
+            //     await addNotification({
+            //         user_id: user_id,
+            //         therapist_id: learner_id,
+            //         type: "Payment Link Generated",
+            //         title: "Payment Link Created",
+            //         message: "Payment link for Course has been created.",
+            //         image: null,
+            //     });
+            // }
 
             if (user_id && therapist_id) {
                 let smsBody = `Hi, Your therapy session payment link has been created.Please make payment to confirm your booking. Payment Link:${response.data.short_url}`
