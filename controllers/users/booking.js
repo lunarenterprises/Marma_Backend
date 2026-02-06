@@ -1,4 +1,4 @@
-const { Booking, User, Therapist, Category, Op } = require('../../models/index.js');
+const { Booking, User, Therapist, Category, priceDetails, Op } = require('../../models/index.js');
 const notification = require('../../utils/addNotification.js')
 const { sendSMS } = require('../../utils/sms')
 var moment = require('moment')
@@ -107,6 +107,8 @@ module.exports.ListBooking = async (req, res) => {
     const include = [
       { model: User, as: 'user', attributes: ['name', 'gender', 'address', 'email', 'phone', 'location', 'profile_pic'] },
       { model: Therapist, as: 'therapist', attributes: ['name', 'specialty', 'file', 'location'] },
+      { model: priceDetails, as: 'priceDetails', attributes: ['pd_minutes', 'pd_price', 'pd_therapist_fee', 'pd_doctor_fee', 'pd_maintenance_fee'] },
+
     ];
 
     let whereClause = {};
@@ -146,6 +148,7 @@ module.exports.ListBooking = async (req, res) => {
         include,
         order: [['createdAt', 'DESC']]
       });
+
     } else if (appointment) {
       Bookinglist = await Booking.findAll({
         where: {
@@ -347,7 +350,8 @@ module.exports.UpdateBookingStatus = async (req, res) => {
       'Rescheduled',
       'Rejected',
       'Timeout'
-    ];
+    ]
+
     if (!ALLOWED_STATUS.includes(status)) {
       return res.send({
         result: false,

@@ -1,9 +1,10 @@
 let { sendEmail } = require('../../utils/emailService');
-let { User, PaymentHistory, Therapist, WalletHistory, Booking, priceDetails } = require('../../models/index');
+let { User, PaymentHistory, Therapist, WalletHistory, Booking, priceDetails, Chat, Messages } = require('../../models/index');
 const { sendUserDetailsToAdmin, sendUserDetailsToUser } = require('../../utils/whatsapp')
-
+let { addNotification } = require('../../utils/addNotification')
+const { sendSMS } = require('../../utils/sms')
 let moment = require('moment')
-
+const { getIO } = require("../../socket/msglist");
 
 module.exports.RazorpayCallback = async (req, res) => {
   try {
@@ -30,7 +31,6 @@ module.exports.RazorpayCallback = async (req, res) => {
       let booking_id = payment_details.ph_booking_id;
       let amount = payment_details.ph_total_amount;
       let payment_date = payment_details.ph_date;
-
 
       if (!learner_id) {
         var Userdetails = await User.findOne({
@@ -68,44 +68,94 @@ module.exports.RazorpayCallback = async (req, res) => {
           { where: { id: booking_id } }
         );
 
-        if (updatebookingpaymentstatus > 0) {
+        // 🔔 SOCKET MESSAGE TO BOTH USER & THERAPIST
 
-          let getprice = await priceDetails.findOne({
-            where: { pd_id: payment_details.ph_price_id }
+        try {
+          const io = getIO();
+
+          // --- Messages for user and therapist ---
+          const userMessageText = `Dear ${username}, Your payment has been successfully completed. The therapy is scheduled on ${payment_date} at ${therapistdetails.location}. Thank you. Team Stylus Wellness.If you have any query regarding therapy pls WhatsApp: +917025050147`;
+
+          const therapistMessageText = `Dear ${therapistdetails.name}, The payment from ${username} has been successfully completed. The therapy is scheduled on ${payment_date} at your location. Thank you. Team Stylus Wellness.If you have any query regarding therapy pls WhatsApp: +917025050147`;
+
+          // --- Find or create chat between user and therapist ---
+          const [chat] = await Chat.findOrCreate({
+            where: {
+              [Op.or]: [
+                {
+                  sender_id: user_id,
+                  receiver_id: therapist_id,
+                  sender_role: 4,
+                  receiver_role: 3
+                },
+                {
+                  sender_id: therapist_id,
+                  receiver_id: user_id,
+                  sender_role: 3,
+                  receiver_role: 4
+                }
+              ]
+            },
+            defaults: {
+              sender_id: user_id,
+              receiver_id: therapist_id,
+              sender_role: 4,
+              receiver_role: 3
+            }
           });
 
-          // console.log("getprice", getprice);
-          // console.log("getprice", getprice.pd_therapist_fee);
-
-          await PaymentHistory.update(
-            { ph_pay_therapist: getprice.pd_therapist_fee },
-            { where: { ph_id: payment_id } }
-          );
-          let updatedWallet = Number(therapistdetails.wallet) + Number(getprice.pd_therapist_fee);
-
-          // console.log(therapistdetails.wallet, "wallet");
-          // console.log(getprice.pd_therapist_fee, "pd_therapist_fee");
-          // console.log(updatedWallet, "updatedWallet");
-
-          await Therapist.update(
-            { wallet: updatedWallet },
-            { where: { id: therapist_id } }
-          );
-
-          let addwallethistory = await WalletHistory.create({
-            wh_therapist_id: therapist_id,
-            wh_user_id: user_id,
-            wh_amount: getprice.pd_therapist_fee,
-            wh_type: 'Credit'
+          // --- Save user message ---
+          const userSaved = await Messages.create({
+            chat_id: chat.id,
+            sender_id: user_id, // user as sender
+            message: userMessageText
           });
+
+          io.to(String(chat.id)).emit("message", {
+            id: userSaved.id,
+            chat_id: chat.id,
+            sender_id: userSaved.sender_id,
+            message: userSaved.message,
+            created_at: userSaved.createdAt
+          });
+
+          // --- Save therapist message ---
+          const therapistSaved = await Messages.create({
+            chat_id: chat.id,
+            sender_id: therapist_id, // therapist as sender
+            message: therapistMessageText
+          });
+
+          io.to(String(chat.id)).emit("message", {
+            id: therapistSaved.id,
+            chat_id: chat.id,
+            sender_id: therapistSaved.sender_id,
+            message: therapistSaved.message,
+            created_at: therapistSaved.createdAt
+          });
+
+        } catch (err) {
+          console.error("Socket chat messages failed:", err);
         }
+
+
+        //==============================
+
+
+        let smsBody = `Dear ${Userdetails.name}, Your booking for Cp's Reflex Marmaa Therapy is completed.
+                            Thank you.
+                            Team Stylus Wellness,
+                            If you have any query regarding training pls WhatsApp : +917025050147`
+
+        await sendSMS(Userdetails.phone, smsBody)
 
       } else {
         //learner checking
         var Userdetails = await Therapist.findOne({
           where: { id: learner_id }
         });
-        if (!Userdetails) {
+
+        if (!Userdetails) { 
           return res.send({
             result: false,
             message: "Learner details not found"
@@ -113,7 +163,6 @@ module.exports.RazorpayCallback = async (req, res) => {
         }
 
         var username = Userdetails.name;
-
 
         const [updateCount] = await PaymentHistory.update(
           { ph_payment_status: 'paid' },
@@ -125,14 +174,30 @@ module.exports.RazorpayCallback = async (req, res) => {
           { where: { id: learner_id } }
         );
 
+        let smsBody = `Dear ${Userdetails.name}, Your student registration for Cp's Reflex Marmaa Therapy is completed.
+                            Thank you.
+                            Team Stylus Wellness,
+                            If you have any query regarding training pls WhatsApp : +917025050147`
+        await sendSMS(Userdetails.phone, smsBody)
+
+        await addNotification({
+          user_id: "",
+          therapist_id: learner_id,
+          type: "Course Payment",
+          title: "Course Payment",
+          message: "Your Course Payment is done successfully.",
+          image: null,
+        });
+
       }
 
-      //==========whatsapp message===========
+      //=====================whatsapp message==========================
 
       const sendadminwhatsappmessage = await sendUserDetailsToAdmin(username, Userdetails.phone, Userdetails.email, Userdetails.gender)
+
       const senduserwhatsappmessage = await sendUserDetailsToUser(username, Userdetails.phone, Userdetails.email, Userdetails.gender)
 
-      //===========================================
+      //===============================================================
 
       //=====================user  mail ================================
       let mailOptions = {
@@ -257,7 +322,7 @@ module.exports.RazorpayCallback = async (req, res) => {
     </div>
   </div>
 </body>
-</html>`
+              </html>`
       };
 
       await sendEmail(mailOptions);

@@ -1,7 +1,12 @@
 const { Op, literal } = require("sequelize");
 const { User, Therapist, Chat, Messages, Booking } = require('../models/index');
 
+let ioInstance = null;
+
 module.exports = function (io) {
+
+    ioInstance = io; // 👈 SAVE io globally
+
     const onlineUsers = new Map(); // key: `${role}-${id}`, value: socket.id
 
     // ✅ Reusable broadcaster function
@@ -303,5 +308,11 @@ module.exports = function (io) {
 };
 
 
+module.exports.getIO = () => {
+    if (!ioInstance) {
+        throw new Error("Socket.io not initialized");
+    }
+    return ioInstance;
+};
 
 
