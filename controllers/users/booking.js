@@ -103,7 +103,6 @@ module.exports.ListBooking = async (req, res) => {
       lastweekbooking,
       lastmonthbooking
     } = req.body || {};
-    console.log(req.body, "req.body");
     const include = [
       { model: User, as: 'user', attributes: ['name', 'gender', 'address', 'email', 'phone', 'location', 'profile_pic'] },
       { model: Therapist, as: 'therapist', attributes: ['name', 'specialty', 'file', 'location'] },
@@ -124,7 +123,6 @@ module.exports.ListBooking = async (req, res) => {
       if (!checkTherapist) return res.status(404).send({ result: false, message: "Therapist not found" });
       whereClause.therapistId = therapist_id;
     }
-    console.log(whereClause, "whereClause");
 
     let Bookinglist = [];
 
