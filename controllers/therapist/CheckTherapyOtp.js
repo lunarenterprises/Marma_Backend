@@ -1,4 +1,4 @@
-const { Booking, PaymentHistory, priceDetails, Doctors, WalletHistory } = require('../../models/index')
+const { Booking, PaymentHistory, priceDetails, Doctors, WalletHistory, Therapist } = require('../../models/index')
 let { generateOTP } = require('../../utils/generateOTP')
 const moment = require("moment");
 
@@ -109,6 +109,31 @@ module.exports.EndTherapy = async (req, res) => {
             where: { id: b_id }
         });
 
+        let payment_details = await PaymentHistory.findOne({
+            where: { ph_booking_id: b_id }
+        });
+
+        // console.log("payment_details", payment_details);
+
+        if (!payment_details) {
+            return res.send({
+                result: false,
+                message: "Payment details not found"
+            });
+        }
+
+        var therapistdetails = await Therapist.findOne({
+            where: { id: checkbooking[0].therapistId }
+        });
+        // console.log("therapistdetails", therapistdetails);
+
+        if (!therapistdetails) {
+            return res.send({
+                result: false,
+                message: "Therapist not found"
+            });
+        }
+
         if (doctor_id) {
 
             let doctordetails = await Doctors.findOne({
@@ -184,10 +209,44 @@ module.exports.EndTherapy = async (req, res) => {
                 message: "This therapy session is already completed ",
             });
         }
+
+        //------------therapist wallet update----------------
+
+        let getprice = await priceDetails.findOne({
+            where: { pd_id: checkbooking[0].price_id }
+        });
+
+        // console.log("getprice", getprice);
+        // console.log("getprice", getprice.pd_therapist_fee);
+
+        await PaymentHistory.update(
+            { ph_pay_therapist: getprice.pd_therapist_fee },
+            { where: { ph_id: payment_details.ph_id } }
+        );
+
+        let updatedWallet = Number(therapistdetails.wallet) + Number(getprice.pd_therapist_fee);
+
+        // console.log(therapistdetails.wallet, "wallet");
+        // console.log(getprice.pd_therapist_fee, "pd_therapist_fee");
+        // console.log(updatedWallet, "updatedWallet");
+
+        await Therapist.update(
+            { wallet: updatedWallet },
+            { where: { id: checkbooking[0].therapistId } }
+        );
+
+        let addwallethistory = await WalletHistory.create({
+            wh_therapist_id: checkbooking[0].therapistId,
+            wh_user_id: checkbooking[0].userId,
+            wh_amount: getprice.pd_therapist_fee,
+            wh_type: 'Credit'
+        });
+
+        //-----------------------------------------------------
+
         const therapyOTP = await generateOTP();
 
         if (checkbooking.length > 0) {
-
 
             let endtherapy = await Booking.update(
                 { otp: therapyOTP, completed_time: moment().format('YYYY-MM-DD') },
@@ -197,7 +256,7 @@ module.exports.EndTherapy = async (req, res) => {
             if (endtherapy) {
                 return res.send({
                     result: true,
-                    message: "Therapy session finished and OTP sent successfully.",
+                    message: "Therapy session completed and OTP sent successfully.",
                 });
 
             } else {
@@ -206,6 +265,7 @@ module.exports.EndTherapy = async (req, res) => {
                     message: "Failed to update finished therapy session  ",
                 });
             }
+
         } else {
             return res.send({
                 result: false,
@@ -218,7 +278,6 @@ module.exports.EndTherapy = async (req, res) => {
             result: false,
             message: error.message,
         });
-
 
     }
 }

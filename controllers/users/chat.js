@@ -10,6 +10,7 @@ module.exports.GetChatId = async (req, res) => {
                 message: "Receiver id is required"
             })
         }
+
         const user = await User.findByPk(user_id);
         if (!user) {
             return res.send({ result: false, message: "User not found" });
@@ -59,7 +60,7 @@ module.exports.SendMessage = async (req, res) => {
     try {
         const { user_id } = req.body;
         const { chat_id, message } = req.body
-        if ( !chat_id || !message) {
+        if (!chat_id || !message) {
             return res.send({
                 result: false,
                 message: "Receiver id, chat id and message is required"

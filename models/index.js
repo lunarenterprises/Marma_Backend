@@ -22,7 +22,7 @@ const WithdrawRequest = require('./withdrawRequest.js')
 const Doctors = require('./doctors.js')
 const Gallery = require('./Gallery.js')
 const priceDetails = require('./price.js')
-const Testimonial =require('./testimonial.js')
+const Testimonial = require('./testimonial.js')
 const fcmtoken = require('./fcmtoken.js')
 
 
@@ -58,6 +58,9 @@ Booking.belongsTo(Therapist, { foreignKey: 'therapistId', as: 'therapist' });
 
 // Booking ↔ User
 Booking.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+// Booking ↔ priceDetails
+Booking.belongsTo(priceDetails, { foreignKey: 'price_id', as: 'priceDetails' });
 
 // Question → SubmittedQuestions (1:M)
 Questions.hasMany(SubmitQuestions, { foreignKey: 'question' });
@@ -97,7 +100,7 @@ PaymentHistory.belongsTo(Therapist, { foreignKey: 'ph_therapist_id', as: 'therap
 
 // WithdrawRequest belongs to a Therapist
 WithdrawRequest.belongsTo(Therapist, { foreignKey: 'wr_therapist_id', as: 'therapist' });
-Therapist.hasMany(WithdrawRequest, { foreignKey: 'wr_therapist_id',as: 'withdrawRequests',});
+Therapist.hasMany(WithdrawRequest, { foreignKey: 'wr_therapist_id', as: 'withdrawRequests', });
 
 // === Initial Seeding === //
 

@@ -199,22 +199,6 @@ module.exports.Payment = async (req, res) => {
                 );
             }
 
-            // if (learner_id) {
-            //     let smsBody = `Dear ${learner.name}, Your student registration for Cp's Reflex Marmaa Therapy is completed.
-            //                 Thank you.
-            //                 Team Stylus Wellness,
-            //                 If you have any query regarding training pls WhatsApp : +91 7025050147`
-            //     await sendSMS(learner.phone, smsBody)
-
-            //     await addNotification({
-            //         user_id: user_id,
-            //         therapist_id: learner_id,
-            //         type: "Payment Link Generated",
-            //         title: "Payment Link Created",
-            //         message: "Payment link for Course has been created.",
-            //         image: null,
-            //     });
-            // }
 
             if (user_id && therapist_id) {
                 let smsBody = `Hi, Your therapy session payment link has been created.Please make payment to confirm your booking. Payment Link:${response.data.short_url}`
