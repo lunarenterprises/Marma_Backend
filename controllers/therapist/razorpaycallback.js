@@ -71,37 +71,51 @@ module.exports.RazorpayCallback = async (req, res) => {
         // ====================== SOCKET FIX START ======================
         try {
           const io = getIO();
+          const { Op } = require("sequelize");
 
-          // 1️⃣ Find or create chat between user & therapist
+          // 1️⃣ Find or create chat between user and therapist
           const [chat] = await Chat.findOrCreate({
             where: {
-              user_id: user_id,
-              therapist_id: therapist_id
+              [Op.or]: [
+                {
+                  sender_id: user_id,
+                  receiver_id: therapist_id,
+                  sender_role: 4, // user
+                  receiver_role: 3 // therapist
+                },
+                {
+                  sender_id: therapist_id,
+                  receiver_id: user_id,
+                  sender_role: 3,
+                  receiver_role: 4
+                }
+              ]
             },
             defaults: {
-              user_id: user_id,
-              therapist_id: therapist_id
+              sender_id: user_id,
+              receiver_id: therapist_id,
+              sender_role: 4,
+              receiver_role: 3
             }
           });
 
-          // 2️⃣ Messages
-          const userMessage = `Dear ${username}, Your payment has been successfully completed. The therapy is scheduled on ${payment_date} at ${therapistdetails.location}. Thank you. Team Stylus Wellness.If you have any query regarding therapy pls WhatsApp: +917025050147;`;
+          // 2️⃣ Prepare messages
+          const userMessage = `Dear ${username}, Your payment has been successfully completed. The therapy is scheduled on ${payment_date} at ${therapistdetails.location}. Thank you. Team Stylus Wellness. If you have any query regarding therapy pls WhatsApp: +917025050147`;
 
-          const therapistMessage = `Dear ${therapistdetails.name}, The payment from ${username} has been successfully completed. The therapy is scheduled on ${payment_date} at your location. Thank you. Team Stylus Wellness.If you have any query regarding therapy pls WhatsApp: +917025050147`;
+          const therapistMessage = `Dear ${therapistdetails.name}, The payment from ${username} has been successfully completed. The therapy is scheduled on ${payment_date} at your location. Thank you. Team Stylus Wellness. If you have any query regarding therapy pls WhatsApp: +917025050147`;
 
           // 3️⃣ Save USER message
           const savedUserMessage = await Messages.create({
             chat_id: chat.id,
-            sender_id: 0, // SYSTEM
-            receiver_id: user_id,
+            sender_id: user_id,
             message: userMessage
           });
 
+          // Emit to chat room
           io.to(String(chat.id)).emit("message", {
             id: savedUserMessage.id,
             chat_id: chat.id,
-            sender_id: 0,
-            receiver_id: user_id,
+            sender_id: savedUserMessage.sender_id,
             message: savedUserMessage.message,
             created_at: savedUserMessage.createdAt
           });
@@ -109,16 +123,15 @@ module.exports.RazorpayCallback = async (req, res) => {
           // 4️⃣ Save THERAPIST message
           const savedTherapistMessage = await Messages.create({
             chat_id: chat.id,
-            sender_id: 0, // SYSTEM
-            receiver_id: therapist_id,
+            sender_id: therapist_id,
             message: therapistMessage
           });
 
+          // Emit to chat room
           io.to(String(chat.id)).emit("message", {
             id: savedTherapistMessage.id,
             chat_id: chat.id,
-            sender_id: 0,
-            receiver_id: therapist_id,
+            sender_id: savedTherapistMessage.sender_id,
             message: savedTherapistMessage.message,
             created_at: savedTherapistMessage.createdAt
           });
@@ -126,6 +139,7 @@ module.exports.RazorpayCallback = async (req, res) => {
         } catch (err) {
           console.error("Socket chat messages failed:", err);
         }
+
         // ====================== SOCKET FIX END ======================
 
 
