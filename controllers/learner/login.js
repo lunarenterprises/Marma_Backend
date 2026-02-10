@@ -267,7 +267,7 @@ module.exports.Login = async (req, res) => {
             })
         }
         let token = generateOTP()
-        let smsBody = `Your student verification code for Marma App is: ${token}. Please do not share it with anyone.`
+        let smsBody = `Use ${token} to securely log in to your therapist account on Marma App. Do not share this code with anyone.`;
         await Therapist.update(
             { resetToken: token }, // values to set
             { where: { phone: formattedNumber } } // condition
