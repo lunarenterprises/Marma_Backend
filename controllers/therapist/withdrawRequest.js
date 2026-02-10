@@ -79,7 +79,9 @@ module.exports.GetWithdrawRequests = async (req, res) => {
         const data = await WithdrawRequest.findAll({
             where: whereClause,
             include: includeOptions,
+            order: [['wr_id', 'DESC']],
         });
+
 
         // Response handling
         if (data && data.length > 0) {
@@ -163,6 +165,7 @@ module.exports.WithdrawRequestApprovel = async (req, res) => {
             await therapist.save();
 
         }
+
         if (status === 'Approved') {
 
             await WalletHistory.create({
@@ -171,6 +174,7 @@ module.exports.WithdrawRequestApprovel = async (req, res) => {
                 wh_type: 'Debit'
             });
         }
+
         // Update withdraw request status
         withdrawrequest.wr_status = status;
         await withdrawrequest.save();
