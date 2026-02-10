@@ -63,6 +63,10 @@ module.exports.RazorpayCallback = async (req, res) => {
           { where: { ph_id: payment_id } }
         );
 
+        const bookingDetails = await Booking.findOne({
+          where: { id: booking_id }
+        });
+
         const [updatebookingpaymentstatus] = await Booking.update(
           { paymentStatus: 'paid' },
           { where: { id: booking_id } }
@@ -100,9 +104,10 @@ module.exports.RazorpayCallback = async (req, res) => {
           });
 
           // 2️⃣ Prepare messages
-          const userMessage = `Dear ${username}, Your payment has been successfully completed. The therapy is scheduled on ${payment_date} at ${therapistdetails.location}. Thank you. Team Stylus Wellness. If you have any query regarding therapy pls WhatsApp: +917025050147`;
 
-          const therapistMessage = `Dear ${therapistdetails.name}, The payment from ${username} has been successfully completed. The therapy is scheduled on ${payment_date} at your location. Thank you. Team Stylus Wellness. If you have any query regarding therapy pls WhatsApp: +917025050147`;
+          const userMessage = `Dear ${username}, Your payment has been successfully completed. The therapy is scheduled on ${bookingDetails.date} at ${bookingDetails.time} at ${bookingDetails.location}. Thank you. Team Stylus Wellness. If you have any query regarding therapy pls WhatsApp: +917025050147`;
+
+          const therapistMessage = `Dear ${therapistdetails.name}, The payment from ${username} has been successfully completed. The therapy is scheduled on ${bookingDetails.date} at ${bookingDetails.time} at ${bookingDetails.location}. Thank you. Team Stylus Wellness. If you have any query regarding therapy pls WhatsApp: +917025050147`;
 
           // 3️⃣ Save USER message
           const savedUserMessage = await Messages.create({
