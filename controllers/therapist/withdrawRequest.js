@@ -163,13 +163,14 @@ module.exports.WithdrawRequestApprovel = async (req, res) => {
             await therapist.save();
 
         }
+        if (status === 'Approved') {
 
-        await WalletHistory.create({
-            wh_therapist_id: therapist_id,
-            wh_amount: amount,
-            wh_type: 'Debit'
-        });
-
+            await WalletHistory.create({
+                wh_therapist_id: therapist_id,
+                wh_amount: amount,
+                wh_type: 'Debit'
+            });
+        }
         // Update withdraw request status
         withdrawrequest.wr_status = status;
         await withdrawrequest.save();
