@@ -140,19 +140,19 @@ module.exports.WithdrawRequestApprovel = async (req, res) => {
             });
         }
 
-        // Prevent double approval
-        if (withdrawrequest.wr_status === 'Approved') {
+        // Prevent double action
+        if (withdrawrequest.wr_status === status) {
             return res.send({
                 result: false,
-                message: "Withdraw request already approved"
+                message: `Withdraw request already ${status}`
             });
         }
 
         const therapist_id = withdrawrequest.wr_therapist_id;
         const amount = Number(withdrawrequest.wr_amount);
 
-        // If approved → deduct wallet amount
-        if (status === 'Approved') {
+        // If REJECTED → refund wallet
+        if (status === 'Rejected') {
 
             const therapist = await Therapist.findByPk(therapist_id);
 
@@ -163,33 +163,20 @@ module.exports.WithdrawRequestApprovel = async (req, res) => {
                 });
             }
 
-            const walletBalance = Number(therapist.wallet);
-
-            // Check wallet balance
-            if (walletBalance < amount) {
-                return res.send({
-                    result: false,
-                    message: "Insufficient wallet balance"
-                });
-            }
-
-            // Update wallet
-            therapist.wallet = walletBalance - amount;
+            therapist.wallet = Number(therapist.wallet) + amount;
             await therapist.save();
 
-            // Wallet history
+            // Wallet history (credit)
             await WalletHistory.create({
                 wh_therapist_id: therapist_id,
                 wh_amount: amount,
-                wh_type: 'Debit'
+                wh_type: 'Credit'
             });
         }
 
         // Update withdraw request status
-        await WithdrawRequest.update(
-            { wr_status: status },
-            { where: { wr_id } }
-        );
+        withdrawrequest.wr_status = status;
+        await withdrawrequest.save();
 
         return res.send({
             result: true,
