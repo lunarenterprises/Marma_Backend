@@ -18,14 +18,14 @@ const WithdrawRequest = sequelize.define(
       allowNull: false,
     },
     wr_status: {
-      type: DataTypes.ENUM('Pending', 'Approved', 'Reject'),
+      type: DataTypes.ENUM('Pending', 'Approved', 'Rejected'),
       allowNull: false,
       defaultValue: 'Pending',
     },
   },
   {
     tableName: 'WithdrawRequest',
-    timestamps: true, 
+    timestamps: true,
   }
 );
 
