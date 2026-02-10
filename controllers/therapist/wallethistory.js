@@ -1,4 +1,4 @@
-const { Therapist, WalletHistory, User } = require('../../models/index');
+const { Therapist, WalletHistory, WithdrawRequest, User } = require('../../models/index');
 
 module.exports.ListWalletHistory = async (req, res) => {
     try {
@@ -34,10 +34,10 @@ module.exports.ListWalletHistory = async (req, res) => {
         });
 
         // Get total withdrawals (Debit)
-        const totalWithdrawals = await WalletHistory.sum('wh_amount', {
+        const totalWithdrawals = await WithdrawRequest.sum('wr_amount', {
             where: {
-                wh_therapist_id: therapist_id,
-                wh_type: 'Debit',
+                wr_therapist_id: therapist_id,
+                wr_status: 'Approved',
             },
         });
 

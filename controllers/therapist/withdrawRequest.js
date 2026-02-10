@@ -43,10 +43,6 @@ module.exports.WithdrawRequest = async (req, res) => {
         );
 
 
-        console.log(addWithdrawRequest, "addbooking");
-        console.log(UpdateWallet, "addbooking");
-
-
         return res.send({
             result: true,
             message: "Withdraw request send succesfully"
@@ -166,13 +162,13 @@ module.exports.WithdrawRequestApprovel = async (req, res) => {
             therapist.wallet = Number(therapist.wallet) + amount;
             await therapist.save();
 
-            // Wallet history (credit)
-            await WalletHistory.create({
-                wh_therapist_id: therapist_id,
-                wh_amount: amount,
-                wh_type: 'Credit'
-            });
         }
+
+        await WalletHistory.create({
+            wh_therapist_id: therapist_id,
+            wh_amount: amount,
+            wh_type: 'Debit'
+        });
 
         // Update withdraw request status
         withdrawrequest.wr_status = status;
