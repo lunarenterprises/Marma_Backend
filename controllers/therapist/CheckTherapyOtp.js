@@ -1,6 +1,7 @@
-const { Booking, PaymentHistory, priceDetails, Doctors, WalletHistory, Therapist } = require('../../models/index')
+const { Booking, PaymentHistory, priceDetails, Doctors, WalletHistory, Therapist, User } = require('../../models/index')
 let { generateOTP } = require('../../utils/generateOTP')
 const moment = require("moment");
+const { sendSMS } = require('../../utils/sms')
 
 module.exports.CheckTherapyOTP = async (req, res) => {
     try {
@@ -19,18 +20,36 @@ module.exports.CheckTherapyOTP = async (req, res) => {
             where: { id: b_id }
         });
 
+        let userDetails = await User.findOne({
+            where: { id: checkbooking[0].userId }
+        });
+
+        if (!userDetails) {
+            return res.send({
+                result: false,
+                message: "User not found",
+            });
+        }
+
+        if (checkbooking[0].paymentStatus !== 'Paid') {
+            return res.send({
+                result: false,
+                message: "Payment not completed",
+            });
+        }
+
         if (checkbooking.length > 0) {
 
             if (otp == checkbooking[0]?.otp) {
                 if (checkbooking[0]?.status == 'Ongoing') {
-                    console.log("Ongoing");
 
                     let [updatestatus] = await Booking.update(
                         { status: 'Completed' },
                         { where: { id: b_id } }
                     );
 
-                    // console.log("updatestatus", updatestatus);
+                    let smsBody = `Dear ${userDetails.name} Your Reflexmarmaa therapy has been successfully completed.`
+                    await sendSMS(userDetails.phone, smsBody)
 
                     if (updatestatus === 1) {
                         return res.send({
