@@ -31,7 +31,7 @@ module.exports.CheckTherapyOTP = async (req, res) => {
             });
         }
 
-        if (checkbooking[0].paymentStatus !== 'Paid') {
+        if (checkbooking[0].paymentStatus.toLowerCase() !== 'paid') {
             return res.send({
                 result: false,
                 message: "Payment not completed",
