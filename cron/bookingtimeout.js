@@ -8,7 +8,7 @@ module.exports.bookingTimeout = async () => {
         const thirtyMinutesAgo = moment()
             .subtract(30, 'minutes')
             .toDate();
-        console.log('thirtyMinutesAgo:', thirtyMinutesAgo);
+        ('thirtyMinutesAgo:', thirtyMinutesAgo);
 
 
         const expiredRequests = await Booking.findAll({

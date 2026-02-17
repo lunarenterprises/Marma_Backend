@@ -51,7 +51,7 @@ module.exports.AddLearner = async (req, res) => {
             roleId: 2
         })
 
-        console.log("createNew : ", createNew)
+        // console.log("createNew : ", createNew)
         if (createNew) {
             return res.send({
                 result: true,

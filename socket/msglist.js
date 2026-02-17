@@ -27,9 +27,9 @@ module.exports = function (io) {
     }
 
     io.on("connection", (socket) => {
-        console.log(`🔌 Socket ${socket.id} connected`);
-        console.log("IP:", socket.handshake.address);
-        console.log("connection:", socket.handshake.headers['user-agent']);
+        // console.log(`🔌 Socket ${socket.id} connected`);
+        // console.log("IP:", socket.handshake.address);
+        // console.log("connection:", socket.handshake.headers['user-agent']);
 
         // ⏳ IDENTIFICATION TIMEOUT (FIXED)
         socket.data.timer = setTimeout(() => {

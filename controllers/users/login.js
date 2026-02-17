@@ -196,15 +196,15 @@ module.exports.verifyOtp = async (req, res) => {
             // FCM TOKEN
             if (fcm_token) {
                 let checkuserlogin = await fcmtoken.findOne({ where: { ft_u_id: user.id } });
-                console.log("user.id", user.id);
+                ("user.id", user.id);
 
                 if (checkuserlogin) {
                     await fcmtoken.update({ ft_fcm_token: fcm_token }, { where: { ft_u_id: user.id } });
-                    console.log("upadte", user.id);
+                    ("upadte", user.id);
 
                 } else {
                     await fcmtoken.create({ ft_fcm_token: fcm_token, ft_u_id: user.id });
-                    console.log("create", user.id);
+                    ("create", user.id);
 
                 }
             }

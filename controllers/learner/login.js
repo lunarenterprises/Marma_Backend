@@ -31,7 +31,6 @@ module.exports.RegisterLearner = async (req, res) => {
             let token = generateOTP()
             let smsBody = `Your student verification code for Marma App is: ${token}. Please do not share it with anyone.`
             let formattedNumber = await formatPhoneNumber(phone)
-            console.log("formattedNumber : ", formattedNumber)
 
             await sendSMS(formattedNumber, smsBody)
 
@@ -85,7 +84,6 @@ module.exports.RegisterLearner = async (req, res) => {
             let token = generateOTP()
             let smsBody = `Your student verification code for Marma App is: ${token}. Please do not share it with anyone.`
             let formattedNumber = await formatPhoneNumber(phone)
-            console.log("formattedNumber : ", formattedNumber)
 
             let updatedata = await Therapist.update({
                 name,
@@ -118,7 +116,6 @@ module.exports.RegisterLearner = async (req, res) => {
         let token = generateOTP()
         let smsBody = `Your verification code for Marma App is: ${token}. Please do not share it with anyone.`
         let formattedNumber = await formatPhoneNumber(phone)
-        console.log("formattedNumber : ", formattedNumber)
         let createNew = await Therapist.create({
             name,
             gender,
@@ -127,7 +124,6 @@ module.exports.RegisterLearner = async (req, res) => {
             roleId: 2,
             resetToken: token
         })
-        console.log("createNew : ", createNew)
         if (createNew) {
 
             await sendSMS(formattedNumber, smsBody)
