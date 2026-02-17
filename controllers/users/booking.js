@@ -156,7 +156,7 @@ module.exports.ListBooking = async (req, res) => {
         include,
       });
     } else if (rescheduled) {
-      console.log('rescheduled');
+      ('rescheduled');
       Bookinglist = await Booking.findAll({
         where: {
           ...whereClause,
@@ -166,7 +166,7 @@ module.exports.ListBooking = async (req, res) => {
         order: [['createdAt', 'DESC']]
 
       });
-      console.log(whereClause, Bookinglist, "Bookinglist where");
+      (whereClause, Bookinglist, "Bookinglist where");
     } else if (todysbooking) {
       const today = moment().format('YYYY-MM-DD');
 
@@ -243,7 +243,7 @@ module.exports.ListBooking = async (req, res) => {
         order: [['createdAt', 'DESC']]
       });
     }
-    console.log(Bookinglist, "Bookinglist");
+    (Bookinglist, "Bookinglist");
     if (Bookinglist.length > 0) {
       return res.status(200).send({
         result: true,

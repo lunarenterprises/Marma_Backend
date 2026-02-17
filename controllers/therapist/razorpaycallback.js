@@ -68,7 +68,7 @@ module.exports.RazorpayCallback = async (req, res) => {
         });
 
         const [updatebookingpaymentstatus] = await Booking.update(
-          { paymentStatus: 'paid' },
+          { paymentStatus: 'Paid' },
           { where: { id: booking_id } }
         );
 

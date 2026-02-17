@@ -254,7 +254,6 @@ module.exports.DeleteDoctor = async (req, res) => {
             let Deletedoctor = await Doctors.destroy({
                 where: { d_id: d_id }
             });
-            console.log("Deletedoctor :", Deletedoctor);
 
             if (Deletedoctor) {
                 return res.send({

@@ -66,7 +66,7 @@ module.exports.EditProfile = async (req, res) => {
                 where: { id: user.id }
             });
 
-            console.log(user.id, affectedCount, "eee");
+            (user.id, affectedCount, "eee");
 
             if (affectedCount > 0) {
                 return res.send({

@@ -40,10 +40,8 @@ module.exports.AddTestimonial = async (req, res) => {
 
                 const rawData = fs.readFileSync(oldPath);
                 fs.writeFileSync(newPath, rawData);
-                console.log(fileType, imagePath);
 
                 var InsertTestimonial = await Testimonial.create({name:name, file: imagePath, message: message, rating: rating })
-                console.log("InsertTestimonial", InsertTestimonial);
 
                 if (InsertTestimonial) {
                     return res.send({

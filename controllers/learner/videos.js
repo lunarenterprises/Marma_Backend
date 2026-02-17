@@ -32,9 +32,6 @@ module.exports.TestWhatsapp = async (req, res) => {
         // const adminresposne = await sendUserDetailsToAdmin({ name: "sample", phone: "1236654789", email: "qwerty@gmail.com" })
         const userresposne = await sendUserDetailsToUser(name, phone, email, gender)
 
-        // console.log("adminresposne : ", adminresposne)
-        console.log("userresposne : ", userresposne)
-
         return res.send({
             result: true,
             message: "Message sended successfully"

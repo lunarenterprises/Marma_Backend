@@ -64,7 +64,6 @@ module.exports.CheckTherapyOTP = async (req, res) => {
                     }
 
                 } else {
-                    // console.log("else Ongoing");
 
                     let [verifyotp] = await Booking.update(
                         { status: 'Ongoing' },
@@ -132,7 +131,7 @@ module.exports.EndTherapy = async (req, res) => {
             where: { ph_booking_id: b_id }
         });
 
-        // console.log("payment_details", payment_details);
+        // ("payment_details", payment_details);
 
         if (!payment_details) {
             return res.send({
@@ -144,7 +143,7 @@ module.exports.EndTherapy = async (req, res) => {
         var therapistdetails = await Therapist.findOne({
             where: { id: checkbooking[0].therapistId }
         });
-        // console.log("therapistdetails", therapistdetails);
+        // ("therapistdetails", therapistdetails);
 
         if (!therapistdetails) {
             return res.send({
@@ -169,7 +168,7 @@ module.exports.EndTherapy = async (req, res) => {
             let payment_details = await PaymentHistory.findOne({
                 where: { ph_booking_id: b_id, ph_payment_status: 'paid' }
             });
-            // console.log("payment_details",payment_details);
+            // ("payment_details",payment_details);
 
             if (payment_details) {
 
@@ -177,7 +176,7 @@ module.exports.EndTherapy = async (req, res) => {
                     where: { pd_id: payment_details.ph_price_id }
                 });
 
-                // console.log("getprice", getprice, getprice.pd_doctor_fee);
+                // ("getprice", getprice, getprice.pd_doctor_fee);
 
                 await PaymentHistory.update(
                     { ph_pay_doctor: getprice.pd_doctor_fee },
@@ -185,7 +184,6 @@ module.exports.EndTherapy = async (req, res) => {
                 );
                 let updatedWallet = Number(doctordetails.d_wallet) + Number(getprice.pd_doctor_fee);
 
-                // console.log(doctordetails.d_wallet, "wallet");
                 // console.log(getprice.pd_doctor_fee, "pd_therapist_fee");
                 // console.log(updatedWallet, "updatedWallet");
 

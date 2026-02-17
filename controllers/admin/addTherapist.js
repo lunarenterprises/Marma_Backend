@@ -216,7 +216,6 @@ module.exports.TherapistEditProfile = async (req, res) => {
             const affectedCount = await Therapist.update(updateData, {
                 where: { id: therapist_id }
             });
-            console.log(therapist_id, affectedCount, "eee");
 
             if (affectedCount > 0) {
                 return res.send({

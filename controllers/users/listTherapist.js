@@ -13,7 +13,7 @@ module.exports.ListTherapist = async (req, res) => {
             }, {
                 where: { id: user_id }
             });
-            console.log("updateuserlocation", updateuserlocation);
+            ("updateuserlocation", updateuserlocation);
         }
 
 
@@ -168,7 +168,7 @@ module.exports.ListTherapist = async (req, res) => {
                     }
                 ]
             });
-            console.log(therapist, "tttt");
+            (therapist, "tttt");
 
             if (!therapist) {
                 return res.send({

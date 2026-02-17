@@ -46,7 +46,7 @@ module.exports.AddReview = async (req, res) => {
             { rating: newAvgRating },
             { where: { id: therapist_id } }
         );
-console.log(newAvgRating,"rating");
+        (newAvgRating, "rating");
 
         return res.send({
             result: true,

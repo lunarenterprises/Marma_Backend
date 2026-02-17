@@ -154,7 +154,6 @@ module.exports.DeletePriceDetails = async (req, res) => {
             let DeletePriceDetails = await priceDetails.destroy({
                 where: { pd_id: pd_id }
             });
-            console.log("DeletePriceDetails :", DeletePriceDetails);
 
             if (DeletePriceDetails) {
                 return res.send({

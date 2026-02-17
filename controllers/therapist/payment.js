@@ -52,7 +52,7 @@ module.exports.Payment = async (req, res) => {
                 });
             }
 
-            if (bookingdetails.paymentStatus === 'paid') {
+            if (bookingdetails.paymentStatus === 'Paid') {
                 return res.status(409).json({
                     result: false,
                     message: "Payment has already been made for this booking",
