@@ -39,8 +39,8 @@ router.post('/finish/therapy', LearnerAuthenticateToken, EndTherapy);
 const { Payment } = require('../controllers/therapist/payment.js');
 router.post('/payment', Payment);
 
-const { RazorpayCallback } = require('../controllers/therapist/razorpaycallback.js');
-router.get('/razorpay/callback', RazorpayCallback);
+// const { RazorpayCallback } = require('../controllers/therapist/razorpaycallback.js');
+// router.get('/razorpay/callback', RazorpayCallback);
 
 const { razorpayWebhook } = require('../controllers/therapist/razorpaycallback.js');
 router.post('/razorpay/webhook', razorpayWebhook);
