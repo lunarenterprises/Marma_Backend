@@ -121,6 +121,7 @@ module.exports.Payment = async (req, res) => {
                     message: "Price details not found",
                 });
             }
+
             paymentData.ph_user_id = user_id;
             paymentData.ph_therapist_id = therapist_id;
             paymentData.ph_booking_id = booking_id;
@@ -148,7 +149,7 @@ module.exports.Payment = async (req, res) => {
         // const key_id = process.env.KEY_ID;
         // const key_secret = process.env.KEY_SECRET;
 
-        const callback_url = `https://www.marma.reflexmarma.com/api/therapist/razorpay/callback?payment_id=${payment_id}`;
+        // const callback_url = `https://www.marma.reflexmarma.com/api/therapist/razorpay/callback?payment_id=${payment_id}`;
 
         const authHeader = {
             auth: {
@@ -167,6 +168,11 @@ module.exports.Payment = async (req, res) => {
                 contact: phone,
             },
             callback_url,
+            notes: {
+                payment_id: payment_id,
+                booking_id: booking_id || "",
+                learner_id: learner_id || ""
+            }
         };
 
         // Generate OTP and create Razorpay payment link
