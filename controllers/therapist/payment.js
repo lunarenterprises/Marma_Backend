@@ -167,7 +167,6 @@ module.exports.Payment = async (req, res) => {
                 email,
                 contact: phone,
             },
-            callback_url,
             notes: {
                 payment_id: payment_id,
                 booking_id: booking_id || "",
