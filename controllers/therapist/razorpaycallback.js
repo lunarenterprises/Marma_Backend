@@ -5,7 +5,8 @@ const {
   Therapist,
   Booking,
   Chat,
-  Messages
+  Messages,
+  Op
 } = require("../../models");
 const { sendEmail } = require("../../utils/emailService");
 const { sendSMS } = require("../../utils/sms");
@@ -28,6 +29,9 @@ module.exports.razorpayWebhook = async (req, res) => {
     }
 
     const event = req.body.event;
+    console.log(event, "event");
+    console.log(req.body, "req.body");
+    console.log("Webhook time:", new Date());
 
     // ============================
     // ✅ PAYMENT SUCCESS
@@ -49,6 +53,11 @@ module.exports.razorpayWebhook = async (req, res) => {
           result: false,
           message: "Payment details not found"
         });
+      }
+
+      if (payment_details.ph_payment_status === "paid") {
+        console.log("Duplicate webhook ignored");
+        return res.status(200).json({ status: true });
       }
       // let date = moment().format('YYYYY-MM-DD')
 
@@ -95,14 +104,13 @@ module.exports.razorpayWebhook = async (req, res) => {
         });
 
         const [updatebookingpaymentstatus] = await Booking.update(
-          { paymentStatus: 'paid' },
+          { paymentStatus: 'Paid' },
           { where: { id: booking_id } }
         );
 
         // ====================== SOCKET FIX START ======================
         try {
           const io = getIO();
-          const { Op } = require("sequelize");
 
           // 1️⃣ Find or create chat between user and therapist
           const [chat] = await Chat.findOrCreate({
